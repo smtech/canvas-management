@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/!svn/ver/436/trunk/lti/web
+END
+lms.php
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/421/trunk/lti/web/lms.php
+END
+lms.css
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/380/trunk/lti/web/lms.css
+END
+tool.php
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/435/trunk/lti/web/tool.php
+END
+TODO.txt
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/352/trunk/lti/web/TODO.txt
+END
+dist.sh
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/408/trunk/lti/web/dist.sh
+END

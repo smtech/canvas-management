@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/!svn/ver/271/trunk/basiclti/java-filter/basiclti-filter/src/main/java/org/imsglobal/basiclti/consumersecret/model
+END
+OauthConsumerSecret.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/!svn/ver/269/trunk/basiclti/java-filter/basiclti-filter/src/main/java/org/imsglobal/basiclti/consumersecret/model/OauthConsumerSecret.java
+END
+OauthConsumerSecret.hbm.xml
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/!svn/ver/271/trunk/basiclti/java-filter/basiclti-filter/src/main/java/org/imsglobal/basiclti/consumersecret/model/OauthConsumerSecret.hbm.xml
+END
+mappings.xml
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/!svn/ver/269/trunk/basiclti/java-filter/basiclti-filter/src/main/java/org/imsglobal/basiclti/consumersecret/model/mappings.xml
+END

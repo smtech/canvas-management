@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/269/trunk/basiclti/java-filter/basiclti-filter-admin/src/main/webapp/WEB-INF
+END
+application.xml
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/!svn/ver/269/trunk/basiclti/java-filter/basiclti-filter-admin/src/main/webapp/WEB-INF/application.xml
+END
+admin-servlet.xml
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/!svn/ver/269/trunk/basiclti/java-filter/basiclti-filter-admin/src/main/webapp/WEB-INF/admin-servlet.xml
+END
+web.xml
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/269/trunk/basiclti/java-filter/basiclti-filter-admin/src/main/webapp/WEB-INF/web.xml
+END

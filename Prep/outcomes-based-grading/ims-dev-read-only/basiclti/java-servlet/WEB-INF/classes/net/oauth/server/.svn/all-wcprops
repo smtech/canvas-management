@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/server
+END
+OAuthServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/server/OAuthServlet.java
+END
+HttpRequestMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/server/HttpRequestMessage.java
+END

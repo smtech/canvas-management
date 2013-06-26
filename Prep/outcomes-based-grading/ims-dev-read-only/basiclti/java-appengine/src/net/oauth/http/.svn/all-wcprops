@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/http
+END
+HttpResponseMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/http/HttpResponseMessage.java
+END
+HttpMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/http/HttpMessage.java
+END
+HttpMessageDecoder.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/http/HttpMessageDecoder.java
+END
+HttpClient.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/http/HttpClient.java
+END

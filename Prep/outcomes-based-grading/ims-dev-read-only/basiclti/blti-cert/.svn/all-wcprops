@@ -1,0 +1,209 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/337/trunk/basiclti/blti-cert
+END
+lms_01_status.png
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/224/trunk/basiclti/blti-cert/lms_01_status.png
+END
+footer.php
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/317/trunk/basiclti/blti-cert/footer.php
+END
+OAuthBody.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/OAuthBody.php
+END
+toolsetup.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/toolsetup.php
+END
+style.css
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/224/trunk/basiclti/blti-cert/style.css
+END
+toolcert.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/toolcert.cfm
+END
+tool_01_test.png
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/224/trunk/basiclti/blti-cert/tool_01_test.png
+END
+lmssetup.php
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/312/trunk/basiclti/blti-cert/lmssetup.php
+END
+check.php
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/224/trunk/basiclti/blti-cert/check.php
+END
+toolstatus.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/toolstatus.php
+END
+tool_provider_outcome.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/337/trunk/basiclti/blti-cert/tool_provider_outcome.php
+END
+TrivialOAuthDataStore.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/TrivialOAuthDataStore.php
+END
+tool_consumer_outcome.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/tool_consumer_outcome.php
+END
+index.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/index.cfm
+END
+blti_util.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/blti_util.php
+END
+lmscert.cfm
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/lmscert.cfm
+END
+lms_01_test.png
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/224/trunk/basiclti/blti-cert/lms_01_test.png
+END
+header.php
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/317/trunk/basiclti/blti-cert/header.php
+END
+imsblti-provider-cert-v1p0.doc
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/224/trunk/basiclti/blti-cert/imsblti-provider-cert-v1p0.doc
+END
+imsblti-consumer-cert-v1p0.doc
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/224/trunk/basiclti/blti-cert/imsblti-consumer-cert-v1p0.doc
+END
+cert_util.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/cert_util.php
+END
+misc.php
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/224/trunk/basiclti/blti-cert/misc.php
+END
+toolgradebook.php
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/toolgradebook.php
+END
+toolcert.php
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/toolcert.php
+END
+lmsstatus.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/310/trunk/basiclti/blti-cert/lmsstatus.php
+END
+tooldoc.php
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/tooldoc.php
+END
+lmscert.php
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/337/trunk/basiclti/blti-cert/lmscert.php
+END
+toolreport.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/toolreport.php
+END
+LICENSE.txt
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/224/trunk/basiclti/blti-cert/LICENSE.txt
+END
+tool_02_test.png
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/224/trunk/basiclti/blti-cert/tool_02_test.png
+END
+toolreturn.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/332/trunk/basiclti/blti-cert/toolreturn.php
+END
+OAuth.php
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/224/trunk/basiclti/blti-cert/OAuth.php
+END
+lmsdoc.php
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/310/trunk/basiclti/blti-cert/lmsdoc.php
+END
+lmsreport.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/310/trunk/basiclti/blti-cert/lmsreport.php
+END

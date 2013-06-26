@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth
+END
+OAuthException.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/OAuthException.java
+END
+SimpleOAuthValidator.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/SimpleOAuthValidator.java
+END
+OAuthProblemException.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/OAuthProblemException.java
+END
+OAuth.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/OAuth.java
+END
+ParameterStyle.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/ParameterStyle.java
+END
+OAuthAccessor.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/OAuthAccessor.java
+END
+OAuthMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/OAuthMessage.java
+END
+OAuthValidator.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/OAuthValidator.java
+END
+consumer.properties.sample
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/consumer.properties.sample
+END
+ConsumerProperties.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/ConsumerProperties.java
+END
+OAuthServiceProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/OAuthServiceProvider.java
+END
+OAuthConsumer.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/net/oauth/OAuthConsumer.java
+END

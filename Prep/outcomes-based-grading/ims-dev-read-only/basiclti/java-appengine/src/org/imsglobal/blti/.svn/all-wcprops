@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/org/imsglobal/blti
+END
+BLTIConsumer.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/org/imsglobal/blti/BLTIConsumer.java
+END
+BLTIToolProviderServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/org/imsglobal/blti/BLTIToolProviderServlet.java
+END
+BLTIDemoHomeServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/231/trunk/basiclti/java-appengine/src/org/imsglobal/blti/BLTIDemoHomeServlet.java
+END

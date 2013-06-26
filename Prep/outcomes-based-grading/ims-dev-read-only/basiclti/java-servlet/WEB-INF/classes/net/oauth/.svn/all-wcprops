@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth
+END
+OAuthException.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/OAuthException.java
+END
+SimpleOAuthValidator.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/SimpleOAuthValidator.java
+END
+OAuthProblemException.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/OAuthProblemException.java
+END
+OAuth.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/OAuth.java
+END
+ParameterStyle.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/ParameterStyle.java
+END
+OAuthAccessor.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/OAuthAccessor.java
+END
+OAuthMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/OAuthMessage.java
+END
+OAuthValidator.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/OAuthValidator.java
+END
+consumer.properties.sample
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/consumer.properties.sample
+END
+ConsumerProperties.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/ConsumerProperties.java
+END
+OAuthServiceProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/OAuthServiceProvider.java
+END
+OAuthConsumer.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/224/trunk/basiclti/java-servlet/WEB-INF/classes/net/oauth/OAuthConsumer.java
+END

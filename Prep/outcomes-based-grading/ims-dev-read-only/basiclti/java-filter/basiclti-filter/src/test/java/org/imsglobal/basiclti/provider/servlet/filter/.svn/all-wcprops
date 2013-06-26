@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/!svn/ver/269/trunk/basiclti/java-filter/basiclti-filter/src/test/java/org/imsglobal/basiclti/provider/servlet/filter
+END
+TestHttpServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/!svn/ver/269/trunk/basiclti/java-filter/basiclti-filter/src/test/java/org/imsglobal/basiclti/provider/servlet/filter/TestHttpServlet.java
+END
+BasicLTISecurityFilterTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/!svn/ver/269/trunk/basiclti/java-filter/basiclti-filter/src/test/java/org/imsglobal/basiclti/provider/servlet/filter/BasicLTISecurityFilterTest.java
+END
+web.xml
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/!svn/ver/269/trunk/basiclti/java-filter/basiclti-filter/src/test/java/org/imsglobal/basiclti/provider/servlet/filter/web.xml
+END

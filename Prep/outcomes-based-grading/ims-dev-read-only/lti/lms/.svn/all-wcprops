@@ -1,0 +1,101 @@
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/!svn/ver/404/trunk/lti/lms
+END
+course.php
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/398/trunk/lti/lms/course.php
+END
+config-sqlite.php
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/401/trunk/lti/lms/config-sqlite.php
+END
+index.php
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/404/trunk/lti/lms/index.php
+END
+config-mysql.php
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/401/trunk/lti/lms/config-mysql.php
+END
+login.php
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/402/trunk/lti/lms/login.php
+END
+logout.php
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/397/trunk/lti/lms/logout.php
+END
+launch.php
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/397/trunk/lti/lms/launch.php
+END
+phpliteadmin.php
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/375/trunk/lti/lms/phpliteadmin.php
+END
+pdo_util.php
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/397/trunk/lti/lms/pdo_util.php
+END
+courses.php
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/399/trunk/lti/lms/courses.php
+END
+README_PHPLITEADMIN.txt
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/375/trunk/lti/lms/README_PHPLITEADMIN.txt
+END
+README.txt
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/404/trunk/lti/lms/README.txt
+END
+db.php
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/!svn/ver/394/trunk/lti/lms/db.php
+END
+dist.sh
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/403/trunk/lti/lms/dist.sh
+END
+lti.php
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/404/trunk/lti/lms/lti.php
+END
+admin.php
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/394/trunk/lti/lms/admin.php
+END

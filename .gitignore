@@ -9,19 +9,6 @@ Icon?
 ehthumbs.db
 Thumbs.db
 
-# Build files #
-###############
-build/*
-
 # Temp files #
 ##############
 *~
-
-# Java #
-########
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
