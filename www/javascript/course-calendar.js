@@ -1,4 +1,11 @@
+/* including a pause because the page content is loaded dynamically --
+   so it needs to be there before we start messing with it */
 var delay = 1000; // 1 second = 1000 milliseconds
+
+var anchorLink = 'Announcements'; // which link is Course Calendar attached to?
+// TODO: right now the Course Calendar is added above the anchor link -- should be configurable (per account) as above or below
+
+var linkText = 'Course Calendar'; // text of the Course Calendar link
 
 function addCourseCalendar() {
 	var section_tabs = document.getElementById('section-tabs');
@@ -13,10 +20,10 @@ function addCourseCalendar() {
 		var link = document.createElement('a');
 		link.setAttribute('target', '_self');
 		link.setAttribute('href', href);
-		link.innerHTML = 'Course Calendar';
+		link.innerHTML = linkText;
 		calendar.appendChild(link);
 		for (i = 0; i < section_tabs.childNodes.length && !done; ++i) {
-			if (section_tabs.childNodes[i].childNodes[0].innerHTML == 'Discussions') {
+			if (section_tabs.childNodes[i].childNodes[0].innerHTML == anchorLink) {
 				section_tabs.insertBefore(calendar, section_tabs.childNodes[i]);
 				done = true;
 			}
@@ -27,6 +34,4 @@ function addCourseCalendar() {
 	}
 }
 
-window.setTimeout(addCourseCalendar, delay);	
-// https://stmarksschool.test.instructure.com/courses/489
-// https://stmarksschool.test.instructure.com/calendar2?include_contexts=course_489
+window.setTimeout(addCourseCalendar, delay);
