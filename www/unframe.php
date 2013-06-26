@@ -1,3 +1,4 @@
+<!-- framebuster for exploding links out of the Canvas wrapper -->
 <html>
 	<head>
 		<script><!--
@@ -8,4 +9,4 @@
 	</head>
 	<body onload="frameBustingRedirect('<?= $_REQUEST["url"] ?>');">
 	</body>
-</html>
+</html>a
