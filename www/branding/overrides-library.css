@@ -32,7 +32,10 @@ you should move a (smaller) Cavas logo to the right side of the header'*/
 #menu{ margin-left: 250px; }
 
 /*make the menu lettering white and make it go back to grey when you hover over*/
-.menu-item .menu-item-title, .menu-item .menu-item-no-drop { color: #FFFFFF; }
+.menu-item .menu-item-title, .menu-item .menu-item-no-drop {
+	color: #003359;
+	text-shadow: none;
+}
 .menu-item.hover .menu-item-title { color: #555555; }
 
 /*style the #identity (the thing that says "Ryan Shaw | inbox | profile | logout | (feedback)" in top right) */
