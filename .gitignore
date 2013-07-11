@@ -12,3 +12,7 @@ Thumbs.db
 # Temp files #
 ##############
 *~
+
+# Files full of secrets #
+#########################
+.ignore.*
