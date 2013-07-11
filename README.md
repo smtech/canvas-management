@@ -10,3 +10,6 @@ develop
 
 dev-XXXX
 : Features we're working on, forked from the most recent master/develop branch as appropriate. One feature per branch, no foolin'!
+
+dev-discussion-permalinks
+: Expose the permalinks within the discussions in Canvas, for easier deep-linking by users.
