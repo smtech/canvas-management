@@ -1,9 +1,0 @@
-Juli 06, 2011
-
-This sample code that provided a Basic LTI provider servlet filter
-was initially developed by
-
-Roland Groen, Edia
-http://www.edia.nl/
-
-And licensed to IMS Global Learning Consortium.
