@@ -11,6 +11,7 @@
 
 $uploadDir = "/var/www-data/canvas/blackboard-import/";
 $workingDir = $uploadDir . "tmp/";
+$manifestName = "imsmanifest.xml";
 
 function exitOnError($title, $text = "") {
 	echo "
@@ -31,7 +32,7 @@ function exitOnError($title, $text = "") {
 	exit;
 }
 
-function unzipUpload() {
+function stageUpload($uploadDir, $workingDir) {
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		if (isset($_FILES["bbzip"])) {
 			if ($_FILES["bbzip"]["error"] === UPLOAD_ERR_OK) {
@@ -50,10 +51,10 @@ function unzipUpload() {
 	return false;
 }
 
-function parseManifest() {
-	$manifestFile = $workingDir . "imsmanifest.xml";
+function parseManifest($workingDir, $manifestName) {
+	$manifestFile = $workingDir . $manifestName;
 	if (file_exists($manifestFile)) {
-		$manifest = simplexml_load_file($workingDir . "imsmanifest.xml");
+		$manifest = simplexml_load_file($manifestFile);
 		print_r($manifest);
 	} else exitOnError("Missing Manifest", "The manifest file (imsmanifest.xml) that should have been included in your Blackboard Exportfile cannot be found.");
 }
@@ -63,8 +64,8 @@ $phase = (isset($_REQUEST["phase"]) ? $_REQUEST["phase"] : NULL);
 switch ($phase) {
 	
 	case 1: { // uploaded the ZIP archive
-		if (unzipUpload()) {
-			parseManifest();
+		if (stageUpload($uploadDir, $workingDir)) {
+			parseManifest($workingDir, $manifestName);
 		}
 		break;
 	}
