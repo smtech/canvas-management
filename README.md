@@ -10,3 +10,6 @@ develop
 
 dev-XXXX
 : Features we're working on, forked from the most recent master/develop branch as appropriate. One feature per branch, no foolin'!
+
+dev-resources-menu
+: Add a Resources menu to the global navigation with a mix of links to Canvas courses, other websites, etc. Focus the Courses menu on only active _courses_ (and possibly teams or clubs). All else should be pulled out to support the student/advisor dashboard concept.
