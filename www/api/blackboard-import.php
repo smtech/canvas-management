@@ -11,11 +11,26 @@
 	6. Clean out files (when Canvas API calls complete)
 */
 
-$uploadDir = "/var/www-data/canvas/blackboard-import/";
-$workingDir = $uploadDir . "tmp/";
-$manifestName = "imsmanifest.xml";
+define("UPLOAD_DIR", "/var/www-data/canvas/blackboard-import/"); // where we'll store uploaded files
+define("WORKING_DIR", UPLOAD_DIR . "tmp/"); // where we'll be dumping temp files (and cleaning up, too!)
+$manifestName = "imsmanifest.xml"; // name of the manifest file
 
-/* defines $canvasApiToken and $canvasInstanceUrl */
+define("IMPORT_TYPE", "importType");
+define("ATTR_INDENT_LEVEL", "indentLevel");
+
+define("CANVAS_MODULE", "MODULE");
+define("CANVAS_FILE", "FILE");
+define("CANVAS_PAGE", "PAGE");
+define("CANVAS_EXTERNAL_URL", "EXTERNAL_URL");
+define("CANVAS_MODULE_ITEM", "MODULE_ITEM");
+define("CANVAS_QUIZ", "QUIZ");
+define("CANVAS_ASSIGNMENT", "ASSIGNMENT");
+define("CANVAS_DISCUSSION", "DISCUSSION");
+define("CANVAS_SUBHEADER", "SUBHEADER");
+define("CANVAS_ANNOUNCEMENT", "ANNOUNCEMENT");
+define("DO_NOT_IMPORT", "NO IMPORT");
+
+/* defines CANVAS_API_TOKEN and CANVAS_INSTANCE_URL */
 require_once(".ignore.canvas-authentication.php");
 
 /**
@@ -44,16 +59,16 @@ function exitOnError($title, $text = "") {
 /**
  * Handles the actual file uploading and unzipping into the working directory
  **/
-function stageUpload($uploadDir, $workingDir) {
+function stageUpload() {
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		if (isset($_FILES["BbExportFile"])) {
 			if ($_FILES["BbExportFile"]["error"] === UPLOAD_ERR_OK) {
 				// ... file was succesfully uploaded, process it
-				$uploadFile = $uploadDir . basename($_FILES["BbExportFile"]["name"]);
-				move_uploaded_file($_FILES["BbExportFile"]["tmp_name"], $uploadFile);
+				$uploadFile = UPLOAD_DIR . basename($_FILES["BbExportFile"]["name"]);
+				move_uploaded_file($_FILES["BbExportFile"]["tmp_name"], $uploadFile); // FIXME would be good to create a per-session temp directory
 				$zip = new ZipArchive();
 				if ($zipRsrc = $zip->open($uploadFile)) {
-					$zip->extractTo($workingDir);
+					$zip->extractTo(WORKING_DIR);
 					$zip->close();
 					return true;
 				} else exitOnError("Unzipping Failed", "The file you uploaded could not be unzipped.");
@@ -64,71 +79,120 @@ function stageUpload($uploadDir, $workingDir) {
 }
 
 /**
- * Strips the labels off of content area titles that indicate that they are
- * the Bb defaults, then expands CamelCased names into separate words and
- * trims any extraneous spaces
+ * Is this XML item a Bb application?
  **/
-function stripBbCOURSE_DEFAULT($string) {
-	return trim(preg_replace("/(.*)([A-Z].*)/", "\\1 \\2", preg_replace("/COURSE_DEFAULT\.(.+)\.[A-Z_]+\.label/", "\\1", $string)));
+function isBbApplication($item) {
+	return preg_match("|COURSE_DEFAULT\..*\.APPLICATION\.label|", $item->title);
 }
 
 /**
- * Works through a nested list of items in the manifest, indicating the level
- * of nested-ness to the callback function (which expects an item and a level).
- * Depth-first iteration, so you get use callbackDummy() to get a nice tab-
- * indented view of what you've found.
+
+/**
+ * Parse a module and update XML with notes for import
  **/
-function recursivelyIterateItems($manifestItem, $callback, $level = 0) {
-	call_user_func($callback, $manifestItem->title, $level);
-	if (isset($manifestItem->item)) {
-		foreach ($manifestItem->item as $item) {
-			recursivelyIterateItems($item, $callback, $level + 1);
+function parseContentArea($contentArea, $manifest, $indent = -1) {
+	foreach ($contentArea->item as $item) {
+		if ($indent >= 0) {
+			$item->addAttribute(ATTR_INDENT_LEVEL, $indent);
+		}
+		if (isset($item->item)) { /* if there are subitems, this must be a subheader */
+			if ($indent < 0) {
+				$item->addAttribute(IMPORT_TYPE, CANVAS_MODULE);
+			} else {
+				$item->addAttribute(IMPORT_TYPE, CANVAS_SUBHEADER);
+			}
+			parseContentArea($item, $manifest, $indent + 1);
+		} else { /* we're going to have to dig deeper into the res00000.dat file */
+			$resFile = WORKING_DIR . $item->attributes()->identifierref . ".dat";
+			if (file_exists($resFile)) {
+				$res = simplexml_load_file($resFile);
+				if ($res->CONTENTHANDLER && $res->CONTENTHANDLER->attributes()) {
+					$contentHandler = $res->CONTENTHANDLER->attributes();
+					switch ($contentHandler["value"]) {
+						case "resource/x-bb-assignment": {
+							$item->addAttribute(IMPORT_TYPE, CANVAS_ASSIGNMENT);
+							break;
+						}
+						
+						case "resource/x-bb-courselink": {
+							$item->addAttribute(IMPORT_TYPE, CANVAS_MODULE_ITEM);
+							break;
+						}
+						
+						case "resource/x-bb-externallink": {
+							if (strlen((string) $res->body->text)) {
+								$item->addAttribute(IMPORT_TYPE, CANVAS_PAGE);
+							} else {
+								$item->addAttribute(IMPORT_TYPE, CANVAS_EXTERNAL_URL);
+							}
+							break;
+						}
+						
+						case "resource/x-bb-asmt-survey-link": {
+							$item->addAttribute(IMPORT_TYPE, CANVAS_QUIZ);
+							break;
+						}
+						
+						case "resource/x-bb-folder":
+						case "resource/x-bb-lesson": {
+							if ($indent < 0) {
+								$item->addAttribute(IMPORT_TYPE, CANVAS_MODULE);
+							} else {
+								$item->addAttribute(IMPORT_TYPE, CANVAS_SUBHEADER);
+							}
+							break;
+						}
+						
+						case "resource/x-bb-vclink": {
+							$item->addAttribute(IMPORT_TYPE, CANVAS_CONFERENCE);
+							break;
+						}
+						
+						case "resource/x-bb-file": {
+							if (strlen((string) $res->body->text)) {
+								$item->addAttribute(IMPORT_TYPE, CANVAS_PAGE);
+							} else {
+								$item->addAttribute(IMPORT_TYPE, CANVAS_FILE);
+							}
+							break;
+						}
+						
+						case "resource/x-bb-document": {
+							$item->addAttribute(IMPORT_TYPE, CANVAS_PAGE);
+							break;
+						}
+					}
+				} else {
+					$item->addAttribute(IMPORT_TYPE, DO_NOT_IMPORT);		
+				}
+			} else exitOnError("Missing Resource File",array("A resource file containing details about one of your items is missing.", $resFile));
 		}
 	}
-}
-
-/**
- * A dummy callback function for recursivelyIterateItems() that lets us do
- * a quick print of what we've got from the manifest to see if it "makes sense"
- **/
-$manifest_text = "";
-function callbackDummy($text, $level) {
-	global $manifest_text;
-	$manifest_text .= "\n";
-	for ($i = 0; $i < $level; $i++) {
-		$manifest_text .= "\t";
-	}
-	$manifest_text .= stripBbCOURSE_DEFAULT($text);
 }
 
 /**
  * Parse the XML of the manifest file and prepare a preview for the user before
  * committing to the actual import into Canvas
  **/
-function parseManifest($workingDir, $manifestName) {
-	$manifestFile = $workingDir . $manifestName;
+function parseManifest($manifestName) {
+	$manifestFile = WORKING_DIR . $manifestName;
 	if (file_exists($manifestFile)) {
 		$manifest = simplexml_load_file($manifestFile);
 		
-		foreach($manifest->organizations->organization->item as $item) {
-			recursivelyIterateItems($item, "callbackDummy");
-		}
+		parseContentArea($manifest->organizations->organization, $manifest);
 		
-		global $manifest_text;
-		echo "<pre>$manifest_text</pre><hr />";
 		echo '<pre>';
 		print_r($manifest);
 		echo '</pre>';
 		
-		return ($manifest);
 	} else exitOnError("Missing Manifest", "The manifest file (imsmanifest.xml) that should have been included in your Blackboard Exportfile cannot be found.");
 }
 
 /**
  * Clean out the working directory, make it ready for our next import
  **/
-function flushDir($workingDir) {
-	$files = glob("$workingDir*");
+function flushDir($dir) {
+	$files = glob("$dir*");
 	foreach($files as $file) {
 		if (is_dir($file)) {
 			flushDir($file);
@@ -139,11 +203,20 @@ function flushDir($workingDir) {
 	}
 }
 
+
+/***********************************************************************
+ *                                                                     *
+ * The main program... whee!                                           *
+ *                                                                     *
+ ***********************************************************************/
+
+echo "<p><a href=\"{$_SERVER["PHP_SELF"]}\">Restart</a></p>";
+
 /* are we uploading a file? */
 if (isset($_FILES["BbExportFile"])) {
-	if (stageUpload($uploadDir, $workingDir)) {
-		$manifest = parseManifest($workingDir, $manifestName);
-		flushDir($workingDir);
+	if (stageUpload()) {
+		$manifest = parseManifest($manifestName);
+		flushDir(WORKING_DIR);
 	}
 } else {
 /* well, it appears that nothing has happened yet, so let's just start with
@@ -156,7 +229,7 @@ if (isset($_FILES["BbExportFile"])) {
 			<!-- 262144000 bytes == 250MB -- if this needs to change, be sure to update the .htaccess file! -->
 			<input type="hidden" name="MAX_FILE_SIZE" value="262144000" />
 			Import this file: <input name="BbExportFile" type="file" />
-			<input type="submit" value="Import File" />
+			<input type="submit" value="Import File" onsubmit="if (this.getAttribute(\'submitted\')) return false; this.setAttribute(\'submitted\',\'true\');" />
 		</form>
 		</body>
 		</html>';
