@@ -60,7 +60,69 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
-			<string>{{279.23051841366953, 485.34352465603536}, {216, 163}}</string>
+			<string>{{36.053098679118534, 36.99999635953516}, {276, 26}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>FitText</key>
+			<string>YES</string>
+			<key>Flow</key>
+			<string>Resize</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Color</key>
+				<dict>
+					<key>w</key>
+					<string>0</string>
+				</dict>
+				<key>Font</key>
+				<string>GillSans</string>
+				<key>Size</key>
+				<real>10</real>
+			</dict>
+			<key>ID</key>
+			<integer>464</integer>
+			<key>Shape</key>
+			<string>Rectangle</string>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>stroke</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+			</dict>
+			<key>Text</key>
+			<dict>
+				<key>Align</key>
+				<integer>0</integer>
+				<key>Pad</key>
+				<integer>0</integer>
+				<key>Text</key>
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
+{\fonttbl\f0\fnil\fcharset0 Inconsolata;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs48 \cf0 Blackboard 8 ExportFile}</string>
+				<key>VerticalPad</key>
+				<integer>0</integer>
+			</dict>
+			<key>Wrap</key>
+			<string>NO</string>
+		</dict>
+		<dict>
+			<key>Bounds</key>
+			<string>{{279.23051841366953, 557.34352465603536}, {216, 163}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -144,7 +206,7 @@ LINK = A link to another course item (resource/x-bb-courselink). Only appears in
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1044.2288208424316, 166.67006563614169}, {216, 108}}</string>
+			<string>{{1044.2288208424316, 238.67006563614169}, {216, 108}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -228,7 +290,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1044.2288501883054, 75.500006606755264}, {216, 75}}</string>
+			<string>{{1044.2288501883054, 147.50000660675528}, {216, 75}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -326,8 +388,8 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 			<real>-1</real>
 			<key>Points</key>
 			<array>
-				<string>{254, 1107}</string>
-				<string>{290, 1107}</string>
+				<string>{254, 1179}</string>
+				<string>{290, 1179}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -355,7 +417,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 171}, {216, 36}}</string>
+			<string>{{792, 243}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -404,7 +466,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 117}, {216, 36}}</string>
+			<string>{{792, 189}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -448,14 +510,14 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\fs20 \cf0 &lt;text&gt;[HTML with Entities]&lt;/text&gt;}</string>
+\f0\fs20 \cf0 &lt;text&gt;[HTML with named entities]&lt;/text&gt;}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
 			</dict>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 387}, {216, 36}}</string>
+			<string>{{792, 459}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -504,7 +566,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 333}, {216, 36}}</string>
+			<string>{{792, 405}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -553,7 +615,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 279}, {216, 36}}</string>
+			<string>{{792, 351}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -602,7 +664,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 225}, {216, 36}}</string>
+			<string>{{792, 297}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -651,7 +713,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 981}, {216, 36}}</string>
+			<string>{{792, 1053}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -700,7 +762,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 927}, {216, 36}}</string>
+			<string>{{792, 999}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -749,7 +811,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 873}, {216, 36}}</string>
+			<string>{{792, 945}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -798,7 +860,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 819}, {216, 36}}</string>
+			<string>{{792, 891}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -847,7 +909,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 765}, {216, 36}}</string>
+			<string>{{792, 837}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -896,7 +958,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 711}, {216, 36}}</string>
+			<string>{{792, 783}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -945,7 +1007,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 657}, {216, 36}}</string>
+			<string>{{792, 729}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -994,7 +1056,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 603}, {216, 36}}</string>
+			<string>{{792, 675}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1043,7 +1105,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 549}, {216, 36}}</string>
+			<string>{{792, 621}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1092,7 +1154,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 495}, {216, 36}}</string>
+			<string>{{792, 567}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1141,7 +1203,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 441}, {216, 36}}</string>
+			<string>{{792, 513}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1190,7 +1252,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1296, 1035}, {216, 36}}</string>
+			<string>{{1296, 1107}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1239,7 +1301,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1296, 981}, {216, 36}}</string>
+			<string>{{1296, 1053}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1288,7 +1350,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1044, 1035}, {216, 36}}</string>
+			<string>{{1044, 1107}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1337,7 +1399,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1044, 981}, {216, 36}}</string>
+			<string>{{1044, 1053}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1386,7 +1448,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1044, 927.00000000000011}, {216, 36}}</string>
+			<string>{{1044, 999.00000000000011}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1435,7 +1497,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1044, 873}, {216, 36}}</string>
+			<string>{{1044, 945}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1484,7 +1546,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1044, 819}, {216, 36}}</string>
+			<string>{{1044, 891}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1533,7 +1595,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1044, 765}, {216, 36}}</string>
+			<string>{{1044, 837}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1582,7 +1644,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1044, 711}, {216, 36}}</string>
+			<string>{{1044, 783}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1631,7 +1693,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{792, 1035}, {216, 36}}</string>
+			<string>{{792, 1107}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1680,7 +1742,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 1035}, {216, 36}}</string>
+			<string>{{540, 1107}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1729,7 +1791,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 819}, {216, 36}}</string>
+			<string>{{540, 891}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1765,7 +1827,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 765}, {216, 36}}</string>
+			<string>{{540, 837}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1801,7 +1863,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 711}, {216, 36}}</string>
+			<string>{{540, 783}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1837,7 +1899,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 657}, {216, 36}}</string>
+			<string>{{540, 729}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1873,7 +1935,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 603}, {216, 36}}</string>
+			<string>{{540, 675}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1909,7 +1971,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 549}, {216, 36}}</string>
+			<string>{{540, 621}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1945,7 +2007,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 495}, {216, 36}}</string>
+			<string>{{540, 567}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1981,7 +2043,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 441}, {216, 36}}</string>
+			<string>{{540, 513}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -2030,7 +2092,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 225}, {216, 36}}</string>
+			<string>{{540, 297}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -2079,7 +2141,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 117}, {216, 36}}</string>
+			<string>{{540, 189}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -2128,7 +2190,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 63}, {216, 36}}</string>
+			<string>{{540, 135}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -2164,7 +2226,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{540, 8.9999999999999858}, {216, 36}}</string>
+			<string>{{540, 80.999999999999986}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -2200,7 +2262,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{288, 9}, {216, 36}}</string>
+			<string>{{288, 81}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -2236,7 +2298,7 @@ P = Programmatic (appears only with grade book entries that appear to be summary
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1296, 652.70225968708087}, {216, 152}}</string>
+			<string>{{1296, 724.70225968708087}, {216, 152}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -2318,7 +2380,7 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{290, 1089}, {216, 36}}</string>
+			<string>{{290, 1161}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -2369,7 +2431,7 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{38, 1089}, {216, 36}}</string>
+			<string>{{38, 1161}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -2418,7 +2480,7 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{35.999999999999993, 9}, {216, 36}}</string>
+			<string>{{35.999999999999993, 81}, {216, 36}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -2472,8 +2534,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 26.999999999999986}</string>
+				<string>{504, 99}</string>
+				<string>{540, 98.999999999999986}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -2519,8 +2581,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 81}</string>
+				<string>{504, 99}</string>
+				<string>{540, 153}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -2566,8 +2628,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 135}</string>
+				<string>{504, 99}</string>
+				<string>{540, 207}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -2613,8 +2675,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>-1</real>
 			<key>Points</key>
 			<array>
-				<string>{252, 27}</string>
-				<string>{288, 27}</string>
+				<string>{252, 99}</string>
+				<string>{288, 99}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -2660,8 +2722,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>-1</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 135}</string>
-				<string>{792, 135}</string>
+				<string>{756, 207}</string>
+				<string>{792, 207}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -2707,8 +2769,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 135}</string>
-				<string>{792, 189}</string>
+				<string>{756, 207}</string>
+				<string>{792, 261}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -2754,8 +2816,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 243}</string>
+				<string>{504, 99}</string>
+				<string>{540, 315}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -2801,8 +2863,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 243}</string>
-				<string>{792, 243}</string>
+				<string>{756, 315}</string>
+				<string>{792, 315}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -2848,8 +2910,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 243}</string>
-				<string>{792, 297}</string>
+				<string>{756, 315}</string>
+				<string>{792, 369}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -2895,8 +2957,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 243}</string>
-				<string>{792, 351}</string>
+				<string>{756, 315}</string>
+				<string>{792, 423}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -2942,8 +3004,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 243}</string>
-				<string>{792, 405}</string>
+				<string>{756, 315}</string>
+				<string>{792, 477}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -2989,8 +3051,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 459}</string>
+				<string>{504, 99}</string>
+				<string>{540, 531}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3036,8 +3098,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 459}</string>
-				<string>{792, 459}</string>
+				<string>{756, 531}</string>
+				<string>{792, 531}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3083,8 +3145,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 459}</string>
-				<string>{792, 513}</string>
+				<string>{756, 531}</string>
+				<string>{792, 585}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3130,8 +3192,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 459}</string>
-				<string>{792, 567}</string>
+				<string>{756, 531}</string>
+				<string>{792, 639}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3177,8 +3239,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 459}</string>
-				<string>{792, 621}</string>
+				<string>{756, 531}</string>
+				<string>{792, 693}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3224,8 +3286,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 459}</string>
-				<string>{792, 675}</string>
+				<string>{756, 531}</string>
+				<string>{792, 747}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3271,8 +3333,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 459}</string>
-				<string>{792, 729}</string>
+				<string>{756, 531}</string>
+				<string>{792, 801}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3318,8 +3380,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 459}</string>
-				<string>{792, 783}</string>
+				<string>{756, 531}</string>
+				<string>{792, 855}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3365,8 +3427,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 459}</string>
-				<string>{792, 837}</string>
+				<string>{756, 531}</string>
+				<string>{792, 909}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3412,8 +3474,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 459}</string>
-				<string>{792, 891}</string>
+				<string>{756, 531}</string>
+				<string>{792, 963}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3459,8 +3521,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 459}</string>
-				<string>{792, 945}</string>
+				<string>{756, 531}</string>
+				<string>{792, 1017}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3506,8 +3568,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 459}</string>
-				<string>{792, 999}</string>
+				<string>{756, 531}</string>
+				<string>{792, 1071}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3553,8 +3615,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 513}</string>
+				<string>{504, 99}</string>
+				<string>{540, 585}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3600,8 +3662,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 567}</string>
+				<string>{504, 99}</string>
+				<string>{540, 639}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3647,8 +3709,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 621}</string>
+				<string>{504, 99}</string>
+				<string>{540, 693}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3694,8 +3756,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 675}</string>
+				<string>{504, 99}</string>
+				<string>{540, 747}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3741,8 +3803,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 729}</string>
+				<string>{504, 99}</string>
+				<string>{540, 801}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3788,8 +3850,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 783}</string>
+				<string>{504, 99}</string>
+				<string>{540, 855}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3835,8 +3897,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 837}</string>
+				<string>{504, 99}</string>
+				<string>{540, 909}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3882,8 +3944,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{504, 27}</string>
-				<string>{540, 1053}</string>
+				<string>{504, 99}</string>
+				<string>{540, 1125}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3929,8 +3991,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>-1</real>
 			<key>Points</key>
 			<array>
-				<string>{756, 1053}</string>
-				<string>{792, 1053}</string>
+				<string>{756, 1125}</string>
+				<string>{792, 1125}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -3976,8 +4038,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{1008, 1053}</string>
-				<string>{1044, 729}</string>
+				<string>{1008, 1125}</string>
+				<string>{1044, 801}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4023,8 +4085,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{1008, 1053}</string>
-				<string>{1044, 783}</string>
+				<string>{1008, 1125}</string>
+				<string>{1044, 855}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4070,8 +4132,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{1008, 1053}</string>
-				<string>{1044, 837}</string>
+				<string>{1008, 1125}</string>
+				<string>{1044, 909}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4117,8 +4179,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{1008, 1053}</string>
-				<string>{1044, 891}</string>
+				<string>{1008, 1125}</string>
+				<string>{1044, 963}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4164,8 +4226,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{1008, 1053}</string>
-				<string>{1044, 945.00000000000011}</string>
+				<string>{1008, 1125}</string>
+				<string>{1044.0000000000002, 1017.0000000000001}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4211,8 +4273,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{1008, 1053}</string>
-				<string>{1044, 999}</string>
+				<string>{1008, 1125}</string>
+				<string>{1044, 1071}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4255,11 +4317,11 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<key>OrthogonalBarPoint</key>
 			<string>{0, 0}</string>
 			<key>OrthogonalBarPosition</key>
-			<real>9.3000001907348633</real>
+			<real>-1</real>
 			<key>Points</key>
 			<array>
-				<string>{1260, 999}</string>
-				<string>{1296, 999}</string>
+				<string>{1260, 1071}</string>
+				<string>{1296, 1071}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4305,8 +4367,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{1260, 999}</string>
-				<string>{1296, 1053}</string>
+				<string>{1260, 1071}</string>
+				<string>{1296, 1125}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4352,8 +4414,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<real>9.3000001907348633</real>
 			<key>Points</key>
 			<array>
-				<string>{1008, 1053}</string>
-				<string>{1044, 1053}</string>
+				<string>{1008, 1125}</string>
+				<string>{1044, 1125}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4393,8 +4455,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<integer>463</integer>
 			<key>Points</key>
 			<array>
-				<string>{540, 567}</string>
-				<string>{495.23051841366953, 566.84352465603536}</string>
+				<string>{540, 639}</string>
+				<string>{495.23051841366953, 638.84352465603536}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4443,8 +4505,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<integer>461</integer>
 			<key>Points</key>
 			<array>
-				<string>{1008, 189}</string>
-				<string>{1044.2288208424316, 220.67006563614169}</string>
+				<string>{1008, 261}</string>
+				<string>{1044.2288208424316, 292.67006563614166}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4493,8 +4555,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<integer>459</integer>
 			<key>Points</key>
 			<array>
-				<string>{1008.4273733340427, 134.74047725841368}</string>
-				<string>{1044.2288501883054, 113.00000660675526}</string>
+				<string>{1008.4273733340427, 206.74047725841368}</string>
+				<string>{1044.2288501883054, 185.00000660675528}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4543,8 +4605,8 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 			<integer>456</integer>
 			<key>Points</key>
 			<array>
-				<string>{1260, 729}</string>
-				<string>{1296, 728.70225968708087}</string>
+				<string>{1260, 801}</string>
+				<string>{1296, 800.70225968708087}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -4631,7 +4693,7 @@ If the name is of the form "/xid-[ID]", the file will be found in the csfiles di
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2013-07-12 01:33:41 +0000</string>
+	<string>2013-07-12 14:06:42 +0000</string>
 	<key>Modifier</key>
 	<string>Seth Battis</string>
 	<key>NotesVisible</key>
