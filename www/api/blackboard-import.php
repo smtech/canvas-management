@@ -11,6 +11,9 @@
 	6. Clean out files (when Canvas API calls complete)
 */
 
+/* REQUIRES the PHP 5 XSL extension
+   http://www.php.net/manual/en/xsl.installation.php */
+
 define("UPLOAD_DIR", "/var/www-data/canvas/blackboard-import/"); // where we'll store uploaded files
 define("WORKING_DIR", UPLOAD_DIR . "tmp/"); // where we'll be dumping temp files (and cleaning up, too!)
 $manifestName = "imsmanifest.xml"; // name of the manifest file
@@ -32,6 +35,8 @@ define("DO_NOT_IMPORT", "NO IMPORT");
 
 /* defines CANVAS_API_TOKEN and CANVAS_INSTANCE_URL */
 require_once(".ignore.canvas-authentication.php");
+
+require_once("PestJSON.php");
 
 /**
  * A handy little helper function to print a (somewhat) friendly error
@@ -86,16 +91,53 @@ function isBbApplication($item) {
 }
 
 /**
+ * Clean up the Bb XML's body text HTML
+ **/
+function BbHTMLtoCanvasHTML($text) {
+	$html = str_replace(array("&lt;", "&gt;"), array("<", ">"), $text);
+	// FIXME: replace Bb Content Collection links of the form src="@X@EmbeddedFile.requestUrlStub@X@bbcswebdav/xid-26980_1"
+	// FIXME: replace Bb Course Content Collection links of the form src="@X@EmbeddedFile.requestUrlStub@X@@@E48B325B306BE98D9AEF6FE35C97DD19/courses/1/CS-31-2-Orange-Battis/content/_3499_1/embedded/logo_house.GIF" (probably not gonna work!)
+	// FIXME: replace attached files of the form src="@X@EmbeddedFile.location@X@logoscript.gif" (knowing that the actual filename may need to be fixed)
+	/* proposed process for each of these fixes
+	
+			1. Spider the appropriate csfiles or res00000 directories to identify the file by size/x-id
+			2. If the file has not already been uploaded, block the conversion process while it is uploaded
+			3. Mark the relevant XML as uploaded (writing back to disk, including Canvas URLs)
+			4. Replace with Canvas URLs
+			5. Unblock and return cleaned HTML
+			
+	 Oy. */
+	return $html;
+}
+
+/**
+ * Create Canvas Page
+ **/
+function createCanvasPage($item, $res, $manifest) {
+	$title = (string) $item->xpath("./[lower-case(name())='title']@[lower-case(name())='value']"); //(string) $res->TITLE->attributes()->value;
+	$pest = new PestJSON(CANVAS_INSTANCE_URL);
+	$pest->post("/courses/1125/pages",
+		array(
+			"wiki_page[title]" => $title,
+			"wiki_page[body]" => "<h1>$title</h1>" . BbHTMLtoCanvasHTML((string) $res->BODY->TEXT),
+			"wiki_page[published]" => "true"
+		),
+		array (
+			"Authorization" => "Bearer " . CANVAS_API_TOKEN
+		)
+	);
+}
 
 /**
  * Parse a module and update XML with notes for import
  **/
 function parseContentArea($contentArea, $manifest, $indent = -1) {
+	// TODO: should probably really be using Xpath...
 	foreach ($contentArea->item as $item) {
 		if ($indent >= 0) {
 			$item->addAttribute(ATTR_INDENT_LEVEL, $indent);
 		}
-		if (isset($item->item)) { /* if there are subitems, this must be a subheader */
+		if (isset($item->item)) { // if there are subitems, this must be a subheader or module
 			if ($indent < 0) {
 				$item->addAttribute(IMPORT_TYPE, CANVAS_MODULE);
 			} else {
@@ -103,70 +145,89 @@ function parseContentArea($contentArea, $manifest, $indent = -1) {
 			}
 			parseContentArea($item, $manifest, $indent + 1);
 		} else { /* we're going to have to dig deeper into the res00000.dat file */
-			$resFile = WORKING_DIR . $item->attributes()->identifierref . ".dat";
-			if (file_exists($resFile)) {
-				$res = simplexml_load_file($resFile);
-				if ($res->CONTENTHANDLER && $res->CONTENTHANDLER->attributes()) {
-					$contentHandler = $res->CONTENTHANDLER->attributes();
-					switch ($contentHandler["value"]) {
-						case "resource/x-bb-assignment": {
-							$item->addAttribute(IMPORT_TYPE, CANVAS_ASSIGNMENT);
-							break;
-						}
-						
-						case "resource/x-bb-courselink": {
-							$item->addAttribute(IMPORT_TYPE, CANVAS_MODULE_ITEM);
-							break;
-						}
-						
-						case "resource/x-bb-externallink": {
-							if (strlen((string) $res->body->text)) {
+			if ($item->attributes()) {
+				$resFile = WORKING_DIR . $item->attributes()->identifierref . ".dat";
+				if (file_exists($resFile)) {
+					$res = simplexml_load_file_lowercase($resFile);
+					if ($res->contenthandler && $res->contenthandler->attributes()) {
+						$contentHandler = $res->contenthandler->attributes()->value;
+						switch ($contentHandler) {
+							case "resource/x-bb-assignment": {
+								$item->addAttribute(IMPORT_TYPE, CANVAS_ASSIGNMENT);
+								break;
+							}
+							
+							case "resource/x-bb-courselink": {
+								$item->addAttribute(IMPORT_TYPE, CANVAS_MODULE_ITEM);
+								break;
+							}
+							
+							case "resource/x-bb-externallink": {
+								if (strlen((string) $res->BODY->TEXT)) {
+									$item->addAttribute(IMPORT_TYPE, CANVAS_PAGE);
+								} else {
+									$item->addAttribute(IMPORT_TYPE, CANVAS_EXTERNAL_URL);
+								}
+								break;
+							}
+							
+							case "resource/x-bb-asmt-survey-link": {
+								$item->addAttribute(IMPORT_TYPE, CANVAS_QUIZ);
+								break;
+							}
+							
+							case "resource/x-bb-folder":
+							case "resource/x-bb-lesson": {
+								if ($indent < 0) {
+									$item->addAttribute(IMPORT_TYPE, CANVAS_MODULE);
+								} else {
+									$item->addAttribute(IMPORT_TYPE, CANVAS_SUBHEADER);
+								}
+								break;
+							}
+							
+							case "resource/x-bb-vclink": {
+								$item->addAttribute(IMPORT_TYPE, CANVAS_CONFERENCE);
+								break;
+							}
+							
+							case "resource/x-bb-file": {
+								if (strlen((string) $res->BODY->TEXT)) {
+									$item->addAttribute(IMPORT_TYPE, CANVAS_PAGE);
+								} else {
+									$item->addAttribute(IMPORT_TYPE, CANVAS_FILE);
+								}
+								break;
+							}
+							
+							case "resource/x-bb-document": {
 								$item->addAttribute(IMPORT_TYPE, CANVAS_PAGE);
-							} else {
-								$item->addAttribute(IMPORT_TYPE, CANVAS_EXTERNAL_URL);
+								//createCanvasPage($item, $res, $manifest);
+								break;
 							}
-							break;
 						}
-						
-						case "resource/x-bb-asmt-survey-link": {
-							$item->addAttribute(IMPORT_TYPE, CANVAS_QUIZ);
-							break;
-						}
-						
-						case "resource/x-bb-folder":
-						case "resource/x-bb-lesson": {
-							if ($indent < 0) {
-								$item->addAttribute(IMPORT_TYPE, CANVAS_MODULE);
-							} else {
-								$item->addAttribute(IMPORT_TYPE, CANVAS_SUBHEADER);
-							}
-							break;
-						}
-						
-						case "resource/x-bb-vclink": {
-							$item->addAttribute(IMPORT_TYPE, CANVAS_CONFERENCE);
-							break;
-						}
-						
-						case "resource/x-bb-file": {
-							if (strlen((string) $res->body->text)) {
-								$item->addAttribute(IMPORT_TYPE, CANVAS_PAGE);
-							} else {
-								$item->addAttribute(IMPORT_TYPE, CANVAS_FILE);
-							}
-							break;
-						}
-						
-						case "resource/x-bb-document": {
-							$item->addAttribute(IMPORT_TYPE, CANVAS_PAGE);
-							break;
-						}
+					} else {
+						$item->addAttribute(IMPORT_TYPE, DO_NOT_IMPORT);		
 					}
-				} else {
-					$item->addAttribute(IMPORT_TYPE, DO_NOT_IMPORT);		
-				}
-			} else exitOnError("Missing Resource File",array("A resource file containing details about one of your items is missing.", $resFile));
+				} else exitOnError("Missing Resource File",array("A resource file containing details about one of your items is missing.", $resFile));
+			}
 		}
+	}
+}
+
+/**
+ * Force nodes and attributes to all lower-case in a given XML document,
+ * returning a SimpleXML object.
+ **/
+function simplexml_load_file_lowercase($fileName) {
+	if (file_exists($fileName)) {
+		$xmlWoNkYcAsE = simplexml_load_file($fileName);
+		$xslt = new XSLTProcessor();
+		$xsl = simplexml_load_file("./lowercase-transform.xsl");
+		$xslt->importStylesheet($xsl);
+		return (simplexml_load_string($xslt->transformToXML($xmlWoNkYcAsE)));
+	} else {
+		return false;
 	}
 }
 
@@ -177,8 +238,7 @@ function parseContentArea($contentArea, $manifest, $indent = -1) {
 function parseManifest($manifestName) {
 	$manifestFile = WORKING_DIR . $manifestName;
 	if (file_exists($manifestFile)) {
-		$manifest = simplexml_load_file($manifestFile);
-		
+		$manifest = simplexml_load_file_lowercase($manifestFile);
 		parseContentArea($manifest->organizations->organization, $manifest);
 		
 		echo '<pre>';
