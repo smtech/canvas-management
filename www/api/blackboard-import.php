@@ -45,6 +45,13 @@ define('DEBUGGING', true);
 /* defines CANVAS_API_TOKEN and CANVAS_INSTANCE_URL */
 require_once('.ignore.canvas-authentication.php');
 
+
+/***********************************************************************
+ *                                                                     *
+ * Helpers                                                             *
+ *                                                                     *
+ ***********************************************************************/
+ 
 require_once('Pest.php');
 
 /**
@@ -66,6 +73,20 @@ function exitOnError($title, $text = '') {
 }
 
 /**
+ * Echo a page of HTML content to the browser, wrapped in some CSS niceities
+ **/
+function displayPage($content) {
+	echo '<html>
+<head>
+	<link rel="stylesheet" href="script-ui.css" />
+</head>
+<body>
+'. $content . '
+</body>
+</html>';
+}
+
+/**
  * Helper function to conditionally fill the log file with notes!
  **/
 function debug_log($message) {
@@ -73,6 +94,44 @@ function debug_log($message) {
 		error_log($message);
 	}
 }
+
+/**
+ * Force nodes and attributes to all lower-case in a given XML document,
+ * returning a SimpleXML object.
+ **/
+function simplexml_load_file_lowercase($fileName) {
+	if (file_exists($fileName)) {
+		$xmlWoNkYcAsE = simplexml_load_file($fileName);
+		$xslt = new XSLTProcessor();
+		$xsl = simplexml_load_file('./lowercase-transform.xsl');
+		$xslt->importStylesheet($xsl);
+		return (simplexml_load_string($xslt->transformToXML($xmlWoNkYcAsE)));
+	} else {
+		return false;
+	}
+}
+
+/**
+ * Clean out the working directory, make it ready for our next import
+ **/
+function flushDir($dir) {
+	$files = glob('$dir*');
+	foreach($files as $file) {
+		if (is_dir($file)) {
+			flushDir($file);
+			rmdir($file);
+		} elseif (is_file($file)) {
+			unlink($file);
+		}
+	}
+}
+
+
+/***********************************************************************
+ *                                                                     *
+ * Import Stages                                                       *
+ *                                                                     *
+ ***********************************************************************/
 
 /**
  * Handles the actual file uploading and unzipping into the working directory
@@ -94,67 +153,6 @@ function stageUpload() {
 		} else exitOnError('No File Uploaded');
 	}
 	return false;
-}
-
-/**
- * Is this XML item a Bb application?
- **/
-function isBbApplication($item) {
-	return preg_match('|COURSE_DEFAULT\..*\.APPLICATION\.label|', $item->title);
-}
-
-/**
- * Clean up the Bb XML's body text HTML
- **/
-function BbHTMLtoCanvasHTML($text) {
-	$html = str_replace(array('&lt;', '&gt;'), array('<', '>'), $text);
-	// FIXME: replace Bb Content Collection links of the form src='@X@EmbeddedFile.requestUrlStub@X@bbcswebdav/xid-26980_1'
-	// FIXME: replace Bb Course Content Collection links of the form src='@X@EmbeddedFile.requestUrlStub@X@@@E48B325B306BE98D9AEF6FE35C97DD19/courses/1/CS-31-2-Orange-Battis/content/_3499_1/embedded/logo_house.GIF' (probably not gonna work!)
-	// FIXME: replace attached files of the form src='@X@EmbeddedFile.location@X@logoscript.gif' (knowing that the actual filename may need to be fixed)
-	/* proposed process for each of these fixes
-	
-			1. Spider the appropriate csfiles or res00000 directories to identify the file by size/x-id
-			2. If the file has not already been uploaded, block the conversion process while it is uploaded
-			3. Mark the relevant XML as uploaded (writing back to disk, including Canvas URLs)
-			4. Replace with Canvas URLs
-			5. Unblock and return cleaned HTML
-			
-	 Oy. */
-	return $html;
-}
-
-/**
- * Create Canvas Page
- **/
-function createCanvasPage($item, $res, $manifest, $courseId) {
-	if ($titleNode = $res->xpath('/content/title')) {
-		$titleAttributes = $titleNode[0]->attributes();
-		$title = (string) $titleAttributes['value'];
-		
-		if ($textNode = $res->xpath('/content/body/text[1]')) {
-			$text = BbHTMLtoCanvasHTML((string) $textNode[0]);
-			
-			$pest = new Pest(CANVAS_INSTANCE_URL);
-			$pest->post("/courses/$courseId/pages",
-				array(
-					'wiki_page[title]' => $title,
-					'wiki_page[body]' => "<h2>$title</h2>\n$text", // Canvas filters out <h1>
-					'wiki_page[published]' => 'true'
-				),
-				array (
-					'Authorization' => 'Bearer ' . CANVAS_API_TOKEN
-				)		
-			);
-		} else {
-			$itemAttributes = $item->attributes();
-			$resFile = $itemAttributes['identifierref'];
-			exitOnError('Text Not Found', "A resource file that we needed ($resFile) was missing a <text> tag that we were looking for to create a page in Canvas.");
-		}
-	} else {
-		$itemAttributes = $item->attributes();
-		$resFile = $itemAttributes['identifierref'];
-		exitOnError('Title Not Found', "A resource file that we needed ($resFile) was missing a <title> tag that we were looking for to create a page in Canvas.");
-	}
 }
 
 /**
@@ -250,22 +248,6 @@ function parseContentArea($contentArea, $manifest, $courseId, $indent = -1) {
 }
 
 /**
- * Force nodes and attributes to all lower-case in a given XML document,
- * returning a SimpleXML object.
- **/
-function simplexml_load_file_lowercase($fileName) {
-	if (file_exists($fileName)) {
-		$xmlWoNkYcAsE = simplexml_load_file($fileName);
-		$xslt = new XSLTProcessor();
-		$xsl = simplexml_load_file('./lowercase-transform.xsl');
-		$xslt->importStylesheet($xsl);
-		return (simplexml_load_string($xslt->transformToXML($xmlWoNkYcAsE)));
-	} else {
-		return false;
-	}
-}
-
-/**
  * Parse the XML of the manifest file and prepare a preview for the user before
  * committing to the actual import into Canvas
  **/
@@ -298,29 +280,77 @@ function parseCourseUrl($courseUrl) {
 	return "1126";
 }
 
-function displayPage($content) {
-	echo '<html>
-<head>
-	<link rel="stylesheet" href="script-ui.css" />
-</head>
-<body>
-$content
-</body>
-</html>';
+/***********************************************************************
+ *                                                                     *
+ * Blackboard (Bb) Functions                                           *
+ *                                                                     *
+ ***********************************************************************/
+
+/**
+ * Is this XML item a Bb application?
+ **/
+function isBbApplication($item) {
+	return preg_match('|COURSE_DEFAULT\..*\.APPLICATION\.label|', $item->title);
 }
 
 /**
- * Clean out the working directory, make it ready for our next import
+ * Clean up the Bb XML's body text HTML
  **/
-function flushDir($dir) {
-	$files = glob('$dir*');
-	foreach($files as $file) {
-		if (is_dir($file)) {
-			flushDir($file);
-			rmdir($file);
-		} elseif (is_file($file)) {
-			unlink($file);
+function BbHTMLtoCanvasHTML($text) {
+	$html = str_replace(array('&lt;', '&gt;'), array('<', '>'), $text);
+	// FIXME: replace Bb Content Collection links of the form src='@X@EmbeddedFile.requestUrlStub@X@bbcswebdav/xid-26980_1'
+	// FIXME: replace Bb Course Content Collection links of the form src='@X@EmbeddedFile.requestUrlStub@X@@@E48B325B306BE98D9AEF6FE35C97DD19/courses/1/CS-31-2-Orange-Battis/content/_3499_1/embedded/logo_house.GIF' (probably not gonna work!)
+	// FIXME: replace attached files of the form src='@X@EmbeddedFile.location@X@logoscript.gif' (knowing that the actual filename may need to be fixed)
+	/* proposed process for each of these fixes
+	
+			1. Spider the appropriate csfiles or res00000 directories to identify the file by size/x-id
+			2. If the file has not already been uploaded, block the conversion process while it is uploaded
+			3. Mark the relevant XML as uploaded (writing back to disk, including Canvas URLs)
+			4. Replace with Canvas URLs
+			5. Unblock and return cleaned HTML
+			
+	 Oy. */
+	return $html;
+}
+
+
+/***********************************************************************
+ *                                                                     *
+ * Canvas Content Builders                                             *
+ *                                                                     *
+ ***********************************************************************/
+
+/**
+ * Create Canvas Page
+ **/
+function createCanvasPage($item, $res, $manifest, $courseId) {
+	if ($titleNode = $res->xpath('/content/title')) {
+		$titleAttributes = $titleNode[0]->attributes();
+		$title = (string) $titleAttributes['value'];
+		
+		if ($textNode = $res->xpath('/content/body/text[1]')) {
+			$text = BbHTMLtoCanvasHTML((string) $textNode[0]);
+			
+			$pest = new Pest(CANVAS_INSTANCE_URL);
+			$pest->post("/courses/$courseId/pages",
+				array(
+					'wiki_page[title]' => $title,
+					'wiki_page[body]' => "<h2>$title</h2>\n$text", // Canvas filters out <h1>
+					'wiki_page[published]' => 'true'
+				),
+				array (
+					'Authorization' => 'Bearer ' . CANVAS_API_TOKEN
+				)		
+			);
+		} else {
+			$itemAttributes = $item->attributes();
+			$resFile = $itemAttributes['identifierref'];
+			exitOnError('Text Not Found', "A resource file that we needed ($resFile) was missing a <text> tag that we were looking for to create a page in Canvas.");
 		}
+	} else {
+		$itemAttributes = $item->attributes();
+		$resFile = $itemAttributes['identifierref'];
+		exitOnError('Title Not Found', "A resource file that we needed ($resFile) was missing a <title> tag that we were looking for to create a page in Canvas.");
 	}
 }
 

@@ -33,3 +33,7 @@ input[type=submit], input[type=button] {
 	width: 1.5in;
 }
 
+pre, code {
+	font-family: Inconsolata, 'Courier New', Monaco, Courier, monospace;
+	font-size: 10pt;
+}
