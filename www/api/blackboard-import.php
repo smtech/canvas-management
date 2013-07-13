@@ -3,10 +3,17 @@
 /*
 	The basic workflow:
 
-	1. Upload ZIP archive
-	2. Unzip ZIP archive and extract course name, teacher, etc.
+	1. Upload ZIP archive (DONE)
+	2. Unzip ZIP archive and extract course name, teacher, etc. (DONE)
 	3. Create (or link to existing) Canvas course
 	4. Upload items via API
+		a. csfiles/ contents (build a list referenced by x-id and Canvas ID for
+		   future reference)
+		b. walk through resources in manifest and post all attachments (build a
+		   list referenced by res00000, x-id if available, filename and Canvas ID)
+		c. post items and then append them to appropriate modules
+		d. perhaps create a nicey-nice front page that lists all the things in the
+		   manifest TOC?
 	5. Open Canvas course
 	6. Clean out files (when Canvas API calls complete)
 */
@@ -38,28 +45,23 @@ define('DEBUGGING', true);
 /* defines CANVAS_API_TOKEN and CANVAS_INSTANCE_URL */
 require_once('.ignore.canvas-authentication.php');
 
-require_once('PestJSON.php');
+require_once('Pest.php');
 
 /**
  * A handy little helper function to print a (somewhat) friendly error
  * message and fail out when things get hairy.
  **/
 function exitOnError($title, $text = '') {
-	echo '
-		<html>
-		<body>
-		<h1>$title</h1>';
+	$html = "<h1>$title</h1>";
 	if (is_array($text)) {
 		foreach ($text as $line) {
-			echo "<p>$line</p>";
+			$html .= "\n<p>$line</p>";
 		}
 	} elseif (strlen($text)) {
-		echo "<p>$text</p>";
+		$html .= "\n<p>$text</p>";
 	}
-	echo '
-		<p><a href="' . $_SERVER['PHP_SELF'] . '">Try again.</a></p>
-		</body>
-		</html>';
+	$html .= '<p><a href="' . $_SERVER['PHP_SELF'] . '">Try again.</a></p>';
+	displayPage($html);
 	exit;
 }
 
@@ -124,18 +126,16 @@ function BbHTMLtoCanvasHTML($text) {
 /**
  * Create Canvas Page
  **/
-function createCanvasPage($item, $res, $manifest) {
+function createCanvasPage($item, $res, $manifest, $courseId) {
 	if ($titleNode = $res->xpath('/content/title')) {
 		$titleAttributes = $titleNode[0]->attributes();
 		$title = (string) $titleAttributes['value'];
-		debug_log($title);
 		
 		if ($textNode = $res->xpath('/content/body/text[1]')) {
 			$text = BbHTMLtoCanvasHTML((string) $textNode[0]);
-			debug_log($text);
 			
-			$pest = new PestJSON(CANVAS_INSTANCE_URL);
-			$pest->post('/courses/1125/pages',
+			$pest = new Pest(CANVAS_INSTANCE_URL);
+			$pest->post("/courses/$courseId/pages",
 				array(
 					'wiki_page[title]' => $title,
 					'wiki_page[body]' => "<h2>$title</h2>\n$text", // Canvas filters out <h1>
@@ -160,8 +160,7 @@ function createCanvasPage($item, $res, $manifest) {
 /**
  * Parse a module and update XML with notes for import
  **/
-function parseContentArea($contentArea, $manifest, $indent = -1) {
-	// TODO: should probably really be using Xpath...
+function parseContentArea($contentArea, $manifest, $courseId, $indent = -1) {
 	foreach ($contentArea->item as $item) {
 		if ($indent >= 0) {
 			$item->addAttribute(ATTR_INDENT_LEVEL, $indent);
@@ -172,7 +171,9 @@ function parseContentArea($contentArea, $manifest, $indent = -1) {
 			} else {
 				$item->addAttribute(IMPORT_TYPE, CANVAS_SUBHEADER);
 			}
-			parseContentArea($item, $manifest, $indent + 1);
+			// TODO: Pass along Module ID so that things get linked appropriately
+			// TODO: Include a breadcrumb trail for the title of pages (so subheaders are included in the name)
+			parseContentArea($item, $manifest, $courseId, $indent + 1);
 		} else { /* we're going to have to dig deeper into the res00000.dat file */
 			if ($item->attributes()) {
 				$resFile = WORKING_DIR . $item->attributes()->identifierref . '.dat';
@@ -231,7 +232,7 @@ function parseContentArea($contentArea, $manifest, $indent = -1) {
 							
 							case 'resource/x-bb-document': {
 								$item->addAttribute(IMPORT_TYPE, CANVAS_PAGE);
-								createCanvasPage($item, $res, $manifest);
+								createCanvasPage($item, $res, $manifest, $courseId);
 								break;
 							}
 						}
@@ -268,17 +269,44 @@ function simplexml_load_file_lowercase($fileName) {
  * Parse the XML of the manifest file and prepare a preview for the user before
  * committing to the actual import into Canvas
  **/
-function parseManifest($manifestName) {
+function parseManifest($manifestName, $courseId) {
 	$manifestFile = WORKING_DIR . $manifestName;
 	if (file_exists($manifestFile)) {
 		$manifest = simplexml_load_file_lowercase($manifestFile);
-		parseContentArea($manifest->organizations->organization, $manifest);
+		parseContentArea($manifest->organizations->organization, $manifest, $courseId);
 		
-		echo '<pre>';
-		print_r($manifest);
-		echo '</pre>';
+		$html = '<pre>';
+		$html .= print_r($manifest, true);
+		$html .= '</pre>';
+		displayPage($html);
 		
 	} else exitOnError('Missing Manifest', "The manifest file ($manifestName) that should have been included in your Blackboard Exportfile cannot be found.");
+}
+
+/**
+ * Pull the Course ID out of the URL
+ * TODO: (Currently returning our dummy course on the test instance)
+ **/
+function parseCourseUrl($courseUrl) {
+	/* do we have a URL or are we creating a new course? */
+	if (strlen($courseUrl)) {
+		// TODO: ...
+	}
+	
+	// TODO: if $courseURL is a valid course ID ...
+	
+	return "1126";
+}
+
+function displayPage($content) {
+	echo '<html>
+<head>
+	<link rel="stylesheet" href="script-ui.css" />
+</head>
+<body>
+$content
+</body>
+</html>';
 }
 
 /**
@@ -303,29 +331,28 @@ function flushDir($dir) {
  *                                                                     *
  ***********************************************************************/
 
-// TODO: Someday, a pretty interface would be nice
-echo "<p><a href=\"{$_SERVER['PHP_SELF']}\">Restart</a></p>";
-
 /* are we uploading a file? */
 if (isset($_FILES['BbExportFile'])) {
 	if (stageUpload()) {
-		$manifest = parseManifest($manifestName);
+		$courseId = parseCourseUrl($_REQUEST["courseUrl"]);
+		$manifest = parseManifest($manifestName, $courseId);
 		flushDir(WORKING_DIR);
 	}
 } else {
 	/* well, it appears that nothing has happened yet, so let's just start with
 	   a basic file upload form, as an aperitif to the main event... */
-	echo '
-		<html>
-		<body>
-		<form enctype="multipart/form-data" action="' . $_SERVER['PHP_SELF'] . '" method="POST">
-			<!-- 262144000 bytes == 250MB -- if this needs to change, be sure to update the .htaccess file! -->
-			<input type="hidden" name="MAX_FILE_SIZE" value="262144000" />
-			Import this file: <input name="BbExportFile" type="file" />
-			<input type="submit" value="Import File" onsubmit="if (this.getAttribute(\'submitted\')) return false; this.setAttribute(\'submitted\',\'true\');" />
-		</form>
-		</body>
-		</html>';
+	displayPage('<form enctype="multipart/form-data" action="' . $_SERVER['PHP_SELF'] . '" method="POST">
+	<div>
+		<label for="courseUrl">Canvas Course URL (blank for new course)<label>
+		<input id="courseUrl" name="courseUrl" type="text" size="100" value="https://stmarksschool.test.instructure.com/courses/1127" />
+	</div>
+	<div>
+		<input type="hidden" name="MAX_FILE_SIZE" value="262144000" />
+		<label for="BbExportFile">Blackboard ExportFile (250MB or 26214400 Bytes max)</label>
+		<input id="BbExportFile" name="BbExportFile" type="file" />
+	</div>
+	<input type="submit" value="Go" onsubmit="if (this.getAttribute(\'submitted\')) return false; this.setAttribute(\'submitted\',\'true\');" />
+</form>');
 	exit;
 }
 

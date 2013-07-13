@@ -1,0 +1,35 @@
+body {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 10pt;
+}
+
+div {
+	background: #e3ebff;
+	padding: 0.5em;
+	margin: 0.5em;
+}
+
+label, input[type=file] {
+	display: block;
+	margin: 1em;
+}
+
+input {
+	display: block;
+}
+
+input[type=text] {
+	margin: 0;
+}
+
+input[type=file] {
+	width: 100%;
+	font-size: 8pt;
+	font-style: italic;
+	margin-left: 0.25in;
+}
+
+input[type=submit], input[type=button] {
+	width: 1.5in;
+}
+
