@@ -7,5 +7,5 @@
 
 define('CANVAS_API_TOKEN', 'Your Canvas API token string goes here');
 define('CANVAS_API_URL', '[Your Canvas instance URL]/api/v1 goes here');
-define('CANVAS_Bb_IMPORT_ACCOUNT_ID', 'The ID of the account you would like new courses created in goes here')
+
 ?>
