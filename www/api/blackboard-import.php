@@ -18,32 +18,59 @@
 	6. Clean out files (when Canvas API calls complete)
 */
 
+
+/***********************************************************************
+ *                                                                     *
+ * Requirments & includes                                              *
+ *                                                                     *
+ ***********************************************************************/
+ 
 /* REQUIRES the PHP 5 XSL extension
    http://www.php.net/manual/en/xsl.installation.php */
 
+/* defines CANVAS_API_TOKEN, CANVAS_API_URL, CANVAS_Bb_IMPORT_ACCOUNT_ID */
+require_once('.ignore.canvas-authentication.php');
+
+/* handles the core of the RESTful API interactions */
+require_once('Pest.php');
+
+
+/***********************************************************************
+ *                                                                     *
+ * Globals & Constants                                                 *
+ *                                                                     *
+ ***********************************************************************/
+
+/* configurable... but why? */
 define('UPLOAD_DIR', '/var/www-data/canvas/blackboard-import/'); // where we'll store uploaded files
 define('WORKING_DIR', UPLOAD_DIR . 'tmp/'); // where we'll be dumping temp files (and cleaning up, too!)
-$manifestName = 'imsmanifest.xml'; // name of the manifest file
+define('TOOL_NAME', 'Blackboard 8 &rarr; Canvas Importer');
+define('BREADCRUMB_SEPARATOR', ' > '); // when creating a breadcrumb trail in the names of subitems
 
-define('IMPORT_TYPE', 'importType');
-define('ATTR_INDENT_LEVEL', 'indentLevel');
-
-define('CANVAS_MODULE', 'MODULE');
-define('CANVAS_FILE', 'FILE');
-define('CANVAS_PAGE', 'PAGE');
-define('CANVAS_EXTERNAL_URL', 'EXTERNAL_URL');
-define('CANVAS_MODULE_ITEM', 'MODULE_ITEM');
-define('CANVAS_QUIZ', 'QUIZ');
-define('CANVAS_ASSIGNMENT', 'ASSIGNMENT');
-define('CANVAS_DISCUSSION', 'DISCUSSION');
-define('CANVAS_SUBHEADER', 'SUBHEADER');
-define('CANVAS_ANNOUNCEMENT', 'ANNOUNCEMENT');
-define('DO_NOT_IMPORT', 'NO IMPORT');
+/* Blackboard-specific names */
+define('Bb_MANIFEST_NAME', 'imsmanifest.xml'); // name of the manifest file
+define('Bb_RES_FILE_EXT', '.dat'); // file extension of resource files
 
 define('DEBUGGING', true);
+define('DEBUGGING_Bb_TARGET_COURSE_ID', 902);
 
-/* defines CANVAS_API_TOKEN and CANVAS_INSTANCE_URL */
-require_once('.ignore.canvas-authentication.php');
+/* XML Receipt values */
+define('CANVAS_IMPORT_TYPE', 'canvas-import-type');
+define('CANVAS_INDENT_LEVEL', 'canvas-indent-level'); // has to be a global for use with SimpleXML
+define('CANVAS_ID', 'canvas-id');
+define('CANVAS_URL', 'canvas-url');
+
+define('CANVAS_MODULE', 'Module');
+define('CANVAS_FILE', 'File');
+define('CANVAS_PAGE', 'Page');
+define('CANVAS_EXTERNAL_URL', 'External URL');
+define('CANVAS_MODULE_ITEM', 'Module Item (link to a course item)');
+define('CANVAS_QUIZ', 'Quiz');
+define('CANVAS_ASSIGNMENT', 'Assignment');
+define('CANVAS_DISCUSSION', 'Discussion');
+define('CANVAS_SUBHEADER', 'Module Subheader');
+define('CANVAS_ANNOUNCEMENT', 'Announcement');
+define('CANVAS_NO_IMPORT', 'Ignored and not imported');
 
 
 /***********************************************************************
@@ -52,22 +79,19 @@ require_once('.ignore.canvas-authentication.php');
  *                                                                     *
  ***********************************************************************/
  
-require_once('Pest.php');
-
 /**
  * A handy little helper function to print a (somewhat) friendly error
  * message and fail out when things get hairy.
  **/
 function exitOnError($title, $text = '') {
-	$html = "<h1>$title</h1>";
+	$html = "<h3>$title</h3>";
 	if (is_array($text)) {
 		foreach ($text as $line) {
-			$html .= "\n<p>$line</p>";
+			$html .= "\n<p>" . $line . "</p>";
 		}
 	} elseif (strlen($text)) {
-		$html .= "\n<p>$text</p>";
+		$html .= "\n<p>". $text . "</p>";
 	}
-	$html .= '<p><a href="' . $_SERVER['PHP_SELF'] . '">Try again.</a></p>';
 	displayPage($html);
 	exit;
 }
@@ -78,10 +102,21 @@ function exitOnError($title, $text = '') {
 function displayPage($content) {
 	echo '<html>
 <head>
+	<title>' . TOOL_NAME . '</title>
 	<link rel="stylesheet" href="script-ui.css" />
 </head>
 <body>
+<h1>' . TOOL_NAME . '</h1>
+<h2>St. Mark&rsquo;s School</h2>
+<div id="header">
+	<a href="' . $_SERVER['PHP_SELF'] . '">Start Over</a>
+</div>
+<div id="content">
 '. $content . '
+</div>
+<div id="footer">
+	Copyright &copy; 2013 Seth Battis, in some annoyance. Not for redistribution or reuse without <a href="mailto:SethBattis@stmarksschool.org?subject=Blackboard+to+Canvas+Importer">explicit permission</a>. Like Major League Baseball.
+</div>
 </body>
 </html>';
 }
@@ -109,6 +144,38 @@ function simplexml_load_file_lowercase($fileName) {
 	} else {
 		return false;
 	}
+}
+
+/**
+ * Pass-through a Pest request with added Canvas authorization token
+ **/
+
+$PEST = new Pest(CANVAS_API_URL);
+function callCanvasApi($verb, $url, $data) {
+	global $PEST;
+	
+	$json = null;
+
+	try {
+		$json = $PEST->$verb($url, $data,
+			array (
+				'Authorization' => 'Bearer ' . CANVAS_API_TOKEN
+			)
+		);
+	} catch (Exception $e) {
+		exitOnError('API Error',
+			array(
+				'Something went awry in the API.',
+				$e->getMessage(),
+				"verb: $verb",
+				"url: $url",
+				'data:',
+				'<pre>' . print_r($data, true) . '</pre>'
+			)
+		);
+	}
+	
+	return $json;
 }
 
 /**
@@ -140,16 +207,17 @@ function stageUpload() {
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		if (isset($_FILES['BbExportFile'])) {
 			if ($_FILES['BbExportFile']['error'] === UPLOAD_ERR_OK) {
-				// ... file was succesfully uploaded, process it
 				$uploadFile = UPLOAD_DIR . basename($_FILES['BbExportFile']['name']);
-				move_uploaded_file($_FILES['BbExportFile']['tmp_name'], $uploadFile); // FIXME would be good to create a per-session temp directory
+				// FIXME: need a per-session temp directory structure to prevent over-writes/conflicts
+				move_uploaded_file($_FILES['BbExportFile']['tmp_name'], $uploadFile);
 				$zip = new ZipArchive();
 				if ($zipRsrc = $zip->open($uploadFile)) {
+					flushDir(WORKING_DIR);
 					$zip->extractTo(WORKING_DIR);
 					$zip->close();
 					return true;
 				} else exitOnError('Unzipping Failed', 'The file you uploaded could not be unzipped.');
-			} else exitOnError('Upload Error', array('There was an error with your file upload:', 'Error ' . $_FILES['BbExportFile']['error'] . ': See the <a href="http://www.php.net/manual/en/features.file-upload.errors.php">PHP Documentation</a> for more information.'));
+			} else exitOnError('Upload Error', array('There was an error with your file upload.', 'Error ' . $_FILES['BbExportFile']['error'] . ': See the <a href="http://www.php.net/manual/en/features.file-upload.errors.php">PHP Documentation</a> for more information.'));
 		} else exitOnError('No File Uploaded');
 	}
 	return false;
@@ -158,91 +226,78 @@ function stageUpload() {
 /**
  * Parse a module and update XML with notes for import
  **/
-function parseContentArea($contentArea, $manifest, $courseId, $indent = -1) {
-	foreach ($contentArea->item as $item) {
-		if ($indent >= 0) {
-			$item->addAttribute(ATTR_INDENT_LEVEL, $indent);
+function parseItem($item, $manifest, $course, $module, $indent = 0, $breadcrumbs = '') {
+	$res = getBbResourceFile($item);
+	$item->addAttribute(CANVAS_INDENT_LEVEL, $indent);
+	
+	$contentHandler = getBbContentHandler($item, $res);
+	switch ($contentHandler) {
+		case 'resource/x-bb-assignment': {
+			createCanvasAssignment($item, $res, $course, $module);
+			break;
 		}
-		if (isset($item->item)) { // if there are subitems, this must be a subheader or module
-			if ($indent < 0) {
-				$item->addAttribute(IMPORT_TYPE, CANVAS_MODULE);
+		
+		case 'resource/x-bb-courselink': {
+			createCanvasCourseLink($item, $res, $course, $module);
+			break;
+		}
+		
+		case 'resource/x-bb-externallink': {
+			$text = getBbBodyText($item, $res);
+			if (strlen($text)) {
+				createCanvasPage($item, $res, $course, $module);
 			} else {
-				$item->addAttribute(IMPORT_TYPE, CANVAS_SUBHEADER);
+				createCanvasExternalUrl($item, $res, $course, $module);
 			}
-			// TODO: Pass along Module ID so that things get linked appropriately
-			// TODO: Include a breadcrumb trail for the title of pages (so subheaders are included in the name)
-			parseContentArea($item, $manifest, $courseId, $indent + 1);
-		} else { /* we're going to have to dig deeper into the res00000.dat file */
-			if ($item->attributes()) {
-				$resFile = WORKING_DIR . $item->attributes()->identifierref . '.dat';
-				if (file_exists($resFile)) {
-					$res = simplexml_load_file_lowercase($resFile);
-					if ($res->contenthandler && $res->contenthandler->attributes()) {
-						$contentHandler = $res->contenthandler->attributes()->value;
-						switch ($contentHandler) {
-							case 'resource/x-bb-assignment': {
-								$item->addAttribute(IMPORT_TYPE, CANVAS_ASSIGNMENT);
-								break;
-							}
-							
-							case 'resource/x-bb-courselink': {
-								$item->addAttribute(IMPORT_TYPE, CANVAS_MODULE_ITEM);
-								break;
-							}
-							
-							case 'resource/x-bb-externallink': {
-								if (strlen((string) $res->BODY->TEXT)) {
-									$item->addAttribute(IMPORT_TYPE, CANVAS_PAGE);
-								} else {
-									$item->addAttribute(IMPORT_TYPE, CANVAS_EXTERNAL_URL);
-								}
-								break;
-							}
-							
-							case 'resource/x-bb-asmt-survey-link': {
-								$item->addAttribute(IMPORT_TYPE, CANVAS_QUIZ);
-								break;
-							}
-							
-							case 'resource/x-bb-folder':
-							case 'resource/x-bb-lesson': {
-								if ($indent < 0) {
-									$item->addAttribute(IMPORT_TYPE, CANVAS_MODULE);
-								} else {
-									$item->addAttribute(IMPORT_TYPE, CANVAS_SUBHEADER);
-								}
-								break;
-							}
-							
-							case 'resource/x-bb-vclink': {
-								$item->addAttribute(IMPORT_TYPE, CANVAS_CONFERENCE);
-								break;
-							}
-							
-							case 'resource/x-bb-file': {
-								if (strlen((string) $res->BODY->TEXT)) {
-									$item->addAttribute(IMPORT_TYPE, CANVAS_PAGE);
-								} else {
-									$item->addAttribute(IMPORT_TYPE, CANVAS_FILE);
-								}
-								break;
-							}
-							
-							case 'resource/x-bb-document': {
-								$item->addAttribute(IMPORT_TYPE, CANVAS_PAGE);
-								createCanvasPage($item, $res, $manifest, $courseId);
-								break;
-							}
-						}
-					} else {
-						$item->addAttribute(IMPORT_TYPE, DO_NOT_IMPORT);		
-					}
-				} else {
-					$itemAttributes = $item->attributes();
-					$resFile = (string) $itemAttributes['identifierref'];
-					exitOnError('Missing Resource File', "A resource file ($resFile) containing details about one of your items is missing.");
-				}
+			break;
+		}
+		
+		case 'resource/x-bb-asmt-survey-link': {
+			createCanvasQuiz($item, $res, $course, $module);
+			break;
+		}
+		
+		case 'resource/x-bb-folder':
+		case 'resource/x-bb-lesson': {
+			$subheader = createCanvasModuleSubheader($item, $res, $course, $module);
+			$subitemNodes = $item->xpath('/item/item');
+			foreach ($subitemNodes as $subitemNode) {
+				parseItem($subitemNode, $manifest, $course, $module, $indent + 1,
+					$breadcrumbs . (strlen($breadcrumbs) ? BREADCUMB_SEPARATOR : '') . $subheader['title']
+				);
 			}
+			break;
+		}
+		
+		case 'resource/x-bb-vclink': {
+			createCanvasConference($item, $res, $course, $module);
+			break;
+		}
+		
+		case 'resource/x-bb-file': {
+			$text = getBbBodyText($item, $res);
+			if (strlen($text)) {
+				createCanvasPage($item, $res, $course, $module);
+			} else {
+				createCanvasFile($item, $res, $course, $module);
+			}
+			break;
+		}
+		
+		case 'resource/x-bb-document': {
+			$text = getBbBodyText($item, $res);
+			$fileAttachmentCount = getBbFileAttachmentCount($item, $res);
+			if (strlen($text) == 0 && $fileAttachmentCount == 1) {
+				createCanvasFile($item, $res, $course, $module);
+			} else {
+				createCanvasPage($item, $res, $course, $module);
+			}
+			break;
+		}
+		
+		default: {
+			createCanvasNoImport($item, $res);
+			break;
 		}
 	}
 }
@@ -251,13 +306,26 @@ function parseContentArea($contentArea, $manifest, $courseId, $indent = -1) {
  * Parse the XML of the manifest file and prepare a preview for the user before
  * committing to the actual import into Canvas
  **/
-function parseManifest($manifestName, $courseId) {
+function parseManifest($manifestName, $course) {
 	$manifestFile = WORKING_DIR . $manifestName;
 	if (file_exists($manifestFile)) {
 		$manifest = simplexml_load_file_lowercase($manifestFile);
-		parseContentArea($manifest->organizations->organization, $manifest, $courseId);
 		
-		$html = '<pre>';
+		$moduleNodes = $manifest->xpath('/manifest/organizations/organization/item');
+		foreach ($moduleNodes as $moduleNode) {
+			$itemNodes = $moduleNode->item;
+			if ($itemNodes) {
+				$res = getBbResourceFile($moduleNode);
+				$module = createCanvasModule($moduleNode, $res, $course);
+				foreach($itemNodes as $itemNode) {
+					parseItem($itemNode, $manifest, $course, $module);
+				}
+			}
+		}
+		
+		$html = '<h3>Import Complete</h3><p><a href="http://' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/courses/' . $course['id'] . '">Open your course in Canvas</a></p>';
+		$html .= '<h3>Receipt</h3>';
+		$html .= '<pre>';
 		$html .= print_r($manifest, true);
 		$html .= '</pre>';
 		displayPage($html);
@@ -266,18 +334,48 @@ function parseManifest($manifestName, $courseId) {
 }
 
 /**
- * Pull the Course ID out of the URL
- * TODO: (Currently returning our dummy course on the test instance)
+ * Look up the course specifed by the course URL
  **/
 function parseCourseUrl($courseUrl) {
-	/* do we have a URL or are we creating a new course? */
-	if (strlen($courseUrl)) {
-		// TODO: ...
+	// TODO: force default view to modules
+	// TODO: load course name/id
+
+	$canvasHost = parse_url(CANVAS_API_URL, PHP_URL_HOST);
+	$courseId = (int) preg_replace("|https?://$canvasHost/courses/(\d+).*|i", '\\1', $courseUrl);
+	if ($courseId) {
+		$json = callCanvasApi('get', "/courses/$courseId",
+			array(
+				'default_view' => 'modules'
+			)
+		);
+		$course = json_decode($json, true);
+		if (!$course['id']) {
+			exitOnError('Invalid Course ID',
+				array (
+					"The course ID in the URL you entered for the target Canvas course ($courseUrl) could not be found by the Canvas API.",
+					'<pre>' . print_r($json, true) . '</pre>'
+				)
+			);
+		}
+		return $course;
+	} elseif (strlen($courseUrl)) {
+		exitOnError('Invalid Canvas Course URL', "The URL you entered for the target Canvas course ($courseUrl) is either not valid or is not a part of the Canvas instance for which this import tool is authorized.");
+	} else {
+		$json = callCanvasApi('post', 'accounts/' . CANVAS_Bb_IMPORT_ACCOUNT_ID . '/courses',
+			array(
+				'account_id' => CANVAS_Bb_IMPORT_ACCOUNT_ID
+			)
+		);
+		if (!$course['id']) {
+			exitOnError('Could Not Create Course',
+				array(
+					'Something went wrong and we could not create a target course in Canvas.',
+					'<pre>' . print_r($json, true) . '</pre>' 
+				)
+			);
+		}
 	}
-	
-	// TODO: if $courseURL is a valid course ID ...
-	
-	return "1126";
+	return false;
 }
 
 /***********************************************************************
@@ -294,25 +392,86 @@ function isBbApplication($item) {
 }
 
 /**
- * Clean up the Bb XML's body text HTML
+ * Return the filename of the resource file that accompanies this item in the
+ * archive (as a SimpleXML Element)
  **/
-function BbHTMLtoCanvasHTML($text) {
-	$html = str_replace(array('&lt;', '&gt;'), array('<', '>'), $text);
-	// FIXME: replace Bb Content Collection links of the form src='@X@EmbeddedFile.requestUrlStub@X@bbcswebdav/xid-26980_1'
-	// FIXME: replace Bb Course Content Collection links of the form src='@X@EmbeddedFile.requestUrlStub@X@@@E48B325B306BE98D9AEF6FE35C97DD19/courses/1/CS-31-2-Orange-Battis/content/_3499_1/embedded/logo_house.GIF' (probably not gonna work!)
-	// FIXME: replace attached files of the form src='@X@EmbeddedFile.location@X@logoscript.gif' (knowing that the actual filename may need to be fixed)
-	/* proposed process for each of these fixes
-	
-			1. Spider the appropriate csfiles or res00000 directories to identify the file by size/x-id
-			2. If the file has not already been uploaded, block the conversion process while it is uploaded
-			3. Mark the relevant XML as uploaded (writing back to disk, including Canvas URLs)
-			4. Replace with Canvas URLs
-			5. Unblock and return cleaned HTML
-			
-	 Oy. */
-	return $html;
+function getBbResourceFile($item) {
+	return simplexml_load_file_lowercase(WORKING_DIR . (string) $item->attributes()->identifierref . Bb_RES_FILE_EXT);
 }
 
+/**
+ *  Extract the contenthandler mimetype from a res00000 file as text
+ **/
+function getBbContentHandler($item, $res) {
+	if ($contentHandlerNode = $res->xpath('//contenthandler')) {
+	
+		return (string) $contentHandlerNode[0]->attributes()->value;
+	}
+
+	return false;
+}
+
+/**
+ * Extract the label text from a res00000 file as text
+ **/
+function getBbLabel($item, $res) {
+	if ($labelNode = $res->xpath('/coursetoc/label')) {
+		$label = preg_replace('|COURSE_DEFAULT\.(.*)\.\w+\.label|', '\\1', (string) $labelNode[0]->attributes()->value);
+		
+		return $label;	
+	} 
+		
+	return false;
+}
+
+/**
+ * Extract the title from a res00000 file as text
+ **/
+function getBbTitle($item, $res) {
+	if ($titleNode = $res->xpath('//title')) {
+		
+		// FIXME: Clean up COURSE_DEFAULT names
+		
+		return (string) $titleNode[0]->attributes()->value;	
+	}
+		
+	return false;
+}
+
+/**
+ * Extract the URL from a res00000 file as text
+ **/
+function getBbUrl($item, $res) {
+	if ($urlNode = $res->xpath('//url')) {
+		
+		return (string) $urlNode[0]->attributes()->value;
+	}
+		
+	return false;
+}
+
+/**
+ * Extract content item text from a res00000 file as html
+ **/
+function getBbBodyText($item, $res) {
+	if ($textNode = $res->xpath('/content/body/text')) {
+		$text = str_replace(array('&lt;', '&gt;'), array('<', '>'), (string) $textNode[0]);
+		
+		return $text;
+	}
+	
+	return false;
+}
+
+/**
+ *  Extract the number of files attached to this item
+ **/
+function getBbFileAttachmentCount($item, $res) {
+	if ($fileNodes = $res->xpath('/content/files/file')) {
+		return count($fileNodes);
+	}
+	return 0;
+}
 
 /***********************************************************************
  *                                                                     *
@@ -321,39 +480,202 @@ function BbHTMLtoCanvasHTML($text) {
  ***********************************************************************/
 
 /**
- * Create Canvas Page
+ * Calculate the next module item position
  **/
-function createCanvasPage($item, $res, $manifest, $courseId) {
-	if ($titleNode = $res->xpath('/content/title')) {
-		$titleAttributes = $titleNode[0]->attributes();
-		$title = (string) $titleAttributes['value'];
-		
-		if ($textNode = $res->xpath('/content/body/text[1]')) {
-			$text = BbHTMLtoCanvasHTML((string) $textNode[0]);
-			
-			$pest = new Pest(CANVAS_INSTANCE_URL);
-			$pest->post("/courses/$courseId/pages",
-				array(
-					'wiki_page[title]' => $title,
-					'wiki_page[body]' => "<h2>$title</h2>\n$text", // Canvas filters out <h1>
-					'wiki_page[published]' => 'true'
-				),
-				array (
-					'Authorization' => 'Bearer ' . CANVAS_API_TOKEN
-				)		
-			);
-		} else {
-			$itemAttributes = $item->attributes();
-			$resFile = $itemAttributes['identifierref'];
-			exitOnError('Text Not Found', "A resource file that we needed ($resFile) was missing a <text> tag that we were looking for to create a page in Canvas.");
-		}
-	} else {
-		$itemAttributes = $item->attributes();
-		$resFile = $itemAttributes['identifierref'];
-		exitOnError('Title Not Found', "A resource file that we needed ($resFile) was missing a <title> tag that we were looking for to create a page in Canvas.");
+$MODULE_ITEM_POSITION = 0;
+$PREVIOUS_MODULE_ID = null;
+function nextModuleItemPosition($moduleId) {
+	global $MODULE_ITEM_POSITION, $PREVIOUS_MODULE_ID;
+	if ($moduleId !== $PREVIOUS_MODULE_ID) {
+		$PREVIOUS_MODULE_ID = $moduleId;
+		$MODULE_ITEM_POSITION = 0;
 	}
+	
+	return ++$MODULE_ITEM_POSITION;
 }
 
+/**
+ * Return the Canvas indent level as a string
+ **/
+function getCanvasIndentLevel($item, $res) {
+	$itemAttributes = $item->attributes();
+	$indent = (string) $itemAttributes[CANVAS_INDENT_LEVEL];
+	if (strlen($indent)) {
+		return $indent;
+	}
+	return false;
+}
+
+/**
+ * Create Canvas module, returning the JSON result as an associative array
+ **/
+$MODULE_POSITION = 0;
+function createCanvasModule($item, $res, $course) {
+	global $MODULE_POSITION;
+	
+	$label = getBbLabel($item, $res);
+	
+	$json = callCanvasApi('post', "/courses/{$course['id']}/modules",
+		array (
+			'module[name]' => $label,
+			'module[position]' => ++$MODULE_POSITION
+		)
+	);
+	
+	$module = json_decode($json, true);
+	$item->addAttribute(CANVAS_IMPORT_TYPE, CANVAS_MODULE);
+	$item->addAttribute(CANVAS_ID, $module['id']);
+	
+	return $module;
+}
+
+function createCanvasModuleSubheader($item, $res, $course, $module) {
+	$json = callCanvasApi('post', "/courses/{$course['id']}/modules/{$module['id']}/items",
+		array (
+			'module_item[title]' => getBbTitle($item, $res),
+			'module_item[type]' => 'SubHeader',
+			'module_item[position]' => nextModuleItemPosition($module['id']),
+			'module_item[indent]' => getCanvasIndentLevel($item, $res)
+		)
+	);
+	
+	$moduleItem = json_decode($json, true);
+
+	$item->addAttribute(CANVAS_IMPORT_TYPE, CANVAS_SUBHEADER);
+	$item->addAttribute(CANVAS_ID, $moduleItem['id']);
+	
+	return $moduleItem;
+}
+
+/**
+ * Create Canvas Page, returning the JSON result of the module item pointed
+ * at the page as an associative array;
+ **/
+function createCanvasPage($item, $res, $course, $module) {
+	// TODO: process x-bb-mimetypes to capture all information!
+	// TODO: handle file attachments
+	$title = getBbTitle($item, $res);
+	$text = "<h2>$title</h2>\n" . getBbBodyText($item, $res); // Canvas filters out <h1>
+			
+	$json = callCanvasApi('post', "/courses/{$course['id']}/pages",
+		array(
+			'wiki_page[title]' => $title,
+			'wiki_page[body]' => $text,
+			'wiki_page[published]' => 'true'
+		)			
+	);
+	$page = json_decode($json, true);
+	
+	$json = callCanvasApi('post', "/courses/{$course['id']}/modules/{$module['id']}/items",
+		array(
+			'module_item[title]' => $title,
+			'module_item[type]' => 'Page',
+			'module_item[position]' => nextModuleItemPosition($module['id']),
+			'module_item[indent]' => getCanvasIndentLevel($item, $res),
+			'module_item[page_url]' => $page['url']
+		)
+	);
+	
+	$moduleItem = json_decode($json, true);
+
+	$item->addAttribute(CANVAS_IMPORT_TYPE, CANVAS_PAGE);
+	$item->addAttribute(CANVAS_ID, $moduleItem['id']);
+	$item->addAttribute(CANVAS_URL, $moduleItem['html_url']);
+	$item->addChild('text', htmlentities($text));
+
+	return $moduleItem;
+}
+
+function createCanvasFile($item, $res, $course, $module) {
+	$item->addAttribute(CANVAS_IMPORT_TYPE, CANVAS_FILE);
+}
+
+/**
+ * Create an External URL in a module, returning the JSON result of the module
+ * item as an associative array.
+ **/
+function createCanvasExternalUrl($item, $res, $course, $module) {
+	$json = callCanvasApi('post', "/courses/{$course['id']}/modules/{$module['id']}/items",
+		array(
+			'module_item[title]' => getBbTitle($item, $res),
+			'module_item[type]' => 'ExternalUrl',
+			'module_item[position]' => nextModuleItemPosition($module['id']),
+			'module_item[indent]' => getCanvasIndentLevel($item, $res),
+			'module_item[external_url]' => getBbUrl($item, $res)
+		)
+	);
+	
+	$moduleItem = json_decode($json, true);
+	
+	$item->addAttribute(CANVAS_IMPORT_TYPE, CANVAS_EXTERNAL_URL);
+	$item->addAttribute(CANVAS_ID, $moduleItem['id']);
+	$item->addAttribute(CANVAS_URL, $moduleItem['html_url']);
+}
+
+/**
+ * Create an Assignment in a module, returning the JSON result of the module
+ * item as an associate array
+ **/
+$ASSIGNMENT_POSITION = 0;
+function createCanvasAssignment($item, $res, $course, $module) {
+	global $ASSIGNMENT_POSITION;
+	// TODO: Need to pull points value, due date out of Bb gradebook settings
+	// TODO: Need to handle file attachments
+	$title = getBbTitle($item, $res);
+	$text = getBbBodyText($item, $res);
+	
+	$json = callCanvasApi('post', "/courses/{$course['id']}/assignments",
+		array(
+			'assignment[name]' => $title,
+			'assignment[position]' => ++$ASSIGNMENT_POSITION,
+			'assignment[submission_types]' => '["online_upload"]',
+			'assignment[description]' => $text,
+			'assignment[published]' => 'true'
+		)
+	);
+	
+	$assignment = json_decode($json, true);
+	
+	$json = callCanvasApi('post', "/courses/{$course['id']}/modules/{$module['id']}/items",
+		array(
+			'module_item[title]' => $title,
+			'module_item[type]' => 'Assignment',
+			'module_item[content_id]' => $assignment['id'],
+			'module_item[position]' => nextModuleItemPosition($module['id']),
+			'module_item[indent]' => getCanvasIndentLevel($item, $res)
+		)
+	);
+	
+	$moduleItem = json_decode($json, true);
+
+	$item->addAttribute(CANVAS_IMPORT_TYPE, CANVAS_ASSIGNMENT);
+	$item->addAttribute(CANVAS_ID, $moduleItem['id']);
+	$item->addAttribute(CANVAS_URL, $moduleItem['html_url']);
+	$item->addChild('text', htmlentities($text));
+
+	return $moduleItem;
+}
+
+function createCanvasCourseLink($item, $res, $course, $module) {
+	$item->addAttribute(CANVAS_IMPORT_TYPE, CANVAS_MODULE_ITEM);
+}
+
+function createCanvasQuiz($item, $res, $course, $module) {
+	$item->addAttribute(CANVAS_IMPORT_TYPE, CANVAS_QUIZ);
+}
+
+
+function createCanvasConference($item, $res, $course, $module) {
+	$item->addAttribute(CANVAS_IMPORT_TYPE, CANVAS_CONFERENCE);
+}
+
+/**
+ * We're not going to import this information (either because there is no
+ * matching type, or we're just no ready yet...
+ **/
+function createCanvasNoImport($item, $res) {
+	$item->addAttribute(CANVAS_IMPORT_TYPE, CANVAS_NO_IMPORT);
+}
 
 /***********************************************************************
  *                                                                     *
@@ -361,29 +683,57 @@ function createCanvasPage($item, $res, $manifest, $courseId) {
  *                                                                     *
  ***********************************************************************/
 
-/* are we uploading a file? */
-if (isset($_FILES['BbExportFile'])) {
-	if (stageUpload()) {
-		$courseId = parseCourseUrl($_REQUEST["courseUrl"]);
-		$manifest = parseManifest($manifestName, $courseId);
-		flushDir(WORKING_DIR);
+function main() {
+	global $Bb_MANIFEST_NAME;
+
+	/* are we uploading a file? */
+	if (isset($_FILES['BbExportFile'])) {
+		if (stageUpload()) {
+			$course = parseCourseUrl($_REQUEST["courseUrl"]);
+			$manifest = parseManifest(Bb_MANIFEST_NAME, $course);
+		}
+	} else {
+		/* well, it appears that nothing has happened yet, so let's just start with
+		   a basic file upload form, as an aperitif to the main event... */
+		displayPage('
+<style><!--
+	.LMS {
+		background-color: #c3d3df;
+		padding: 20px;
+		width: 50%;
+		border-radius: 20px;
 	}
-} else {
-	/* well, it appears that nothing has happened yet, so let's just start with
-	   a basic file upload form, as an aperitif to the main event... */
-	displayPage('<form enctype="multipart/form-data" action="' . $_SERVER['PHP_SELF'] . '" method="POST">
-	<div>
-		<label for="courseUrl">Canvas Course URL (blank for new course)<label>
-		<input id="courseUrl" name="courseUrl" type="text" size="100" value="https://stmarksschool.test.instructure.com/courses/1127" />
-	</div>
-	<div>
-		<input type="hidden" name="MAX_FILE_SIZE" value="262144000" />
-		<label for="BbExportFile">Blackboard ExportFile (250MB or 26214400 Bytes max)</label>
-		<input id="BbExportFile" name="BbExportFile" type="file" />
-	</div>
-	<input type="submit" value="Go" onsubmit="if (this.getAttribute(\'submitted\')) return false; this.setAttribute(\'submitted\',\'true\');" />
+	
+	#arrow {
+		padding: 0px 20px;
+	}
+	
+	#arrow input[type=submit] {
+		font-size: 24pt;
+	}
+--></style>	
+<form enctype="multipart/form-data" action="' . $_SERVER['PHP_SELF'] . '" method="POST">
+	<table>
+		<tr valign="middle">
+			<td id="Bb" class="LMS">
+				<input type="hidden" name="MAX_FILE_SIZE" value="262144000" />
+				<label for="BbExportFile">Blackboard ExportFile <span class="comment">(250MB / 26,214,400 Bytes maximum size)</span></label>
+				<input id="BbExportFile" name="BbExportFile" type="file" />
+			</td>
+			<td id="arrow">
+				<input type="submit" value="&rarr;" onsubmit="if (this.getAttribute(\'submitted\')) return false; this.setAttribute(\'submitted\',\'true\');" />
+			</td>
+			<td id="canvas" class="LMS">
+				<label for="courseUrl">Canvas Course URL <span class="comment">(leave blank to import into a new course)</span><label>
+				<input id="courseUrl" name="courseUrl" type="text" value="' . (DEBUGGING ? 'https://' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/courses/' . DEBUGGING_Bb_TARGET_COURSE_ID : '') . '" />
+			</td>
+		</tr>
+	</table>
 </form>');
-	exit;
+		exit;
+	}
 }
+
+main();
 
 ?>
