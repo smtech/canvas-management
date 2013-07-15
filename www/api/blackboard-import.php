@@ -44,7 +44,7 @@ require_once('Pest.php');
 /* configurable... but why? */
 define('UPLOAD_DIR', '/var/www-data/canvas/blackboard-import/'); // where we'll store uploaded files
 define('WORKING_DIR', UPLOAD_DIR . 'tmp/'); // where we'll be dumping temp files (and cleaning up, too!)
-define('TOOL_NAME', 'Blackboard 8 &rarr; Canvas Importer');
+define('TOOL_NAME', 'Blackboard 8 &rarr; Canvas Import Tool');
 define('BREADCRUMB_SEPARATOR', ' > '); // when creating a breadcrumb trail in the names of subitems
 
 /* Blackboard-specific names */
@@ -52,11 +52,10 @@ define('Bb_MANIFEST_NAME', 'imsmanifest.xml'); // name of the manifest file
 define('Bb_RES_FILE_EXT', '.dat'); // file extension of resource files
 
 define('DEBUGGING', true);
-define('DEBUGGING_Bb_TARGET_COURSE_ID', 902);
 
 /* XML Receipt values */
 define('CANVAS_IMPORT_TYPE', 'canvas-import-type');
-define('CANVAS_INDENT_LEVEL', 'canvas-indent-level'); // has to be a global for use with SimpleXML
+define('CANVAS_INDENT_LEVEL', 'canvas-indent-level');
 define('CANVAS_ID', 'canvas-id');
 define('CANVAS_URL', 'canvas-url');
 
@@ -260,11 +259,13 @@ function parseItem($item, $manifest, $course, $module, $indent = 0, $breadcrumbs
 		case 'resource/x-bb-folder':
 		case 'resource/x-bb-lesson': {
 			$subheader = createCanvasModuleSubheader($item, $res, $course, $module);
-			$subitemNodes = $item->xpath('/item/item');
-			foreach ($subitemNodes as $subitemNode) {
-				parseItem($subitemNode, $manifest, $course, $module, $indent + 1,
-					$breadcrumbs . (strlen($breadcrumbs) ? BREADCUMB_SEPARATOR : '') . $subheader['title']
-				);
+			$subitemNodes = $item->item;
+			if ($subitemNodes) {
+				foreach ($subitemNodes as $subitemNode) {
+					parseItem($subitemNode, $manifest, $course, $module, $indent + 1,
+						$breadcrumbs . (strlen($breadcrumbs) ? BREADCUMB_SEPARATOR : '') . $subheader['title']
+					);
+				}
 			}
 			break;
 		}
@@ -343,11 +344,7 @@ function parseCourseUrl($courseUrl) {
 	$canvasHost = parse_url(CANVAS_API_URL, PHP_URL_HOST);
 	$courseId = (int) preg_replace("|https?://$canvasHost/courses/(\d+).*|i", '\\1', $courseUrl);
 	if ($courseId) {
-		$json = callCanvasApi('get', "/courses/$courseId",
-			array(
-				'default_view' => 'modules'
-			)
-		);
+		$json = callCanvasApi('get', "/courses/$courseId", array());
 		$course = json_decode($json, true);
 		if (!$course['id']) {
 			exitOnError('Invalid Course ID',
@@ -366,6 +363,7 @@ function parseCourseUrl($courseUrl) {
 				'account_id' => CANVAS_Bb_IMPORT_ACCOUNT_ID
 			)
 		);
+		$course = json_decode($json, true);
 		if (!$course['id']) {
 			exitOnError('Could Not Create Course',
 				array(
@@ -374,6 +372,7 @@ function parseCourseUrl($courseUrl) {
 				)
 			);
 		}
+		return $course;
 	}
 	return false;
 }
@@ -725,7 +724,7 @@ function main() {
 			</td>
 			<td id="canvas" class="LMS">
 				<label for="courseUrl">Canvas Course URL <span class="comment">(leave blank to import into a new course)</span><label>
-				<input id="courseUrl" name="courseUrl" type="text" value="' . (DEBUGGING ? 'https://' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/courses/' . DEBUGGING_Bb_TARGET_COURSE_ID : '') . '" />
+				<input id="courseUrl" name="courseUrl" type="text" />
 			</td>
 		</tr>
 	</table>
