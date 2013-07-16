@@ -39,6 +39,8 @@ h1, h2 {
 	background-color: #003359;
 	color: white;
 	font-family: Garamond, 'Adobe Garamond', 'Garamond Pro', Palatino, 'Times New Roman', serif;
+	min-width: 600px;
+	white-space: nowrap;
 }
 
 h1 {
@@ -80,4 +82,6 @@ h2 {
 	color: black;
 	background-color: white;
 	text-transform: none;
+	white-space: normal;
+	min-width: intrinsic;
 }
