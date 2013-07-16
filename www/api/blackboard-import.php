@@ -361,11 +361,7 @@ function parseCourseSettings($manifest, $course) {
 				'course[start_at]' => getBbCourseStart($courseSettingsNode, $courseSettings),
 				'course[end_at]' => getBbCourseEnd($courseSettingsNode, $courseSettings),
 				'course[public_description]' => getBbCourseDescription($courseSettingsNode, $courseSettings),
-				'course[sis_course_id]' => (
-					isset($course['sis_course_id']) ?
-					$course['sis_course_id'] :
-					getBbCourseId($courseSettingsNode, $courseSettingsNode)
-				),
+				'course[sis_course_id]' => getBbCourseId($courseSettingsNode, $courseSettings),
 				'course[default_view]' => 'modules'
 			)
 		);
@@ -629,7 +625,7 @@ function getBbCourseTitle($item, $res) {
  **/
 function getBbCourseId($item, $res) {
 	if ($courseIdNode = $res->xpath('/course/courseid')) {
-		return (string) $courseIdNode[0]->attributes()->value;
+		return (string) $courseIdNode[0]->attributes()->value . '-imported-' . date('%Y-%m-%d_%h:%i%A');
 	}
 	return false;
 }
