@@ -10,3 +10,6 @@ develop
 
 dev-XXXX
 : Features we're working on, forked from the most recent master/develop branch as appropriate. One feature per branch, no foolin'!
+
+dev-calendar-ics
+: Working on hooking up ICS feeds into and out of specific Canvas calendars
