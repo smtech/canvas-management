@@ -1,0 +1,87 @@
+body {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 10pt;
+	margin: 0;
+	padding: 0;
+}
+
+label, input[type=file] {
+	display: block;
+}
+
+label .comment {
+	font-size: 8pt;
+	display: block;
+}
+
+input {
+	display: block;
+}
+
+input[type=file] {
+	width: 100%;
+	font-size: 8pt;
+	font-style: italic;
+}
+
+input[type=text] {
+	width: 100%;
+}
+
+pre, code {
+	font-family: Inconsolata, 'Courier New', Monaco, Courier, monospace;
+	font-size: 10pt;
+}
+
+h1, h2 {
+	margin: 0;
+	padding: 0 20px;
+	background-color: #003359;
+	color: white;
+	font-family: Garamond, 'Adobe Garamond', 'Garamond Pro', Palatino, 'Times New Roman', serif;
+	min-width: 600px;
+	white-space: nowrap;
+}
+
+h1 {
+	padding-top: 10px;
+	font-size: 24pt;
+}
+
+h2 {
+	padding-bottom: 10px;
+	font-size: 12pt;
+	text-transform: uppercase;
+}
+
+#header, #footer {
+	padding: 10px;
+	margin: 10px;
+	background: #eaedef;
+	color: #003359;
+	border-radius: 10px;
+}
+
+#footer {
+	text-align: right;
+	font-size: 8pt;
+}
+
+#header a, #footer a {
+	color: #003359;
+	text-decoration: none;
+	border-bottom: dotted #003359 1px;
+}
+
+#content {
+	margin: 40px;
+}
+
+#content h1, #content h2 {
+	font-family: Helvetica, Arial, sans-serif;
+	color: black;
+	background-color: white;
+	text-transform: none;
+	white-space: normal;
+	min-width: intrinsic;
+}
