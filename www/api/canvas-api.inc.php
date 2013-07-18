@@ -43,4 +43,29 @@ function callCanvasApi($verb, $url, $data) {
 	return $json;
 }
 
+/**
+ * Echo a page of HTML content to the browser, wrapped in some CSS niceities
+ **/
+function displayPage($content) {
+	echo '<html>
+<head>
+	<title>' . TOOL_NAME . '</title>
+	<link rel="stylesheet" href="script-ui.css" />
+</head>
+<body>
+<h1>' . TOOL_NAME . '</h1>
+<h2>St. Mark&rsquo;s School</h2>
+<div id="header">
+	<a href="' . $_SERVER['PHP_SELF'] . '">Start Over</a>
+</div>
+<div id="content">
+'. $content . '
+</div>
+<div id="footer">
+	St. Mark&rsquo;s School Academic Technology
+</div>
+</body>
+</html>';
+}
+
 ?>
