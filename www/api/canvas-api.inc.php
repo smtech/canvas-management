@@ -56,13 +56,13 @@ function displayPage($content) {
 <h1>' . TOOL_NAME . '</h1>
 <h2>St. Mark&rsquo;s School</h2>
 <div id="header">
-	<a href="' . $_SERVER['PHP_SELF'] . '">Start Over</a>
+	<a href="' . TOOL_START_PAGE . '">Start Over</a>
 </div>
 <div id="content">
 '. $content . '
 </div>
 <div id="footer">
-	Copyright &copy; 2013 Seth Battis, in some annoyance. Not for redistribution or reuse without <a href="mailto:SethBattis@stmarksschool.org?subject=Blackboard+to+Canvas+Importer">explicit permission</a>. Like Major League Baseball.
+	<a href="http://www.stmarksschool.org">St. Mark&rsquo;s School</a> &bull; <a href="http://area51.stmarksschoo.org">Academic Technology</a> &bull; 25 Marlboro Road, Southborough, MA 01772
 </div>
 </body>
 </html>';
