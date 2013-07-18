@@ -128,31 +128,6 @@ function exitOnError($title, $text = '') {
 }
 
 /**
- * Echo a page of HTML content to the browser, wrapped in some CSS niceities
- **/
-function displayPage($content) {
-	echo '<html>
-<head>
-	<title>' . TOOL_NAME . '</title>
-	<link rel="stylesheet" href="script-ui.css" />
-</head>
-<body>
-<h1>' . TOOL_NAME . '</h1>
-<h2>St. Mark&rsquo;s School</h2>
-<div id="header">
-	<a href="' . $_SERVER['PHP_SELF'] . '">Start Over</a>
-</div>
-<div id="content">
-'. $content . '
-</div>
-<div id="footer">
-	Copyright &copy; 2013 Seth Battis, in some annoyance. Not for redistribution or reuse without <a href="mailto:SethBattis@stmarksschool.org?subject=Blackboard+to+Canvas+Importer">explicit permission</a>. Like Major League Baseball.
-</div>
-</body>
-</html>';
-}
-
-/**
  * Helper function to conditionally fill the log file with notes!
  **/
 function debug_log($message) {
