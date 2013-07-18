@@ -28,10 +28,13 @@
 /* REQUIRES the PHP 5 XSL extension
    http://www.php.net/manual/en/xsl.installation.php */
 
-/* defines CANVAS_API_TOKEN, CANVAS_API_URL */
-require_once('.ignore.canvas-authentication.php');
+/* what Canvas API user are we going to connect as? */
+require_once('.ignore.blackboard-import-authentication.inc.php');
 
-/* handles the core of the RESTful API interactions */
+/* handles the core of the Canvas API interactions */
+require_once('canvas-api.inc.php');
+
+/* we do directly work with Pest on some AWS API calls */
 require_once('Pest.php');
 
 
@@ -172,46 +175,6 @@ function simplexml_load_file_lowercase($fileName) {
 	} else {
 		return false;
 	}
-}
-
-/**
- * Generate the Canvas API authorization header
- **/
-function buildCanvasAuthorizationHeader() {
-	return array ('Authorization' => 'Bearer ' . CANVAS_API_TOKEN);
-}
-
-/**
- * Pass-through a Pest request with added Canvas authorization token
- **/
-$PEST = new Pest(CANVAS_API_URL);
-function callCanvasApi($verb, $url, $data) {
-	global $PEST;
-	
-	$json = null;
-
-	do {
-		$retry = false;
-		try {
-			$json = $PEST->$verb($url, $data, buildCanvasAuthorizationHeader());
-		} catch (Pest_ServerError $e) {
-			/* who knows what goes on in the server's mind... try again */
-			$retry = true;
-		} catch (Exception $e) {
-			exitOnError('API Error',
-				array(
-					'Something went awry in the API.',
-					$e->getMessage(),
-					"<dl><dt>Verb</dt><dd>$verb</dd>" .
-					"<dt>URL</dt><dd>$url</dd>" .
-					'<dt>Data</dt>' .
-					'<dd><pre>' . print_r($data, true) . '</pre></dd></dl>'
-				)
-			);
-		}
-	} while ($retry == true);
-	
-	return $json;
 }
 
 /**
