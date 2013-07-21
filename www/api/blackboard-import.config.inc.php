@@ -11,5 +11,6 @@ define('CANVAS_Bb_IMPORT_ACCOUNT_ID', 167); // the default account in which to c
 define('CANVAS_DEFAULT_PATH', 'Imported from Blackboard'); // the folder that most files will be imported into
 define('CANVAS_CONTENT_COLLECTION_PATH', buildPath(CANVAS_DEFAULT_PATH, 'Content Collection')); // the folder that the content collection will be imported into
 define('RECEIPT_FILE_NAME', 'Import Receipt.xml'); // the name of the generated and uploaded receipt
+define('API_CLIENT_ERROR_RETRIES', 2); // how many times to retry requests for which we got client errors that we don't entirely believe
 
 ?>

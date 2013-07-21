@@ -35,18 +35,26 @@ function callCanvasApi($verb, $url, $data) {
 			$retry = true;
 			debug_log('Canvas API client error. ' . $e->getMessage() . ' Retrying.'); 
 		} catch (Exception $e) {
-			exitOnError('API Error',
-				array(
-					'Something went awry in the API.',
-					$e->getMessage(),
-					"<dl><dt>Verb</dt><dd>$verb</dd>" .
-					"<dt>URL</dt><dd>$url</dd>" .
-					'<dt>Data</dt>' .
-					'<dd><pre>' . print_r($data, true) . '</pre></dd></dl>'
-				)
-			);
+			displayError(array(
+				'Error' => $e->getMessage(),
+				'Verb' => $verb,
+				'URL' => $url,
+				'Data' => $data
+			), true, 'API Error', 'Something went awry in the API');
+			exit;
 		}
-	} while ($retry == true && $cautiousRetryCount < 3);
+	} while ($retry == true && $cautiousRetryCount < API_CLIENT_ERROR_RETRIES);
+	
+	if ($cautiousRetryCount == API_CLIENT_ERROR_RETRIES) {
+		displayError(array(
+			'Status' => $PEST->lastStatus(),
+			'Error' => $PEST->lastBody(),
+			'Verb' => $verb,
+			'URL' => $url,
+			'Data' => $data
+		), true, 'Probable Client Error', 'After trying ' . API_CLIENT_ERROR_RETRIES . ' times, we still got this error message from the API.');
+		exit;
+	}
 	
 	return $json;
 }
