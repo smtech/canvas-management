@@ -19,6 +19,7 @@ function callCanvasApi($verb, $url, $data) {
 	
 	$json = null;
 
+	$cautiousRetryCount = 0;
 	do {
 		$retry = false;
 		try {
@@ -26,6 +27,13 @@ function callCanvasApi($verb, $url, $data) {
 		} catch (Pest_ServerError $e) {
 			/* who knows what goes on in the server's mind... try again */
 			$retry = true;
+			debug_log('Canvas API server error. ' . $e->getMessage() . ' Retrying.');
+		} catch (Pest_ClientError $e) {
+			/* I just watched the Canvas API throw an unauthorized error when, in fact,
+			   I was authorized. Everything gets retried a few times before I give up */
+			$cautiousRetryCount++;
+			$retry = true;
+			debug_log('Canvas API client error. ' . $e->getMessage() . ' Retrying.'); 
 		} catch (Exception $e) {
 			exitOnError('API Error',
 				array(
@@ -38,7 +46,7 @@ function callCanvasApi($verb, $url, $data) {
 				)
 			);
 		}
-	} while ($retry == true);
+	} while ($retry == true && $cautiousRetryCount < 3);
 	
 	return $json;
 }
@@ -72,11 +80,11 @@ function displayPage($content) {
  * Because not every script works the right way the first time, and it's handy
  * to get well-formatted error messages
  **/
-function screenDump($object, $isList = false, $title = null, $message = null) {
-	$content = ($title ? "<h3>$title</h3>" : '') . ($message ? "<p>$message</p>" : '');
+function displayError($object, $isList = false, $title = null, $message = null) {
+	$content = '<div class="error">' . ($title ? "<h3>$title</h3>" : '') . ($message ? "<p>$message</p>" : '');
 	if ($isList) {
 		$content .= '<dl>';
-		if (array_keys($object) === range(0, count($object) - 1)) {
+		if (array_keys($object) !== range(0, count($object) - 1)) {
 			foreach($object as $term => $definition) {
 				$content .= "<dt>$term</dt><dd><pre>" . print_r($definition, true) . '</pre></dd>';
 			}
@@ -89,6 +97,7 @@ function screenDump($object, $isList = false, $title = null, $message = null) {
 	} else {
 		$content .= '<pre>' . print_r($object, true) . '</pre>';
 	}
+	$content .= '</div>';
 	displayPage($content);
 }
 
