@@ -10,3 +10,6 @@ develop
 
 dev-XXXX
 : Features we're working on, forked from the most recent master/develop branch as appropriate. One feature per branch, no foolin'!
+
+dev-blackboard-import
+: Convert Blackboard exportfiles into Canvas uploads.
