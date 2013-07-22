@@ -27,13 +27,13 @@ function callCanvasApi($verb, $url, $data) {
 		} catch (Pest_ServerError $e) {
 			/* who knows what goes on in the server's mind... try again */
 			$retry = true;
-			debug_log('Canvas API server error. ' . $e->getMessage() . ' Retrying.');
+			debug_log('Retrying after Canvas API server error. ' . $e->getMessage());
 		} catch (Pest_ClientError $e) {
 			/* I just watched the Canvas API throw an unauthorized error when, in fact,
 			   I was authorized. Everything gets retried a few times before I give up */
 			$cautiousRetryCount++;
 			$retry = true;
-			debug_log('Canvas API client error. ' . $e->getMessage() . ' Retrying.'); 
+			debug_log('Retrying after Canvas API client error. ' . $e->getMessage()); 
 		} catch (Exception $e) {
 			displayError(array(
 				'Error' => $e->getMessage(),

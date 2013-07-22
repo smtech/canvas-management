@@ -17,7 +17,7 @@ define('FILE_ATTACHMENT_SUFFIX', '</blockquote>');
 define('CONTENT_LINK_PREFIX', '<h3>Linked Content</h3><blockquote>');
 define('CONTENT_LINK_SUFFIX', '</blockquote>');
 
-define('BREADCRUMB_SEPARATOR', ' > '); // when creating a breadcrumb trail in the names of subitems
+define('BREADCUMB_SEPARATOR', ' > '); // when creating a breadcrumb trail in the names of subitems
 
 define('CANVAS_Bb_IMPORT_ACCOUNT_ID', 167); // the default account in which to create new courses
 define('CANVAS_DEFAULT_PATH', 'Imported from Blackboard'); // the folder that most files will be imported into

@@ -50,7 +50,6 @@ require_once('Pest.php');
  ***********************************************************************/
 
 define('DEBUGGING', true);
-debug_log('***********************************************************************');
 
 /* Blackboard-specific names */
 define('Bb_MANIFEST_NAME', 'imsmanifest.xml'); // name of the manifest file
@@ -72,7 +71,8 @@ define('Bb_ITEM_TITLE', 'Bb_item_title'); // $page[]
 define('NAMESPACE_CANVAS', 'c'); // canvas namespace prefix
 define('XMLNS_CANVAS', 'http://stmarksschool.instructure.com/blackboard-import'); // whatever
 
-define('ATTRIBUTE_CANVAS_IMPORT_TYPE', 'canvas-import-type');
+define('ATTRIBUTE_CANVAS_IMPORT_TYPE', 'import_type');
+define('ATTRIBUTE_Bb_RES_REF', 'bb-resource-reference');
 define('ATTRIBUTE_INDENT', 'indent');
 define('ATTRIBUTE_Bb_FILE_INFO', 'bb-file-info');
 define('ATTRIBUTE_Bb_RELEASE_DATE', 'bb-release-date');
@@ -224,6 +224,13 @@ function prependNamespace($attributeName, $namespacePrefix = CANVAS_NAMESPACE_PR
 	return $attributeName;
 }
 
+/**
+ * Clean up html entities, UTF-8 encoding, etc.
+ **/
+function cleanTextForXml($text) {
+	return utf8_encode(htmlentities($text));
+}
+
 function appendCanvasResponseToReceipt($itemXml, $canvasResponseArray) {
 	$itemDom = dom_import_simplexml($itemXml);
 	foreach($canvasResponseArray as $key => $value) {
@@ -238,7 +245,7 @@ function appendCanvasResponseToReceipt($itemXml, $canvasResponseArray) {
 				$itemDom->setAttributeNS(
 					CANVAS_NAMESPACE_URI,
 					prependNamespace($key),
-					(is_array($value) ? serialize($value) : utf8_encode($value))
+					(is_array($value) ? cleanTextForXml(serialize($value)) : cleanTextForXml($value)) // a critical observer would think that one could call htmlentities() with the UTF-8 encoding a single call, but apparently not... at least not on my PHP install!
 				);
 			}
 		}
@@ -289,14 +296,14 @@ function addElementToReceipt($manifestXml, $elementName, $parentXmlOrNameOrNames
 				CANVAS_NAMESPACE_URI
 			)
 		);
-		$cdataDom = $elementDom->appendChild(new DOMCdataSection($elementValue));
+		$cdataDom = $elementDom->appendChild(new DOMCdataSection(cleanTextForXml($elementValue)));
 	
 	/* if not, encode those HTML entities, just to be safe */
 	} else {
 		$elementDom = $parentDom->appendChild(
 			new DOMElement(
 				prependNamespace($elementName),
-				utf8_encode($elementValue),
+				cleanTextForXml($elementValue),
 				CANVAS_NAMESPACE_URI
 			)
 		);
@@ -378,7 +385,7 @@ function stageUpload() {
 				if ($zipRsrc = $zip->open($uploadFile)) {
 					$zip->extractTo(getWorkingDir());
 					$zip->close();
-					return true;
+					return $uploadFile;
 				} else exitOnError('Unzipping Failed', 'The file you uploaded could not be unzipped.');
 			} else exitOnError('Upload Error', array('There was an error with your file upload.', 'Error ' . $_FILES['BbExportFile']['error'] . ': See the <a href="http://www.php.net/manual/en/features.file-upload.errors.php">PHP Documentation</a> for more information.'));
 		} else exitOnError('No File Uploaded');
@@ -425,7 +432,7 @@ function processManifest($manifestName, $course) {
 		
 		processAnnouncements($course);
 		
-		// FIXME: process courselinks here (but only AFTER the import receipt is cleaned up -- need that to create the links)
+		//processCourseLinks($course);
 		
 		$html = "<h3>&ldquo;{$course['name']}&rdquo; Imported</h3><p>Open <a target=\"_blank\" href=\"http://" . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/courses/' . $course['id'] . "\">{$course['name']}</a> in Canvas.";
 
@@ -448,7 +455,8 @@ function processManifest($manifestName, $course) {
 		}
 
 		displayPage($html);
-		debug_log('FINISHED');
+		debug_log('FINISH ' . getWorkingDir());
+		return $course;
 		
 	} else exitOnError('Missing Manifest', "The manifest file ($manifestName) that should have been included in your Blackboard Exportfile cannot be found.");
 }
@@ -730,8 +738,123 @@ function processAnnouncements($course) {
  **/
 function processCourseLinks($course) {
 	if ($xpathResult = $course[MANIFEST]->xpath("//resource[@type='resource/x-bb-link']")) {
-		foreach($xpathResult as $courseLinkXml) {
-			//appendCourseLink ($courseLinkXml);
+		foreach($xpathResult as $itemXml) {
+			$resXml = getBbResourceFile($itemXml);
+			$referrerId = getBbReferrerId($resXml);
+			$referredToId = getBbReferredToId($resXml);
+
+			/* is the referred-to item one that was imported? */
+			$course[MANIFEST]->registerXPathNamespace(CANVAS_NAMESPACE_PREFIX, CANVAS_NAMESPACE_URI);
+			$xpathResult = $course[MANIFEST]->xpath("//*[@" . prependNamespace(ATTRIBUTE_Bb_RES_REF) . "='$referredToId']");
+			displayError($xpathResult[0]->attributes(CANVAS_NAMESPACE_PREFIX, true), true, 'referredTo XPath');
+ 			if (count($xpathResult)) {
+				$referredToXml = $xpathResult[0];
+				$referredToUnstrung = $referredToXml->attributes(CANVAS_NAMESPACE_PREFIX, true);
+				$referredTo = array();
+				foreach ($referredToUnstrung as $key => $value) {
+					$referredTo[$key] = (string) $value;
+				}
+				/* was the referrer imported as well? */
+				$course[MANIFEST]->registerXPathNamespace(CANVAS_NAMESPACE_PREFIX, CANVAS_NAMESPACE_URI);
+				$xpathResult = $course[MANIFEST]->xpath("//*[@" . prependNamespace(ATTRIBUTE_Bb_RES_REF) . "='$referrerId']");
+				displayError($xpathResult[0]->attributes(CANVAS_NAMESPACE_PREFIX, true), true, 'referrer Xpath');
+				if (count($xpathResult)) {
+					$referrerXml = $xpathResult[0];
+					$referrerUnstrung = $referrerXml->attributes(CANVAS_NAMESPACE_PREFIX, true);
+					$referrer = array();
+					foreach($referrerUnstrung as $key => $value) {
+						$referrer[$key] = (string) $value;
+					}
+					
+					/* get the current text of the referrer */
+					$referrerDom = dom_import_simplexml($referrerXml);
+					$textDom = dom_import_simplexml($referrerXml->text);
+					$text = $textDom->textContent;
+					
+					/* append the course link -- handily, no item can have more than one! */
+					$text .= CONTENT_LINK_PREFIX . "<div class=\"bb_course_link\"><a href=\"/courses/{$course['id']}/";
+					switch ($referredTo[ATTRIBUTE_CANVAS_IMPORT_TYPE]) {
+						case CANVAS_PAGE: {
+							$text .= "pages/{$referredTo['url']}\">{$referredTo['title']}";
+							break;
+						}
+						case CANVAS_ASSIGNMENT: {
+							$text .= "assignments/{$referredTo['id']}\">{$referredTo['name']}";
+							break;
+						}
+						case CANVAS_ANNOUNCEMENT: {
+							$text .= "discussion_topics/{$referredTo['id']}\">{$referredTo['title']}";
+							break;
+						}
+						case CANVAS_FILE: {
+							$text .= "files/{$referredTo['id']}/download?wrapper=1\">{$referredTo['display_name']}";
+							break;
+						}
+						case CANVAS_MODULE: {
+							$text .= "modules/{$referredTo['id']}";
+							break;
+						}
+					}
+					$text .= '</a></div>' . CONTENT_LINK_SUFFIX;
+					
+					/* append a course link to the referrer's text */
+					$canvasResponseArray = null;
+					$json = null;
+					switch($referrer[ATTRIBUTE_CANVAS_IMPORT_TYPE]) {
+						case CANVAS_PAGE: {
+							$json = callCanvasApi(
+								'put',
+								"/courses/{$course['id']}/pages/{$referrer['url']}",
+								array(
+									'wiki_page[body]' => $text
+								)
+							);
+							break;
+						}
+						case CANVAS_ASSIGNMENT: {
+							$json = callCanavsApi(
+								'put',
+								"/courses/{$course['id']}/assignments/{$referrer['id']}",
+								array(
+									'assignment[description]' => $text
+								)
+							);
+							break;
+						}
+						case CANVAS_ANNOUNCEMENT: {
+							$json = callCanvasApi(
+								'put',
+								"/courses/{$course['id']}/discussion_topics/{$referrer['id']}",
+								array(
+									'message' => $text
+								)
+							);
+							break;
+						}
+						default: {
+							/* ignore, since we're not able to add body text to any other types
+							   anyway! */
+							   debug_log("link from $referrerId to $referredToId not created, referrer was not imported as a type with body text");
+							   break;
+						}
+					}
+					if ($json) {
+						$canvasResponseArray = json_decode($json, true);
+						appendCanvasResponseToReceipt($referrerXml, $canvasResponseArray);
+						/* no need to delete the old text if there was no old text */
+						if ($textDom) {
+							$textDom->removeChild($textDom->firstChild);
+						}
+						$textDom->addChild(new DOMCDataSection(cleanTextForXml($text)));
+					} else {
+						debug_log("link from $referrerId to $referredToId not created, possible Canvas API error");
+					}
+				} else {
+					debug_log("link from $referrerId to $referredToId not created, referrer was not imported");
+				}
+			} else {
+				debug_log("link from $referrerId to $referredToId not created, referredTo was not imported");
+			}
 		}
 	}
 }
@@ -1031,6 +1154,26 @@ function getBbXid($node) {
 }
 
 /**
+ * Extract referrer ID from a course link
+ **/
+function getBbReferrerId($node) {
+	if ($referrerId = (string) $node->referrer->attributes()->id) {
+		return $referrerId;
+	}
+	return false;
+}
+
+/**
+ * Extract referred-to ID from a course link
+ **/
+function getBbReferredToId($node) {
+	if ($referredToId = (string) $node->referredto->attributes()->id) {
+		return $referredToId;
+	}
+	return false;
+}
+
+/**
  * Extract XID value from a string
  **/
 function parseBbXid($string) {
@@ -1148,6 +1291,7 @@ function relinkEmbeddedLinks($itemXml, $resXml, $course, $text) {
 							$file["bb-$key"] = $value;
 						}
 						$fileXml = addElementToReceipt($course[MANIFEST], NODE_FILE, $filesXml);
+						$file[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_FILE;
 						appendCanvasResponseToReceipt($fileXml, $file);
 						break;
 					}
@@ -1342,6 +1486,7 @@ function uploadCanvasFileAttachments($itemXml, $resXml, $course) {
 				$file[CANVAS_SMART_URL] = "/courses/{$course['id']}/files/{$file['id']}/download?wrap=1";
 				$attachments[$file['display_name']] = $file;
 				$fileXml = addElementToReceipt($course[MANIFEST], NODE_FILE, $filesXml);
+				$file[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_FILE;
 				appendCanvasResponseToReceipt($fileXml, $file);
 
 				break;
@@ -1410,6 +1555,7 @@ function createCanvasModule($itemXml, $resXml, $course) {
 	
 	$module = json_decode($json, true);
 	$module[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_MODULE;
+	$module[ATTRIBUTE_Bb_RES_REF] = getBbResourceFileName($itemXml);
 	appendCanvasResponseToReceipt($itemXml, $module);
 	
 	return $module;
@@ -1427,6 +1573,7 @@ function createCanvasModuleSubheader($itemXml, $resXml, $course, $module) {
 	
 	$moduleItem = json_decode($json, true);
 	$moduleItem[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_SUBHEADER;
+	$moduleItem[ATTRIBUTE_Bb_RES_REF] = getBbResourceFileName($itemXml);
 	appendCanvasResponseToReceipt($itemXml, $moduleItem);
 	
 	return $moduleItem;
@@ -1481,6 +1628,7 @@ function createCanvasModuleItem($itemXml, $moduleItemType, $indent, $canvasItemA
 	
 	$moduleItem = json_decode($json, true);
 	$moduleItem[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_MODULE_ITEM;
+	$moduleItem[ATTRIBUTE_Bb_RES_REF] = getBbResourceFileName($itemXml);
 	appendCanvasResponseToReceipt($itemXml, $moduleItem);
 	
 	return $moduleItem;
@@ -1527,6 +1675,7 @@ function createCanvasPage($itemXml, $resXml, $course) {
 	$page[Bb_ITEM_TITLE] = $title;
 
 	$page[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_PAGE;
+	$page[ATTRIBUTE_Bb_RES_REF] = getBbResourceFileName($itemXml);
 	$pageXml = addElementToReceipt($course[MANIFEST], NODE_PAGE, $itemXml);
 	addElementToReceipt($course[MANIFEST], NODE_TITLE, $pageXml, $page['title']);
 	addElementToReceipt($course[MANIFEST], NODE_TEXT, $pageXml, $page['body'], true);
@@ -1598,6 +1747,7 @@ function createCanvasAssignment($itemXml, $resXml, $course, $gradebookXml, $assi
 	/* find the assignments tag (or create it, if it hasn't yet been created) */
 	// TODO: should group by assignment group!
 	$assignment[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_ASSIGNMENT;
+	$assignment[ATTRIBUTE_Bb_RES_REF] = getBbResourceFileName($itemXml);
 	$assignmentXml = addElementToReceipt($course[MANIFEST], NODE_ASSIGNMENT, array('name' => NODE_ASSIGNMENTS));
 	addElementToReceipt($course[MANIFEST], NODE_TITLE, $assignmentXml, $assignment['name']);
 	addElementToReceipt($course[MANIFEST], NODE_TEXT, $assignmentXml, $assignment['description'], true);
@@ -1620,6 +1770,7 @@ function createCanvasAssignmentGroup($itemXml, $course) {
 	$assignmentGroup = json_decode($json, true);
 	
 	$assignmentGroup[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_ASSIGNMENT_GROUP;
+	$assignmentGroup[ATTRIBUTE_Bb_RES_REF] = getBbResourceFileName($itemXml);
 	$assignmentGroupXml = addElementToReceipt($course[MANIFEST], NODE_ASSIGNMENT_GROUP, array('name' => NODE_ASSIGNMENTS));
 	appendCanvasResponseToReceipt($assignmentGroupXml, $assignmentGroup);
 	
@@ -1650,6 +1801,8 @@ function createCanvasAnnouncement($itemXml, $resXml, $course) {
 	
 	$announcement = json_decode($json, true);
 
+	$announcement[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_ANNOUNCEMENT;
+	$announcement[ATTRIBUTE_Bb_RES_REF] = getBbResourceFileName($itemXml);
 	$announcementXml = addElementToReceipt($course[MANIFEST], NODE_ANNOUNCEMENT, array('name' => NODE_ANNOUNCEMENTS));
 	addElementToReceipt($course[MANIFEST], NODE_TITLE, $announcementXml, $announcement['title']);
 	addElementToReceipt($course[MANIFEST], NODE_TEXT, $announcementXml, $announcement['message'], true);
@@ -1678,7 +1831,8 @@ function main() {
 
 	/* are we uploading a file? */
 	if (isset($_FILES['BbExportFile'])) {
-		if (stageUpload()) {
+	debug_log('START ' . getWorkingDir());
+		if ($zipArchive = stageUpload()) {
 			$courseId = parseCourseUrl($_REQUEST["courseUrl"]);
 			$course = null;
 			if($courseId) {
@@ -1686,7 +1840,13 @@ function main() {
 			} else {
 				$course = createCanvasCourse();
 			}
-			processManifest(Bb_MANIFEST_NAME, $course);
+			$course = processManifest(Bb_MANIFEST_NAME, $course);
+			$fileInfo = array(
+				'name' => basename($zipArchive),
+				'path' => CANVAS_IMPORT_INFO_DIR
+			);
+			uploadCanvasFile(basename($zipArchive), dirname($zipArchive), $fileInfo, $course);
+			unlink($zipArchive);
 			flushDir(getWorkingDir());
 			rmdir(getWorkingDir());
 		}
