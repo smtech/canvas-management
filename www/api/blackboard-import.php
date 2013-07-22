@@ -227,11 +227,21 @@ function prependNamespace($attributeName, $namespacePrefix = CANVAS_NAMESPACE_PR
 function appendCanvasResponseToReceipt($itemXml, $canvasResponseArray) {
 	$itemDom = dom_import_simplexml($itemXml);
 	foreach($canvasResponseArray as $key => $value) {
-		$itemDom->setAttributeNS(
-			CANVAS_NAMESPACE_URI,
-			prependNamespace($key),
-			(is_array($value) ? serialize($value) : $value)
-		);
+		switch ($key) {
+			case 'body': // Pages
+			case 'description': // Assignments
+			case 'message': { // Discussions and Announcements
+				/* do nothing -- these will be added as <text> children */
+				break;
+			}
+			default : {
+				$itemDom->setAttributeNS(
+					CANVAS_NAMESPACE_URI,
+					prependNamespace($key),
+					(is_array($value) ? serialize($value) : utf8_encode($value))
+				);
+			}
+		}
 	}
 }
 
@@ -286,7 +296,7 @@ function addElementToReceipt($manifestXml, $elementName, $parentXmlOrNameOrNames
 		$elementDom = $parentDom->appendChild(
 			new DOMElement(
 				prependNamespace($elementName),
-				htmlentities($elementValue),
+				utf8_encode($elementValue),
 				CANVAS_NAMESPACE_URI
 			)
 		);
@@ -419,18 +429,21 @@ function processManifest($manifestName, $course) {
 		
 		$html = "<h3>&ldquo;{$course['name']}&rdquo; Imported</h3><p>Open <a target=\"_blank\" href=\"http://" . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/courses/' . $course['id'] . "\">{$course['name']}</a> in Canvas.";
 
-		$receiptFile = buildPath(getWorkingDir(), RECEIPT_FILE_NAME);
+		$receiptFile = buildPath(getWorkingDir(), CANVAS_IMPORT_RECEIPT_FILENAME);
 		if ($course[MANIFEST]->asXml($receiptFile)) {
-			$fileInfo = array('name' => RECEIPT_FILE_NAME);
+			$fileInfo = array(
+				'name' => CANVAS_IMPORT_RECEIPT_FILENAME,
+				'path' => CANVAS_IMPORT_INFO_DIR
+			);
 			if ($receiptFile = uploadCanvasFile(basename($receiptFile), dirname($receiptFile), $fileInfo, $course)) {
-				$html .= ' A receipt file (<a href="https://' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . "/courses/{$course['id']}/files/{$receiptFile['id']}/download?wrap=1\">" . RECEIPT_FILE_NAME . '</a>) detailing the actions taken has been uploaded to your course files in Canvas.';
+				$html .= ' A receipt file (<a href="https://' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . "/courses/{$course['id']}/files/{$receiptFile['id']}/download?wrap=1\">{$receiptFile['display_name']}</a>) detailing the actions taken has been uploaded to your course files in Canvas.";
 			} else {
 				// TODO: make a download link
-				$html .= ' Normally a file (' . RECEIPT_FILE_NAME . ') would have been uploaded to your course files in Canvas, however the upload failed. It\'s contents are displayed below.</p>';
+				$html .= ' Normally a file (' . CANVAS_IMPORT_RECEIPT_FILENAME . ') would have been uploaded to your course files in Canvas, however the upload failed. It\'s contents are displayed below.</p>';
 				$html .= '<pre>' . print_r($course[MANIFEST], true) . '</pre>';
 			}
 		} else {
-			$html .= ' Normally a file (' . RECEIPT_FILE_NAME . ') would have been uploaded to your course files in Canvas, however it could not be created. It\'s contents are displayed below.</p>';
+			$html .= ' Normally a file (' . CANVAS_IMPORT_RECEIPT_FILENAME . ') would have been uploaded to your course files in Canvas, however it could not be created. It\'s contents are displayed below.</p>';
 			$html .= '<pre>' . print_r($course[MANIFEST], true) . '</pre>';
 		}
 
@@ -1142,7 +1155,7 @@ function relinkEmbeddedLinks($itemXml, $resXml, $course, $text) {
 				if ($file) {
 					$text = str_replace($embeddedAttachment[0], "/courses/{$course['id']}/files/{$file['id']}", $text);
 				} else {
-					debug_log("Missing embedded file '$fileName' in item " . getBbXid($itemXml));
+					debug_log("Missing embedded file '$fileName' in item " . getBbXid($resXml));
 				}
 			}
 		}
@@ -1163,7 +1176,7 @@ function relinkEmbeddedLinks($itemXml, $resXml, $course, $text) {
 	} elseif (preg_match_all('|@X@EmbeddedFile\.requestUrlStub@X@([^"]+)|', $text, $embeddedBbLinks, PREG_PATTERN_ORDER)) {
 		$text = str_replace($embeddedBbLinks[0], $embeddedBbLinks[1], $text);
 	} elseif (preg_match_all('|@X@[^"]*|', $text, $unmatchedEmbedCodes)) {
-		debug_log(count($unmatchedEmbedCodes) . " unmatched embed codes in " . getBbXid($itemXml));
+		debug_log(count($unmatchedEmbedCodes) . " unmatched embed codes in " . getBbXid($resXml));
 	}
 
 	// <img src="/courses/903/files/10539/preview" alt="Giant Purple Snorklewhacker.png" />

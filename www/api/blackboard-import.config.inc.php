@@ -22,8 +22,9 @@ define('BREADCRUMB_SEPARATOR', ' > '); // when creating a breadcrumb trail in th
 define('CANVAS_Bb_IMPORT_ACCOUNT_ID', 167); // the default account in which to create new courses
 define('CANVAS_DEFAULT_PATH', 'Imported from Blackboard'); // the folder that most files will be imported into
 define('CANVAS_CONTENT_COLLECTION_PATH', buildPath(CANVAS_DEFAULT_PATH, 'Content Collection')); // the folder that the content collection will be imported into
+define('CANVAS_IMPORT_INFO_DIR', buildPath(CANVAS_DEFAULT_PATH, 'Import Information')); // where information about the import is stored in Canvas
 
-define('RECEIPT_FILE_NAME', 'Import Receipt.xml'); // the name of the generated and uploaded receipt
+define('CANVAS_IMPORT_RECEIPT_FILENAME', 'Import Receipt.xml'); // the name of the generated and uploaded receipt
 define('CANVAS_NAMESPACE_URI', buildPath($_SERVER['SERVER_NAME'], dirname($_SERVER['REQUEST_URI']))); // use the URL of this script as the URI for the namespace
 define('CANVAS_NAMESPACE_PREFIX', 'canvas');
 
