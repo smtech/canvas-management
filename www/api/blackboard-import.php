@@ -178,9 +178,16 @@ function buildPath() {
 /**
  * Allow for session-based temp directories
  **/
+$WORKING_DIR_FIRST_RUN = true;
+$SESSION_WORKING_DIR = null;
 function getWorkingDir()
 {
-	return WORKING_DIR;
+	if ($GLOBALS['WORKING_DIR_FIRST_RUN']) {
+		$GLOBALS['SESSION_WORKING_DIR'] = buildPath(WORKING_DIR, md5($_SERVER['REMOTE_ADDR'] . time()));
+		mkdir($GLOBALS['SESSION_WORKING_DIR']);
+		$GLOBALS['WORKING_DIR_FIRST_RUN'] = false;
+	}
+	return buildPath($GLOBALS['SESSION_WORKING_DIR']);
 }
 
 
@@ -359,7 +366,6 @@ function stageUpload() {
 				move_uploaded_file($_FILES['BbExportFile']['tmp_name'], $uploadFile);
 				$zip = new ZipArchive();
 				if ($zipRsrc = $zip->open($uploadFile)) {
-					flushDir(getWorkingDir());
 					$zip->extractTo(getWorkingDir());
 					$zip->close();
 					return true;
@@ -430,7 +436,6 @@ function processManifest($manifestName, $course) {
 
 		displayPage($html);
 		debug_log('FINISHED');
-		exit;
 		
 	} else exitOnError('Missing Manifest', "The manifest file ($manifestName) that should have been included in your Blackboard Exportfile cannot be found.");
 }
@@ -1669,6 +1674,8 @@ function main() {
 				$course = createCanvasCourse();
 			}
 			processManifest(Bb_MANIFEST_NAME, $course);
+			flushDir(getWorkingDir());
+			rmdir(getWorkingDir());
 		}
 	} else {
 		/* well, it appears that nothing has happened yet, so let's just start with
