@@ -7,10 +7,10 @@
 	2. Unzip ZIP archive and extract course name, teacher, etc. (DONE)
 	3. Create (or link to existing) Canvas course
 	4. Upload items via API
-		a. csfiles/ contents (build a list referenced by x-id and Canvas ID for
+		a. csfiles/ contents (build a list referenced by XID and Canvas ID for
 		   future reference)
 		b. walk through resources in manifest and post all attachments (build a
-		   list referenced by res00000, x-id if available, filename and Canvas ID)
+		   list referenced by res00000, XID if available, filename and Canvas ID)
 		c. post items and then append them to appropriate modules
 		d. perhaps create a nicey-nice front page that lists all the things in the
 		   manifest TOC?
@@ -73,9 +73,7 @@ define('NAMESPACE_CANVAS', 'c'); // canvas namespace prefix
 define('XMLNS_CANVAS', 'http://stmarksschool.instructure.com/blackboard-import'); // whatever
 
 define('ATTRIBUTE_CANVAS_IMPORT_TYPE', 'canvas-import-type');
-define('ATTRIBUTE_INDENT_LEVEL', 'canvas-indent-level');
-define('ATTRIBUTE_CANVAS_ID', 'canvas-id');
-define('ATTRIBUTE_CANVAS_URL', 'canvas-url');
+define('ATTRIBUTE_INDENT', 'indent');
 define('ATTRIBUTE_Bb_FILE_INFO', 'bb-file-info');
 define('ATTRIBUTE_Bb_RELEASE_DATE', 'bb-release-date');
 
@@ -86,16 +84,25 @@ define('CANVAS_EXTERNAL_URL', 'ExternalURL');
 define('CANVAS_MODULE_ITEM', 'Module Item (link to a course item)');
 define('CANVAS_QUIZ', 'Quiz');
 define('CANVAS_ASSIGNMENT', 'Assignment');
+define('CANVAS_ASSIGNMENT_GROUP', 'Assignment Group');
 define('CANVAS_DISCUSSION', 'Discussion');
 define('CANVAS_SUBHEADER', 'Module Subheader');
 define('CANVAS_ANNOUNCEMENT', 'Announcement');
 define('CANVAS_NO_IMPORT', 'Ignored and not imported');
 
-define('NODE_ATTACHMENTS', 'files');
-define('NODE_CONTENT_COLLECTION', 'contentcollection');
+define('NODE_COURSE_SETTINGS', 'course-settings');
+define('NODE_ANNOUNCEMENTS', 'announcements');
+define('NODE_ANNOUNCEMENT', 'announcement');
+define('NODE_CONTENT_COLLECTION', 'content-collection');
 define('NODE_FILE', 'file');
+define('NODE_ASSIGNMENTS', 'assignments');
+define('NODE_ASSIGNMENT_GROUP', 'assignment-group');
+define('NODE_ASSIGNMENT', 'assignment');
+define('NODE_PAGE', 'page');
 define('NODE_TITLE', 'title');
 define('NODE_TEXT', 'text');
+define('NODE_ATTACHMENTS', 'files');
+define('NODE_EMBEDDED_FILES', 'embedded');
 
 
 /***********************************************************************
@@ -119,22 +126,6 @@ function exitOnError($title, $text = '') {
 function debug_log($message) {
 	if (DEBUGGING) {
 		error_log($message);
-	}
-}
-
-/**
- * Force nodes and attributes to all lower-case in a given XML document,
- * returning a SimpleXML object.
- **/
-function loadFileAsSimpleXmlWithLowercaseNodesAndAttributes($fileName) {
-	if (file_exists($fileName)) {
-		$xmlWoNkYcAsE = simplexml_load_file($fileName);
-		$xslt = new XSLTProcessor();
-		$xsl = simplexml_load_file('./lowercase-transform.xsl');
-		$xslt->importStylesheet($xsl);
-		return (simplexml_load_string($xslt->transformToXML($xmlWoNkYcAsE)));
-	} else {
-		return false;
 	}
 }
 
@@ -183,7 +174,172 @@ function buildPath() {
 	
 	return $path;
 }
+
+/**
+ * Allow for session-based temp directories
+ **/
+function getWorkingDir()
+{
+	return WORKING_DIR;
+}
+
+
+/***********************************************************************
+ *                                                                     *
+ * XML Helpers                                                         *
+ *                                                                     *
+ ***********************************************************************/
  
+/**
+ * Force nodes and attributes to all lower-case in a given XML document,
+ * returning a SimpleXML object.
+ **/
+function loadFileAsSimpleXmlWithLowercaseNodesAndAttributes($fileName) {
+	if (file_exists($fileName)) {
+		$xmlWoNkYcAsE = simplexml_load_file($fileName);
+		$xslt = new XSLTProcessor();
+		$xsl = simplexml_load_file('./lowercase-transform.xsl');
+		$xslt->importStylesheet($xsl);
+		return (simplexml_load_string($xslt->transformToXML($xmlWoNkYcAsE)));
+	} else {
+		return false;
+	}
+}
+
+/**
+ * Helper function to construct attribute names with a (possible)
+ * namespace prefix
+ **/
+function prependNamespace($attributeName, $namespacePrefix = CANVAS_NAMESPACE_PREFIX) {
+	if (strlen($namespacePrefix)) {
+		return "$namespacePrefix:$attributeName";
+	}
+	return $attributeName;
+}
+
+function appendCanvasResponseToReceipt($itemXml, $canvasResponseArray) {
+	$itemDom = dom_import_simplexml($itemXml);
+	foreach($canvasResponseArray as $key => $value) {
+		$itemDom->setAttributeNS(
+			CANVAS_NAMESPACE_URI,
+			prependNamespace($key),
+			(is_array($value) ? serialize($value) : $value)
+		);
+	}
+}
+
+/**
+ * Helper function to add a new node into the manifest XML as a child of either
+ * a known and specified node, or of a named node which may or may not exist.
+ * If the parent is named, but does not exist, create it and insert it before
+ * the successorName element, if it can be found (or append it at the end of
+ * the manifest if the successor can't be found).
+ * Returns the node that was added as a SimpleXMLElement
+ **/
+function addElementToReceipt($manifestXml, $elementName, $parentXmlOrNameOrNamespaceArray, $elementValue = null, $isCdata = false, $successorXmlOrNameOrNamespaceArray = 'organizations') {
+	$manifestDom = dom_import_simplexml($manifestXml);
+	$parentDom = comboFind($manifestXml, $parentXmlOrNameOrNamespaceArray);
+	if (is_array($parentDom)) {
+		$successorDom = comboFind($manifestXml, $successorXmlOrNameOrNamespaceArray);
+		if ($successorDom) {
+			$parentDom = $manifestDom->insertBefore(
+				new DOMElement(
+					prependNamespace($parentDom['name'], $parentDom['prefix']),
+					null,
+					$parentDom['uri']
+				),
+				$successorDom
+			);
+		} else {
+			$parentDom = $manifestDom->appendChild(
+				new DOMElement(
+					prependNamespace($parentName),
+					null,
+					CANVAS_NAMESPACE_URI
+				)
+			);
+		}
+	}
+	
+	$elementDom = false;
+	
+	/* is our value Cdata? Then let's add a Cdata node! */
+	if ($isCdata) {
+		$elementDom = $parentDom->appendChild(
+			new DOMElement(
+				prependNamespace($elementName),
+				null,
+				CANVAS_NAMESPACE_URI
+			)
+		);
+		$cdataDom = $elementDom->appendChild(new DOMCdataSection($elementValue));
+	
+	/* if not, encode those HTML entities, just to be safe */
+	} else {
+		$elementDom = $parentDom->appendChild(
+			new DOMElement(
+				prependNamespace($elementName),
+				htmlentities($elementValue),
+				CANVAS_NAMESPACE_URI
+			)
+		);
+	}
+	
+	return simplexml_import_dom($elementDom);
+}
+
+function comboFind($manifestXml, $elementXmlOrNameOrNamespaceArray) {
+	/* were we just given a SimpleXMLElement node? */
+	if (is_object($elementXmlOrNameOrNamespaceArray)) {
+		return dom_import_simplexml($elementXmlOrNameOrNamespaceArray);
+		
+	/* or were we given a node name to find? */
+	} else {
+		$elementDom = null;
+		$elementName = (is_string($elementXmlOrNameOrNamespaceArray) ? $elementXmlOrNameOrNamespaceArray : null);
+		$elementNamespacePrefix = null;
+		$elementNamespaceUri = null;
+		
+		/* does the name exist in a namespace? */
+		if (is_array($elementXmlOrNameOrNamespaceArray)) {
+			$elementName = $elementXmlOrNameOrNamespaceArray['name'];
+			$elementNamespacePrefix = (
+				isset($elementXmlOrNameOrNamespaceArray['prefix']) ?
+				$elementXmlOrNameOrNamespaceArray['prefix'] :
+				CANVAS_NAMESPACE_PREFIX
+			);
+			$elementNamespaceUri = (
+				isset($elementXmlOrNameOrNamespaceArray['uri']) ?
+				$elementXmlOrNameOrNamespaceArray['uri'] :
+				CANVAS_NAMESPACE_URI
+			);
+		}
+
+		if ($elementNamespaceUri) {
+			$manifestXml->registerXPathNamespace($elementNamespacePrefix, $elementNamespaceUri);
+		}
+		$xpathResult = $manifestXml->xpath(
+			'//' . (
+				$elementNamespaceUri ?
+				prependNamespace($elementName, $elementNamespacePrefix) :
+				$elementName
+			)
+		);
+		
+		/* if we can find that node, awesome */
+		if (count($xpathResult)) {
+			return dom_import_simplexml($xpathResult[0]);			
+		} elseif ($elementNamespaceUri) {
+			return array(
+				'name' => $elementName,
+				'prefix' => $elementNamespacePrefix,
+				'uri' => $elementNamespaceUri
+			);
+		} else {
+			return false;
+		}
+	}
+}
 
 /***********************************************************************
  *                                                                     *
@@ -199,12 +355,12 @@ function stageUpload() {
 		if (isset($_FILES['BbExportFile'])) {
 			if ($_FILES['BbExportFile']['error'] === UPLOAD_ERR_OK) {
 				$uploadFile = buildPath(UPLOAD_DIR, basename($_FILES['BbExportFile']['name']));
-				// TODO: need a per-session temp directory structure to prevent over-writes/conflicts
+				// FIXME: need a per-session temp directory structure to prevent over-writes/conflicts
 				move_uploaded_file($_FILES['BbExportFile']['tmp_name'], $uploadFile);
 				$zip = new ZipArchive();
 				if ($zipRsrc = $zip->open($uploadFile)) {
-					flushDir(WORKING_DIR);
-					$zip->extractTo(WORKING_DIR);
+					flushDir(getWorkingDir());
+					$zip->extractTo(getWorkingDir());
 					$zip->close();
 					return true;
 				} else exitOnError('Unzipping Failed', 'The file you uploaded could not be unzipped.');
@@ -227,34 +383,37 @@ function parseCourseUrl($courseUrl) {
  * committing to the actual import into Canvas
  **/
 function processManifest($manifestName, $course) {
-	$manifestFile = buildPath(WORKING_DIR, $manifestName);
+	$manifestFile = buildPath(getWorkingDir(), $manifestName);
 	if (file_exists($manifestFile)) {
 		$manifest = loadFileAsSimpleXmlWithLowercaseNodesAndAttributes($manifestFile);
 		
 		$course = processCourseSettings($manifest, $course);
+
 		$course[MANIFEST] = $manifest;
 		
 		$course[CONTENT_COLLECTION] = uploadContentCollection($course);
 		
 		$course[GRADEBOOK] = processGradebook($course);
 		
-		$moduleNodes = $course[MANIFEST]->xpath('/manifest/organizations/organization/item');
-		foreach ($moduleNodes as $moduleNode) {
-			$itemNodes = $moduleNode->item;
-			if ($itemNodes) {
-				$res = getBbResourceFile($moduleNode);
-				$module = createCanvasModule($moduleNode, $res, $course);
-				foreach($itemNodes as $itemNode) {
-					processItem($itemNode, $course, $module);
+		$xpathResult = $course[MANIFEST]->xpath('/manifest/organizations/organization/item');
+		foreach ($xpathResult as $moduleXml) {
+			$itemsXml = $moduleXml->item;
+			if ($itemsXml) {
+				$resXml = getBbResourceFile($moduleXml);
+				$module = createCanvasModule($moduleXml, $resXml, $course);
+				foreach($itemsXml as $itemXml) {
+					processItem($itemXml, $course, $module);
 				}
 			}
 		}
 		
 		processAnnouncements($course);
 		
+		// FIXME: process courselinks here (but only AFTER the import receipt is cleaned up -- need that to create the links)
+		
 		$html = "<h3>&ldquo;{$course['name']}&rdquo; Imported</h3><p>Open <a target=\"_blank\" href=\"http://" . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/courses/' . $course['id'] . "\">{$course['name']}</a> in Canvas.";
 
-		$receiptFile = buildPath(WORKING_DIR, RECEIPT_FILE_NAME);
+		$receiptFile = buildPath(getWorkingDir(), RECEIPT_FILE_NAME);
 		if ($course[MANIFEST]->asXml($receiptFile)) {
 			$fileInfo = array('name' => RECEIPT_FILE_NAME);
 			if ($receiptFile = uploadCanvasFile(basename($receiptFile), dirname($receiptFile), $fileInfo, $course)) {
@@ -270,6 +429,8 @@ function processManifest($manifestName, $course) {
 		}
 
 		displayPage($html);
+		debug_log('FINISHED');
+		exit;
 		
 	} else exitOnError('Missing Manifest', "The manifest file ($manifestName) that should have been included in your Blackboard Exportfile cannot be found.");
 }
@@ -278,9 +439,9 @@ function processManifest($manifestName, $course) {
  * Update Canvas course settings to match Bb
  **/
 function processCourseSettings($manifest, $course) {
-	if ($courseSettingsNodes = $manifest->xpath('//resource[@type=\'course/x-bb-coursesetting\']')) {
-		$courseSettingsNode = $courseSettingsNodes[0];
-		$courseSettings = loadFileAsSimpleXmlWithLowercaseNodesAndAttributes(buildPath(WORKING_DIR, (string) $courseSettingsNode->attributes()->identifier . Bb_RES_FILE_EXT));
+	if ($xpathResult = $manifest->xpath('//resource[@type=\'course/x-bb-coursesetting\']')) {
+		$courseSettingsXml = $xpathResult[0];
+		$courseSettings = loadFileAsSimpleXmlWithLowercaseNodesAndAttributes(buildPath(getWorkingDir(), (string) $courseSettingsXml->attributes()->identifier . Bb_RES_FILE_EXT));
 		
 		$courseTitle = getBbTitle($courseSettings);
 		
@@ -299,21 +460,28 @@ function processCourseSettings($manifest, $course) {
 		$courseUpdate = json_decode($json, true);
 		
 		if ($courseUpdate) {
-			foreach($courseUpdate as $key => $value) {
-				$course[$key] = $value;
-				$courseSettingsNode->addAttribute(
-					'canvas-' . str_replace('_', '-', $key),
-					(is_array($value) ? json_encode($value) : $value)
-				);
-			}
+			/* update import receipt */
+			// FIXME: argle-bargle should be the session ID or timestamp (or both?), if there were a session ID
+			$manifest->addAttribute(prependNamespace('import-receipt'), 'argle-bargle', CANVAS_NAMESPACE_URI);
+			$manifestDom = dom_import_simplexml($manifest);
+			$xpathResult = $manifest->xpath('//organizations');
+			$organizationsDom = dom_import_simplexml($xpathResult[0]);
+			$courseDom = new DOMElement(prependNamespace(NODE_COURSE_SETTINGS), null, CANVAS_NAMESPACE_URI);
+			$courseDom = $manifestDom->insertBefore($courseDom, $organizationsDom);
+			$courseXml = simplexml_import_dom($courseDom);
+			
+			$course = array_merge($course, $courseUpdate);
+			appendCanvasResponseToReceipt($courseXml, $courseUpdate);
+
 			return $course;
 		} else {
-			exitOnError('Course Settings Failed',
-				array(
-					'There was a problem trying to import the course settings for your course.',
-					'<pre>' . print_r($json, true) . '</pre>'
-				)
+			displayError(
+				$json,
+				false,
+				'Course Settings Failed',
+				'There was a problem trying to import the course settings for your course.'
 			);
+			exit;
 		}		
 	} else {
 		exitOnError('Missing Course Settings', 'The course settings resource file for your course could not be identified.');
@@ -327,27 +495,27 @@ function processCourseSettings($manifest, $course) {
  **/
 
 function uploadContentCollection($course) {
-	$contentCollectionPath = buildPath(WORKING_DIR, Bb_CONTENT_COLLECTION_DIR);
-	$files = glob("$contentCollectionPath\\\\*");
+	$ccPath = buildPath(getWorkingDir(), Bb_CONTENT_COLLECTION_DIR);
+	$ccFilenames = glob("$ccPath\\\\*");
 	$contentCollection = array();
-	$contentCollectionNode = $course[MANIFEST]->addChild(NODE_CONTENT_COLLECTION);
-	foreach ($files as $file) {
-		if (is_file($file) && !preg_match('|^.*\.xml$|i', $file)) {
-			$fileInfo = getBbLomFileInfo($file);
-			$fileInfo['path'] = buildPath(CANVAS_CONTENT_COLLECTION_PATH, $fileInfo['path']);
+	$ccXml = addElementToReceipt($course[MANIFEST], NODE_CONTENT_COLLECTION, 'manifest');
+	foreach ($ccFilenames as $ccFilename) {
+		if (is_file($ccFilename) && !preg_match('|^.*\.xml$|i', $ccFilename)) {
+			$fileInfo = getBbLomFileInfo($ccFilename);
+			$fileInfo['bb-path'] = $fileInfo['path'];
+			$fileInfo['path'] = buildPath(CANVAS_CONTENT_COLLECTION_PATH, $fileInfo['bb-path']);
 			if ($fileInfo) {
-				$canvasFile = uploadCanvasFile(basename($file), dirname($file), $fileInfo, $course);
-				$contentCollectionFileNode = $contentCollectionNode->addChild(NODE_FILE, htmlentities($fileInfo['name']));
-				foreach($canvasFile as $key => $value) {
-					$contentCollectionFileNode->addAttribute(
-						'canvas-' . str_replace('_', '-', $key),
-						(is_array($value) ? json_encode($value) : htmlentities($value))
-					);
-					$fileInfo[$key] = $value;
+				$file = uploadCanvasFile(basename($ccFilename), dirname($ccFilename), $fileInfo, $course);
+				foreach($fileInfo as $key => $value) {
+					$file["bb-$key"] = $value;
 				}
-				$contentCollection[$fileInfo['x-id']] = $fileInfo;
-			} elseif (!is_dir($file)) { // ham-handed way to exclude the csfiles\/ directory
-				exitOnError('Missing LOM Information', "A file ($file) was missing its LOM (Learning Object Metadata) file and is therefore lost to the content collection.");
+				$file[CANVAS_SMART_URL] = "/courses/{$course['id']}/files/{$file['id']}";
+				$fileXml = addElementToReceipt($course[MANIFEST], NODE_FILE, $ccXml);
+				appendCanvasResponseToReceipt($fileXml, $file);
+				$contentCollection[$file['bb-xid']] = $file;
+			} elseif (!is_dir($ccFilename)) { // ham-handed way to exclude the csfiles\/ directory
+				displayError($ccFilename, false, 'Missing LOM Information', "A file ($ccFilename) was missing its LOM (Learning Object Metadata) file and is therefore lost to the content collection.");
+				exit;
 			}
 		}
 	}
@@ -359,14 +527,14 @@ function uploadContentCollection($course) {
  **/
 function processGradebook($course) {
 
-	// TODO: do something creative with the embedded grading schme <SCALES> -- Canvas has no API access to grading schemes
-	if ($gradebookNode = $course[MANIFEST]->xpath("//resource[@type='course/x-bb-gradebook']")) {
-		$gradebookNode = $gradebookNode[0];
-		$gradebookResourceFile = getBbResourceFile($gradebookNode);
-		if ($categoryNodes = $gradebookResourceFile->xpath('//categories/category')) {
+	// TODO: do something creative with the embedded grading scheme <SCALES> -- Canvas has no API access to grading schemes
+	if ($xpathResult = $course[MANIFEST]->xpath("//resource[@type='course/x-bb-gradebook']")) {
+		$gradebookXml = $xpathResult[0];
+		$gradebookResourceFile = getBbResourceFile($gradebookXml);
+		if ($xpathResult = $gradebookResourceFile->xpath('//categories/category')) {
 			$gradebook = array();
-			foreach($categoryNodes as $categoryNode) {
-				$gradebook = array_merge($gradebook, createCanvasAssignmentGroupAndAssignments($gradebookResourceFile, $categoryNode, $course));
+			foreach($xpathResult as $categoryXml) {
+				$gradebook = array_merge($gradebook, createCanvasAssignmentGroupAndAssignments($gradebookResourceFile, $categoryXml, $course));
 			}
 		}
 
@@ -380,23 +548,23 @@ function processGradebook($course) {
 /**
  * create all of the assignments in a particular category/assignment group
  **/
-function createCanvasAssignmentGroupAndAssignments($gradebookNode, $categoryNode, $course) {
-	$x_id = '';
+function createCanvasAssignmentGroupAndAssignments($gradebookXml, $categoryXml, $course) {
+	$xid = '';
 	$title = 'Uncategorized Assignments';
-	if ($categoryNode) {
-		$x_id = getBbXId($categoryNode);
-		$title = getBbTitle($categoryNode);
+	if ($categoryXml) {
+		$xid = getBbXid($categoryXml);
+		$title = getBbTitle($categoryXml);
 	} else {
-		$categoryNode = new SimpleXMLElement('<category id=""><title value="' . $title . '"/><description/><isuserdefined value="true"/><iscalculated value="false"/><isscorable value="false"/></category>');
+		$categoryXml = new SimpleXMLElement('<category id=""><title value="' . $title . '"/><description/><isuserdefined value="true"/><iscalculated value="false"/><isscorable value="false"/></category>');
 	}
 	
 	$gradebookCategory = array();
 	
-	$assignmentNodes = $gradebookNode->xpath("//outcomedefinition[categoryid[@value='$x_id'] and iscalculated[@value='false'] and not(score_provider_handle[@value='resource/x-bb-assessment'])]");
-	if ($assignmentNodes) {
-		$assignmentGroup = createCanvasAssignmentGroup($categoryNode, $course);
-		foreach ($assignmentNodes as $assignmentNode) {
-			$scoreProviderHandle = getBbScoreProviderHandle($assignmentNode);
+	$xpathResult = $gradebookXml->xpath("//outcomedefinition[categoryid[@value='$xid'] and iscalculated[@value='false'] and not(score_provider_handle[@value='resource/x-bb-assessment'])]");
+	if ($xpathResult) {
+		$assignmentGroup = createCanvasAssignmentGroup($categoryXml, $course);
+		foreach ($xpathResult as $assignmentXml) {
+			$scoreProviderHandle = getBbScoreProviderHandle($assignmentXml);
 			switch ($scoreProviderHandle) {
 				case 'resource/x-bb-assessment': {
 					// TODO: Canvas has no API access to create quiz questions
@@ -404,11 +572,11 @@ function createCanvasAssignmentGroupAndAssignments($gradebookNode, $categoryNode
 				}
 				case 'resource/x-bb-assignment':
 				default: {
-					$gradebookCategory[getBbResourceFileName($assignmentNode)] = createCanvasAssignment(
-						$assignmentNode,
-						getBbResourceFile($assignmentNode),
+					$gradebookCategory[getBbResourceFileName($assignmentXml)] = createCanvasAssignment(
+						$assignmentXml,
+						getBbResourceFile($assignmentXml),
 						$course,
-						$gradebookNode,
+						$gradebookXml,
 						$assignmentGroup
 					);
 					break;
@@ -422,45 +590,42 @@ function createCanvasAssignmentGroupAndAssignments($gradebookNode, $categoryNode
 /**
  * process a module and update XML with notes for import
  **/
-function processItem($item, $course, $module, $indent = 0, $breadcrumbs = '') {
-	$res = getBbResourceFile($item);
-	$item->addAttribute(ATTRIBUTE_INDENT_LEVEL, $indent);
+function processItem($itemXml, $course, $module, $indent = 0, $breadcrumbs = '') {
+	$resXml = getBbResourceFile($itemXml);
+	$itemXml->addAttribute(prependNamespace(ATTRIBUTE_INDENT), $indent, CANVAS_NAMESPACE_URI);
 	
-	$contentHandler = getBbContentHandler($res);
+	$contentHandler = getBbContentHandler($resXml);
 	switch ($contentHandler) {
 		case 'resource/x-bb-assignment': {
 			createCanvasModuleItem(
+				$itemXml,
 				CANVAS_ASSIGNMENT,
-				getCanvasIndentLevel($item),
-				$course[GRADEBOOK][getBbResourceFileName($item)], 
+				getCanvasIndentLevel($itemXml),
+				$course[GRADEBOOK][getBbResourceFileName($itemXml)], 
 				$course,
 				$module); 
 			break;
 		}
 		
-		case 'resource/x-bb-courselink': {
-			// FIXME: is this a special case?
-			createCanvasCourseLink($item, $res, $course, $module);
-			break;
-		}
-		
 		case 'resource/x-bb-externallink': {
-			$text = getBbText($res);
+			$text = getBbText($resXml);
 			if (strlen($text)) {
 				createCanvasModuleItem(
+					$itemXml,
 					CANVAS_PAGE,
-					getCanvasIndentLevel($item),
-					createCanvasPage($item, $res, $course),
+					getCanvasIndentLevel($itemXml),
+					createCanvasPage($itemXml, $resXml, $course),
 					$course,
 					$module
 				);
 			} else {
 				createCanvasModuleItem(
+					$itemXml,
 					CANVAS_EXTERNAL_URL,
-					getCanvasIndentLevel($item),
+					getCanvasIndentLevel($itemXml),
 					array(
-						'title' => getBbTitle($res),
-						'url' => getBbUrl($res),
+						'title' => getBbTitle($resXml),
+						'url' => getBbUrl($resXml),
 					),
 					$course,
 					$module
@@ -476,12 +641,12 @@ function processItem($item, $course, $module, $indent = 0, $breadcrumbs = '') {
 		
 		case 'resource/x-bb-folder':
 		case 'resource/x-bb-lesson': {
-			$subheader = createCanvasModuleSubheader($item, $res, $course, $module);
-			$subitemNodes = $item->item;
-			if ($subitemNodes) {
-				foreach ($subitemNodes as $subitemNode) {
+			$subheader = createCanvasModuleSubheader($itemXml, $resXml, $course, $module);
+			$subitemsXml = $itemXml->item;
+			if ($subitemsXml) {
+				foreach ($subitemsXml as $subitemXml) {
 					// TODO: actually make use of the breadcrumbs!
-					processItem($subitemNode, $course, $module, $indent + 1,
+					processItem($subitemXml, $course, $module, $indent + 1,
 						$breadcrumbs . (strlen($breadcrumbs) ? BREADCUMB_SEPARATOR : '') . $subheader['title']
 					);
 				}
@@ -494,26 +659,29 @@ function processItem($item, $course, $module, $indent = 0, $breadcrumbs = '') {
 			break;
 		}
 		
+		case 'resource/x-bb-courselink': // will have link added to the page text at the end of processManifest()
 		case 'resource/x-bb-file':
 		case 'resource/x-bb-document': {
-			$text = getBbText($res);
-			$fileAttachmentCount = getBbFileAttachmentCount($res);
+			$text = getBbText($resXml);
+			$fileAttachmentCount = getBbFileAttachmentCount($resXml);
 			if (strlen($text) == 0 && $fileAttachmentCount == 1) {
-				$attachments = uploadCanvasFileAttachments($item, $res, $course);
+				$attachments = uploadCanvasFileAttachments($itemXml, $resXml, $course);
 				$keys = array_keys($attachments);
-				$attachments[$keys[0]][Bb_ITEM_TITLE] = getBbTitle($res);
+				$attachments[$keys[0]][Bb_ITEM_TITLE] = getBbTitle($resXml);
 				createCanvasModuleItem(
+					$itemXml,
 					CANVAS_FILE,
-					getCanvasIndentLevel($item),
+					getCanvasIndentLevel($itemXml),
 					$attachments[$keys[0]],
 					$course,
 					$module
 				);
 			} else {
 				createCanvasModuleItem(
+					$itemXml,
 					CANVAS_PAGE,
-					getCanvasIndentLevel($item),
-					createCanvasPage($item, $res, $course, $module), 
+					getCanvasIndentLevel($itemXml),
+					createCanvasPage($itemXml, $resXml, $course, $module), 
 					$course,
 					$module);
 			}
@@ -521,7 +689,7 @@ function processItem($item, $course, $module, $indent = 0, $breadcrumbs = '') {
 		}
 		
 		default: {
-			createCanvasNoImport($item, $res);
+			createCanvasNoImport($itemXml);
 			break;
 		}
 	}
@@ -531,13 +699,23 @@ function processItem($item, $course, $module, $indent = 0, $breadcrumbs = '') {
  * process and post announcements
  **/
 function processAnnouncements($course) {
-	if ($announcementNodes = $course[MANIFEST]->xpath('//resource[@type=\'resource/x-bb-announcement\']')) {
-		// TODO: Include in receipt
-		foreach($announcementNodes as $announcementNode) {
-			$announcement = createCanvasAnnouncement($announcementNode, getBbResourceFile($announcementNode), $course);
+	if ($xpathResult = $course[MANIFEST]->xpath('//resource[@type=\'resource/x-bb-announcement\']')) {
+		foreach($xpathResult as $announcementXml) {
+			$announcement = createCanvasAnnouncement($announcementXml, getBbResourceFile($announcementXml), $course);
 		}
 	}
 	return false;
+}
+
+/**
+ * process and append course links
+ **/
+function processCourseLinks($course) {
+	if ($xpathResult = $course[MANIFEST]->xpath("//resource[@type='resource/x-bb-link']")) {
+		foreach($xpathResult as $courseLinkXml) {
+			//appendCourseLink ($courseLinkXml);
+		}
+	}
 }
 
 /***********************************************************************
@@ -573,16 +751,15 @@ function getBbResourceFileName($node) {
  * archive (as a SimpleXML Element)
  **/
 function getBbResourceFile($node) {
-	return loadFileAsSimpleXmlWithLowercaseNodesAndAttributes(buildPath(WORKING_DIR, getBbResourceFileName($node) . Bb_RES_FILE_EXT));
+	return loadFileAsSimpleXmlWithLowercaseNodesAndAttributes(buildPath(getWorkingDir(), getBbResourceFileName($node) . Bb_RES_FILE_EXT));
 }
 
 /**
  *  Extract the contenthandler mimetype from a res00000 file as text
  **/
 function getBbContentHandler($node) {
-	if ($contentHandlerNode = $node->xpath('//contenthandler')) {
-	
-		return (string) $contentHandlerNode[0]->attributes()->value;
+	if ($xpathResult = $node->xpath('//contenthandler')) {
+		return (string) $xpathResult[0]->attributes()->value;
 	}
 
 	return false;
@@ -593,10 +770,10 @@ function getBbContentHandler($node) {
  **/
  // TODO: this could really just be another special case of getBbTitle()
 function getBbLabel($node) {
-	if ($labelNode = $node->xpath('/coursetoc/label')) {
+	if ($xpathResult = $node->xpath('/coursetoc/label')) {
 
 		/* strip off Bb default name tagging */
-		$label = preg_replace('|COURSE_DEFAULT\.(.*)\.\w+\.label|i', '\\1', (string) $labelNode[0]->attributes()->value);
+		$label = preg_replace('|COURSE_DEFAULT\.(.*)\.\w+\.label|i', '\\1', (string) $xpathResult[0]->attributes()->value);
 		
 		/* it looks like some things still come through as .labels, just rip that stuff off... */
 		$label = preg_replace('|.*\.([^\.]*)\.label|i', '\\1', $label);
@@ -629,15 +806,14 @@ function getBbTitle($node) {
 				break;
 			}
 			case 'course': {
-				if ($titleNode = $node->xpath('/course/title')) {
-					return (string) $titleNode[0]->attributes()->value;
+				if ($xpathResult = $node->xpath('/course/title')) {
+					return (string) $xpathResult[0]->attributes()->value;
 				}
 				break;
 			}
 			default: {
-				if ($titleNode = $node->xpath('//title')) {
-					
-					return (string) $titleNode[0]->attributes()->value;	
+				if ($xpathResult = $node->xpath('//title')) {
+					return (string) $xpathResult[0]->attributes()->value;	
 				}
 				break;
 			}
@@ -651,9 +827,8 @@ function getBbTitle($node) {
  * Extract the URL from a res00000 file as text
  **/
 function getBbUrl($node) {
-	if ($urlNode = $node->xpath('//url')) {
-		
-		return (string) $urlNode[0]->attributes()->value;
+	if ($xpathResult = $node->xpath('//url')) {
+		return (string) $xpathResult[0]->attributes()->value;
 	}
 		
 	return false;
@@ -663,8 +838,8 @@ function getBbUrl($node) {
  * Extract content item text from a res00000 file as html
  **/
 function getBbText($node) {
-	if ($textNode = $node->xpath('//text')) {
-		$text = str_replace(array('&lt;', '&gt;'), array('<', '>'), (string) $textNode[0]);
+	if ($xpathResult = $node->xpath('//text')) {
+		$text = str_replace(array('&lt;', '&gt;'), array('<', '>'), (string) $xpathResult[0]);
 		
 		return $text;
 	}
@@ -676,8 +851,8 @@ function getBbText($node) {
  *  Extract the number of files attached to this item
  **/
 function getBbFileAttachmentCount($node) {
-	if ($fileNodes = $node->xpath('//files/file')) {
-		return count($fileNodes);
+	if ($xpathResult = $node->xpath('//files/file')) {
+		return count($xpathResult);
 	}
 	return 0;
 }
@@ -688,8 +863,8 @@ function getBbFileAttachmentCount($node) {
  * Extract the name of the first file attachment
  **/
 function getBbFileAttachmentName($node) {
-	if ($fileNameNode = $node->xpath('//file/name')) {
-		return (string) $fileNameNode[0];
+	if ($xpathResult = $node->xpath('//file/name')) {
+		return (string) $xpathResult[0];
 	}
 	return false;
 }
@@ -698,22 +873,22 @@ function getBbFileAttachmentName($node) {
  * Extract the listed size of the first file attachment
  **/
 function getBbFileAttachmentSize($node) {
-	if ($fileSizeNode = $node->xpath('//file/size')) {
-		return (string) $fileSizeNode[0]->attributes()->value;
+	if ($xpathResult = $node->xpath('//file/size')) {
+		return (string) $xpathResult[0]->attributes()->value;
 	}
 	return false;
 }
 
 /**
- * Extract the x-id, path and filename from a <lom> file accompanying a file
+ * Extract the XID, path and filename from a <lom> file accompanying a file
  * from the Content Collection, return as an associative array
  **/
 function getBbLomFileInfo($fileName) {
-	if ($lomNode = loadFileAsSimpleXmlWithLowercaseNodesAndAttributes("$fileName.xml")) {
-		$identifier = (string) $lomNode->relation->resource->identifier;
+	if ($lomXml = loadFileAsSimpleXmlWithLowercaseNodesAndAttributes("$fileName.xml")) {
+		$identifier = (string) $lomXml->relation->resource->identifier;
 		if ($identifier) {
-			$fileInfo['x-id'] = preg_replace('|^([_0-9]+)#.*|', '$1', $identifier);
-			$fileInfo['path'] = preg_replace("|^{$fileInfo['x-id']}#(.*)|", '\\1', $identifier);
+			$fileInfo['xid'] = preg_replace('|^([_0-9]+)#.*|', '$1', $identifier);
+			$fileInfo['path'] = preg_replace("|^{$fileInfo['xid']}#(.*)|", '\\1', $identifier);
 			$fileInfo['name'] = basename($fileInfo['path']);
 			$fileInfo['path'] = dirname($fileInfo['path']);
 			return $fileInfo;
@@ -726,8 +901,8 @@ function getBbLomFileInfo($fileName) {
  * Extract a course id from the course settings file
  **/
 function getBbCourseId($node) {
-	if ($courseIdNode = $node->xpath('/course/courseid')) {
-		return (string) $courseIdNode[0]->attributes()->value . ' (Imported ' . date('Y-m-d h:i:s A') . ')';
+	if ($xpathResult = $node->xpath('/course/courseid')) {
+		return (string) $xpathResult[0]->attributes()->value . ' (Imported ' . date('Y-m-d h:i:s A') . ')';
 	}
 	return false;
 }
@@ -744,8 +919,8 @@ function convertBbTimeStampToCanvasTimeStamp($bbTimestamp) {
  * Extract course start date and time
  **/
 function getBbCourseStart($node) {
-	if ($courseStartNode = $node->xpath('//coursestart')) {
-		$bbTimestamp = (string) $courseStartNode[0]->attributes()->value;
+	if ($xpathResult = $node->xpath('//coursestart')) {
+		$bbTimestamp = (string) $xpathResult[0]->attributes()->value;
 		if (strlen($bbTimestamp)) {
 			return convertBbTimeStampToCanvasTimeStamp();
 		}
@@ -757,8 +932,8 @@ function getBbCourseStart($node) {
  * Extract course end date and time
  **/
 function getBbCourseEnd($node) {
-	if ($courseEndNode = $node->xpath('//courseend')) {
-		$bbTimestamp = (string) $courseEndNode[0]->attributes()->value;
+	if ($xpathResult = $node->xpath('//courseend')) {
+		$bbTimestamp = (string) $xpathResult[0]->attributes()->value;
 		if (strlen($bbTimestamp)) {
 			return convertBbTimeStampToCanvasTimeStamp();
 		}
@@ -770,8 +945,8 @@ function getBbCourseEnd($node) {
  * Extract restricted start timestamp
  **/
 function getBbRestrictStart($node) {
-	if ($restrictStartNode = $node->xpath('//restrictstart')) {
-		return convertBbTimeStampToCanvasTimeStamp((string) $restrictStartNode[0]->attributes()->value);
+	if ($xpathResult = $node->xpath('//restrictstart')) {
+		return convertBbTimeStampToCanvasTimeStamp((string) $xpathResult[0]->attributes()->value);
 	}
 	return false;
 }
@@ -780,8 +955,8 @@ function getBbRestrictStart($node) {
  * Extract assignment due date timestampe
  **/
 function getBbDue($node) {
-	if ($dueNode = $node->dates->due) {
-		return convertBbTimeStampToCanvasTimeStamp((string) $dueNode->attributes()->value);
+	if ($dueXml = $node->dates->due) {
+		return convertBbTimeStampToCanvasTimeStamp((string) $dueXml->attributes()->value);
 	}
 	return false;
 }
@@ -790,8 +965,8 @@ function getBbDue($node) {
  * Extract points possible for an assignment
  **/
 function getBbPointsPossible($node) {
-	if ($pointsPossibleNode = $node->pointspossible) {
-		return (string) $pointsPossibleNode->attributes()->value;
+	if ($pointsPossibleXml = $node->pointspossible) {
+		return (string) $pointsPossibleXml->attributes()->value;
 	}
 	return false;
 }
@@ -800,10 +975,10 @@ function getBbPointsPossible($node) {
  * Extract outcome scale title for an assignment
  **/
 function getBbScaleType($node) {
-	if ($scaleIdNode = $node->scaleid) {
-		$scaleId = (string) $scaleIdNode->attributes()->value;
-		if ($scaleTypeNode = $node->xpath("//scale[@id='$scaleId']/type")) {
-			return (string) $scaleTypeNode[0]->attributes()->value;
+	if ($scaleIdXml = $node->scaleid) {
+		$scaleId = (string) $scaleIdXml->attributes()->value;
+		if ($xpathResult = $node->xpath("//scale[@id='$scaleId']/type")) {
+			return (string) $xpathResult[0]->attributes()->value;
 		}
 	}
 }
@@ -812,8 +987,8 @@ function getBbScaleType($node) {
  * Extract outcome position
  **/
 function getBbPosition($node) {
-	if ($positionNode = $node->position) {
-		return (string) $positionNode->attributes()->value;
+	if ($positionXml = $node->position) {
+		return (string) $positionXml->attributes()->value;
 	}
 }
 
@@ -828,24 +1003,24 @@ function getBbCourseDescription($node) {
 }
 
 /**
- * Extract the Bb X-ID from an object
+ * Extract the Bb XID from an object
  **/
-function getBbXId($node) {
-	if ($x_id = (string) $node->attributes()->id) {
-		return $x_id;
+function getBbXid($node) {
+	if ($xid = (string) $node->attributes()->id) {
+		return $xid;
 	}
 	return false;
 }
 
 /**
- * Extract X-ID value from a string
+ * Extract XID value from a string
  **/
-function parseBbXId($string) {
-	/* there is an explicitly identified X-ID */
+function parseBbXid($string) {
+	/* there is an explicitly identified XID */
 	if (preg_match('|^/xid-([_0-9]+)|i', $string, $matches)) {
 		return $matches[1];
 		
-	/* ...or the string is just an X-ID entirely */
+	/* ...or the string is just an XID entirely */
 	} elseif (preg_match('|^[_0-9]+$|', $string)) {
 		return $string;
 	}
@@ -895,12 +1070,13 @@ function nextModuleItemPosition($moduleId) {
 /**
  * Append links to attachments to the HTML text body of an item
  **/
-function appendAttachmentLinks(&$item, $res, $course, $text) {
-	if ($attachments = uploadCanvasFileAttachments($item, $res, $course)) {
-		$text .= "\n<h3>Attached Files</h3>\n";
+function appendAttachmentLinks($itemXml, $resXml, $course, $text) {
+	if ($attachments = uploadCanvasFileAttachments($itemXml, $resXml, $course)) {
+		$text .= '<div id="bb_file_attachments">' . FILE_ATTACHMENT_PREFIX;
 		foreach ($attachments as $attachment) {
-			$text .= "<blockquote><a class=\"instructure_scribd_link instructure_file_link\" href=\"{$attachment[CANVAS_SMART_URL]}\">" . $attachment['display_name'] .'</a></blockquote>'; 
+			$text .= "<div class=\"bb_file_attachment\"><a class=\"instructure_scribd_link instructure_file_link\" href=\"{$attachment[CANVAS_SMART_URL]}\">" . $attachment['display_name'] .'</a><div>'; 
 		}
+		$text .= FILE_ATTACHMENT_SUFFIX . '</div>';
 	}
 	return $text;
 }
@@ -909,24 +1085,25 @@ function appendAttachmentLinks(&$item, $res, $course, $text) {
  * Scan through the body text and replace Blackboard embed codes with links
  * to Canvas files
  **/
-function relinkEmbeddedLinks(&$item, $res, $course, $text) {
+function relinkEmbeddedLinks($itemXml, $resXml, $course, $text) {
 	/* links to attached files */
 	if (preg_match_all('|@X@EmbeddedFile\.location@X@([^"]+)|', $text, $embeddedAttachments, PREG_SET_ORDER)) {
 		foreach($embeddedAttachments as $embeddedAttachment) {
 			$fileName = urldecode($embeddedAttachment[1]);
 			
 			/* is it something that we've already uploaded as an attachment? */
-			if ($attachmentFileNode = $item->xpath("//file/@canvas-display-name='$fileName'")) {
-				$attachmentFileNodeAttributes = $attachmentFileNode->attributes();
-				$text = str_replace($embeddedAttachment[0], "/courses/{$course['id']}/files/{$attachmentFileNodeAttributes['canvas-id']}", $text);
+			$itemXml->registerXPathNamespace(CANVAS_NAMESPACE_PREFIX, CANVAS_NAMESPACE_URI);
+			if ($xpathResult = $itemXml->xpath("//file/@" . prependNamespace('display_name') . "='$fileName'")) {
+				$attachmentId = (string) $xpathResult[0]->attributes(CANVAS_NAMESPACE_PREFIX, true)->id;
+				$text = str_replace($embeddedAttachment[0], "/courses/{$course['id']}/files/$attachmentId", $text);
 			
 			/* or is it something that we now need to upload? */
 			} else {
-				$localFilePath = buildPath(WORKING_DIR, getBbResourceFileName($item)) . '\\\\' . Bb_EMBED_DIR . '\\\\';
+				$localFilePath = buildPath(getWorkingDir(), getBbResourceFileName($itemXml)) . '\\\\' . Bb_EMBED_DIR . '\\\\';
 				$localFiles = glob("$localFilePath*");
 				$attachments = array();
 
-				$filesNode = $item->addChild(NODE_ATTACHMENTS);
+				$filesXml = addElementToReceipt($course[MANIFEST], NODE_EMBEDDED_FILES, $itemXml);
 				$file = null;
 				foreach ($localFiles as $localFile) {
 					$fileInfo['name'] = $fileName;
@@ -937,35 +1114,30 @@ function relinkEmbeddedLinks(&$item, $res, $course, $text) {
 												
 					/* Bb hosed the name and left no record, so we hope there's only one embedded file */
 					} elseif (count($localFiles) == 1) {
-						$fileInfo['original-name'] = basename($localFile);
-						$fileInfo['match'] = 'based on a single file attachment being available';
+						$fileInfo['filesystem-name'] = basename($localFile);
+						$fileInfo['import-match-rationale'] = 'based on a single file attachment being available';
 						$file = uploadCanvasFile(basename($localFile), dirname($localFile), $fileInfo, $course);
 					
 					/* Bb hosed the name and left no record, but there are a bunch of embedded files, so we try to match by file extension */
 					} elseif (pathinfo($localFile, PATHINFO_EXTENSION) == pathinfo($fileName, PATHINFO_EXTENSION)) {								
-						$fileInfo['original-name'] = basename($localFile);
-						$fileInfo['match'] = 'based on file size and extension';
+						$fileInfo['filesystem-name'] = basename($localFile);
+						$fileInfo['import-match-rationale'] = 'based on file size and extension';
 						$file = uploadCanvasFile(basename($localFile), dirname($localFile), $fileInfo, $course);
 					}
 					
 					if ($file) {
-						$file[ATTRIBUTE_Bb_FILE_INFO] = $fileInfo;
-						// FIXME: figure out how to record this in the receipt for embeddef files
-						/* $attachments[$file['display_name']] = $file;
-						$attachmentFileNode = $filesNode->addChild(NODE_FILE, htmlentities($file['display_name']));
-						foreach($file as $key => $value) {
-							$attachmentFileNode->addAttribute(
-								'canvas-' . str_replace('_', '-', $key),
-								(is_array($value) ? json_encode($value) : htmlentities($value))
-							);
-						}*/
+						foreach($fileInfo as $key => $value) {
+							$file["bb-$key"] = $value;
+						}
+						$fileXml = addElementToReceipt($course[MANIFEST], NODE_FILE, $filesXml);
+						appendCanvasResponseToReceipt($fileXml, $file);
 						break;
 					}
 				}
 				if ($file) {
 					$text = str_replace($embeddedAttachment[0], "/courses/{$course['id']}/files/{$file['id']}", $text);
 				} else {
-					debug_log("Missing embedded file '$fileName' in item " . getBbXId($item));
+					debug_log("Missing embedded file '$fileName' in item " . getBbXid($itemXml));
 				}
 			}
 		}
@@ -973,12 +1145,12 @@ function relinkEmbeddedLinks(&$item, $res, $course, $text) {
 	/* links to content collection items */
 	} elseif (preg_match_all('|@X@EmbeddedFile\.requestUrlStub@X@bbcswebdav/xid-([_0-9]+)|', $text, $embeddedContentCollectionAttachments, PREG_SET_ORDER)) {
 		foreach($embeddedContentCollectionAttachments as $embeddedAttachment) {
-			$x_id = $embeddedAttachment[1];
-			if (isset($course[CONTENT_COLLECTION][$x_id])) {
-				$text = str_replace($embeddedAttachment[0], "/courses/{$course['id']}/files/" . $course[CONTENT_COLLECTION][$x_id]['id'], $text);
+			$xid = $embeddedAttachment[1];
+			if (isset($course[CONTENT_COLLECTION][$xid])) {
+				$text = str_replace($embeddedAttachment[0], "/courses/{$course['id']}/files/" . $course[CONTENT_COLLECTION][$xid]['id'], $text);
 			} else {
 				// TODO: generate a wiki page and link to this for HREFs, standard graphic for SRC (or something like that)
-				debug_log("Missing item $x_id, embedded in " . getBbXId($item));
+				debug_log("Missing item $xid, embedded in " . getBbXid($resXml));
 			}
 		}
 		
@@ -986,7 +1158,7 @@ function relinkEmbeddedLinks(&$item, $res, $course, $text) {
 	} elseif (preg_match_all('|@X@EmbeddedFile\.requestUrlStub@X@([^"]+)|', $text, $embeddedBbLinks, PREG_PATTERN_ORDER)) {
 		$text = str_replace($embeddedBbLinks[0], $embeddedBbLinks[1], $text);
 	} elseif (preg_match_all('|@X@[^"]*|', $text, $unmatchedEmbedCodes)) {
-		debug_log(count($unmatchedEmbedCodes) . " unmatched embed codes in " . getBbXId($item));
+		debug_log(count($unmatchedEmbedCodes) . " unmatched embed codes in " . getBbXid($itemXml));
 	}
 
 	// <img src="/courses/903/files/10539/preview" alt="Giant Purple Snorklewhacker.png" />
@@ -1002,8 +1174,7 @@ function relinkEmbeddedLinks(&$item, $res, $course, $text) {
  * Return the Canvas indent level as a string
  **/
 function getCanvasIndentLevel($node) {
-	$itemAttributes = $node->attributes();
-	$indent = (string) $itemAttributes[ATTRIBUTE_INDENT_LEVEL];
+	$indent = (string) $node->attributes(CANVAS_NAMESPACE_PREFIX, true)->indent;
 	if (strlen($indent)) {
 		return $indent;
 	}
@@ -1025,6 +1196,10 @@ function getCanvasCourse($courseId) {
 				)
 			);
 		}
+		
+		/* $course[] not included in receipt because we need to process the manifest
+		   first -- will be added in processCourseSettings() */
+		
 		return $course;
 	}
 	return false;
@@ -1037,7 +1212,8 @@ function getCanvasCourse($courseId) {
 // TODO: It would be faster to figure out a way to do this asynchronously
 function uploadCanvasFile($fileName, $localPath, &$fileInfo, $course) {
 	/* stage local file for upload */
-	$stageName = md5($fileName . time());
+	/* Nota bene: Canvas needs the file extension to confirm the mimetype in the API request! */
+	$stageName = md5($fileName . time()) . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
 	$originalFile = buildPath($localPath, $fileName);
 	$fileSize = filesize($originalFile);
 	$stageFile = buildPath(UPLOAD_STAGING_DIR, $stageName);
@@ -1075,7 +1251,6 @@ function uploadCanvasFile($fileName, $localPath, &$fileInfo, $course) {
 		}
 		
 		if ($uploadProcess['upload_status'] == 'ready') {
-			// TODO: make sure file metadata gets saved to receipt
 			unlink($stageFile);
 			return $uploadProcess['attachment'];
 		} else {
@@ -1096,36 +1271,36 @@ function uploadCanvasFile($fileName, $localPath, &$fileInfo, $course) {
  * Upload all of the files attached to an item, returning an array of
  * associative arrays of file information
  **/ 
-function uploadCanvasFileAttachments($item, $res, $course) {
-	$localFilePath = buildPath(WORKING_DIR, getBbResourceFileName($item)) . '\\\\';
+function uploadCanvasFileAttachments($itemXml, $resXml, $course) {
+	$localFilePath = buildPath(getWorkingDir(), getBbResourceFileName($itemXml)) . '\\\\';
 	$localFiles = glob("$localFilePath*");
 	$attachments = array();
-	if ($attachmentNodes = $res->xpath('//files/file')) {
-		$filesNode = $item->addChild(NODE_ATTACHMENTS);
-		foreach ($attachmentNodes as $attachmentNode) {
+	if ($xpathResult = $resXml->xpath('//files/file')) {
+		$filesXml = $itemXml->addChild(prependNamespace(NODE_ATTACHMENTS), null, CANVAS_NAMESPACE_URI);
+		foreach ($xpathResult as $attachmentXml) {
 			// TODO: it would require less fiddling in processItems() if this was a wrapper for a uploadCanvasFileAttachment() (singular!)
 			$file = null;
 			$fileInfo = array(
-				'name' => getBbFileAttachmentName($attachmentNode),
-				'size' => getBbFileAttachmentSize($attachmentNode),
+				'name' => getBbFileAttachmentName($attachmentXml),
+				'size' => getBbFileAttachmentSize($attachmentXml),
 			);
 			
 			/* we get lucky and file names match*/
 			if (($i = array_search("$localFilePath{$fileInfo['name']}", $localFiles)) !== false) {
 				$file = uploadCanvasFile(basename($localFiles[$i]), dirname($localFiles[$i]), $fileInfo, $course);
 				
-			/* it's in the content collection, and we look it up by x-id */
-			} elseif ($x_id = parseBbXId($fileInfo['name'])) {
-				if (isset($course[CONTENT_COLLECTION][$x_id])) {
-					$file = $course[CONTENT_COLLECTION][$x_id];
+			/* it's in the content collection, and we look it up by XID */
+			} elseif ($xid = parseBbXid($fileInfo['name'])) {
+				if (isset($course[CONTENT_COLLECTION][$xid])) {
+					$file = $course[CONTENT_COLLECTION][$xid];
 				} else {
-					debug_log("$x_id was not found in the content collection, attached to " . getBbXId($item));
+					debug_log("$xid was not found in the content collection, attached to " . getBbXid($resXml));
 				}
 				
 			/* Bb hosed the name and left no record, so we hope there's only one attachment */
-			} elseif (getBbFileAttachmentCount($res) == 1) {
-				$fileInfo['original-name'] = basename($localFiles[0]);
-				$fileInfo['match'] = 'based on a single file attachment being available';
+			} elseif (getBbFileAttachmentCount($resXml) == 1) {
+				$fileInfo['filesystem-name'] = basename($localFiles[0]);
+				$fileInfo['import-match-rationale'] = 'based on a single file attachment being available';
 				$file = uploadCanvasFile(basename($localFiles[0]), dirname($localFiles[0]), $fileInfo, $course);
 			
 			/* Bb hosed the name and left no record, but there are a bunch of attachments, so we try to match by size and file extension */
@@ -1134,8 +1309,8 @@ function uploadCanvasFileAttachments($item, $res, $course) {
 					if (filesize($localFile) == $fileInfo['size'] &&
 						pathinfo($localFile, PATHINFO_EXTENSION) == pathinfo($fileInfo['name'], PATHINFO_EXTENSION)) {
 						
-						$fileInfo['original-name'] = basename($localFile);
-						$fileInfo['match'] = 'based on file size and extension';
+						$fileInfo['filesystem-name'] = basename($localFile);
+						$fileInfo['import-match-rationale'] = 'based on file size and extension';
 						$file = uploadCanvasFile(basename($localFile), dirname($localFile), $fileInfo, $course);
 						break;
 					}
@@ -1143,19 +1318,18 @@ function uploadCanvasFileAttachments($item, $res, $course) {
 			}
 			
 			if ($file) {
-				$file[ATTRIBUTE_Bb_FILE_INFO] = $fileInfo;
+				foreach ($fileInfo as $key => $value) {
+					$file["bb-$key"] = $value;
+				}
 				$file[CANVAS_SMART_URL] = "/courses/{$course['id']}/files/{$file['id']}/download?wrap=1";
 				$attachments[$file['display_name']] = $file;
-				$attachmentFileNode = $filesNode->addChild(NODE_FILE, htmlentities($file['display_name']));
-				foreach($file as $key => $value) {
-					$attachmentFileNode->addAttribute(
-						'canvas-' . str_replace('_', '-', $key),
-						utf8_encode(is_array($value) ? json_encode($value) : htmlentities($value))
-					);
-				}
+				$fileXml = addElementToReceipt($course[MANIFEST], NODE_FILE, $filesXml);
+				appendCanvasResponseToReceipt($fileXml, $file);
+
 				break;
 			} else {
-				$linkName = (string) $attachmentNode->linkname->attributes()->value;
+				// TODO: this generates a new page for each broken link to the same file -- it would be more elegant to link to one page for all broken links to the same file
+				$linkName = (string) $attachmentXml->linkname->attributes()->value;
 				$json = callCanvasApi('post', "/courses/{$course['id']}/pages",
 					array(
 						'wiki_page[title]' => "Missing \"$linkName\"", 
@@ -1169,10 +1343,6 @@ function uploadCanvasFileAttachments($item, $res, $course) {
 				$page[CANVAS_SMART_URL] = "/courses/{$course['id']}/wiki/{$page['url']}";
 				$page['display_name'] = $linkName . ' (Missing)';
 				$attachments[$page['display_name']] = $page;
-				// FIXME: not passed by reference, adding here doesn't make a difference? worth sorting through the nested functionc alls?
-				/* if ($x_id = parseBbXId($fileInfo['name'])) {
-					$course[CONTENT_COLLECTION][$x_id] = $page;
-				}*/
 			}
 		}
 		return $attachments;
@@ -1191,13 +1361,17 @@ function createCanvasCourse() {
 	);
 	$course = json_decode($json, true);
 	if (!$course['id']) {
-		exitOnError('Could Not Create Course',
-			array(
-				'Something went wrong and we could not create a target course in Canvas.',
-				'<pre>' . print_r($json, true) . '</pre>' 
-			)
+		displayError(
+			$json,
+			false,
+			'Could Not Create Course',
+			'Something went wrong and we could not create the target course in Canvas.'
 		);
+		exit;
 	}
+	
+	/* entered into import receipt in processCourseSettings() */
+	
 	return $course;
 }
 
@@ -1205,9 +1379,9 @@ function createCanvasCourse() {
  * Create Canvas module, returning the JSON result as an associative array
  **/
 $MODULE_POSITION = 0;
-function createCanvasModule($item, $res, $course) {
+function createCanvasModule($itemXml, $resXml, $course) {
 	
-	$label = getBbLabel($res);
+	$label = getBbLabel($resXml);
 	
 	$json = callCanvasApi('post', "/courses/{$course['id']}/modules",
 		array (
@@ -1217,31 +1391,30 @@ function createCanvasModule($item, $res, $course) {
 	);
 	
 	$module = json_decode($json, true);
-	$item->addAttribute(ATTRIBUTE_CANVAS_IMPORT_TYPE, CANVAS_MODULE);
-	$item->addAttribute(ATTRIBUTE_CANVAS_ID, $module['id']);
+	$module[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_MODULE;
+	appendCanvasResponseToReceipt($itemXml, $module);
 	
 	return $module;
 }
 
-function createCanvasModuleSubheader($item, $res, $course, $module) {
+function createCanvasModuleSubheader($itemXml, $resXml, $course, $module) {
 	$json = callCanvasApi('post', "/courses/{$course['id']}/modules/{$module['id']}/items",
 		array (
-			'module_item[title]' => getBbTitle($res),
+			'module_item[title]' => getBbTitle($resXml),
 			'module_item[type]' => 'SubHeader',
 			'module_item[position]' => nextModuleItemPosition($module['id']),
-			'module_item[indent]' => getCanvasIndentLevel($item)
+			'module_item[indent]' => getCanvasIndentLevel($itemXml)
 		)
 	);
 	
 	$moduleItem = json_decode($json, true);
-
-	$item->addAttribute(ATTRIBUTE_CANVAS_IMPORT_TYPE, CANVAS_SUBHEADER);
-	$item->addAttribute(ATTRIBUTE_CANVAS_ID, $moduleItem['id']);
+	$moduleItem[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_SUBHEADER;
+	appendCanvasResponseToReceipt($itemXml, $moduleItem);
 	
 	return $moduleItem;
 }
 
-function createCanvasModuleItem($moduleItemType, $indent, $itemArray, $course, $module) {
+function createCanvasModuleItem($itemXml, $moduleItemType, $indent, $canvasItemArray, $course, $module) {
 	/* there really can't be a "default" title... */
 	$title = null;
 	
@@ -1249,32 +1422,32 @@ function createCanvasModuleItem($moduleItemType, $indent, $itemArray, $course, $
 	$referenceName = 'module_item[content_id]';
 	
 	/* ...and presumably an id -- although pages won't, so we check first */
-	$referenceValue = (isset($itemArray['id']) ? $itemArray['id'] : null);
+	$referenceValue = (isset($canvasItemArray['id']) ? $canvasItemArray['id'] : null);
 	
 	/* try to get the "real" values for title and reference */
 	switch ($moduleItemType) {
 		case CANVAS_PAGE: {
-			$title = $itemArray[Bb_ITEM_TITLE];
+			$title = $canvasItemArray[Bb_ITEM_TITLE];
 			$referenceName = 'module_item[page_url]';
-			$referenceValue = $itemArray['url'];
+			$referenceValue = $canvasItemArray['url'];
 			break;
 		}
 		case CANVAS_FILE: {
-			$title = $itemArray['display_name'];
+			$title = $canvasItemArray['display_name'];
 			break;
 		}
 		case CANVAS_ASSIGNMENT: {
-			$title = $itemArray['name'];
+			$title = $canvasItemArray['name'];
 			break;
 		}
 		case CANVAS_EXTERNAL_URL: {
-			$title = $itemArray['title'];
+			$title = $canvasItemArray['title'];
 			$referenceName = 'module_item[external_url]';
-			$referenceValue = $itemArray['url'];
+			$referenceValue = $canvasItemArray['url'];
 			break;
 		}
 		case CANVAS_FILE: {
-			$title = $itemArray[Bb_ITEM_TITLE];
+			$title = $canvasItemArray[Bb_ITEM_TITLE];
 			break;
 		}
 	}
@@ -1289,25 +1462,29 @@ function createCanvasModuleItem($moduleItemType, $indent, $itemArray, $course, $
 	);
 	
 	$moduleItem = json_decode($json, true);
+	$moduleItem[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_MODULE_ITEM;
+	appendCanvasResponseToReceipt($itemXml, $moduleItem);
+	
+	return $moduleItem;
 }
 
 /**
  * Create Canvas Page, returning an associative array;
  **/
-function createCanvasPage($item, $res, $course) {
-	$title = getBbTitle($res);
+function createCanvasPage($itemXml, $resXml, $course) {
+	$title = getBbTitle($resXml);
 	if (preg_match('|[0-9a-z]|i', $title) == false) {
-		$canvasTitle = getBbXId($res);
+		$canvasTitle = getBbXid($resXml);
 	} else {
 		$canvasTitle = $title;
 	}
-	$text = "<h2>$title</h2>\n" . getBbText($res); // Canvas filters out <h1>
-	$text = appendAttachmentLinks($item, $res, $course, $text);
-	$text = relinkEmbeddedLinks($item, $res, $course, $text);
+	$text = "<h2>$title</h2>\n" . getBbText($resXml); // Canvas filters out <h1>
+	$text = appendAttachmentLinks($itemXml, $resXml, $course, $text);
+	$text = relinkEmbeddedLinks($itemXml, $resXml, $course, $text);
 
 	
 	/* there may be some additional body text to add, depending on mimetype */
-	$contentHandler = getBbContentHandler($res);
+	$contentHandler = getBbContentHandler($resXml);
 	switch($contentHandler) {
 		case 'resource/x-bb-file':
 		case 'resource/x-bb-document': {
@@ -1315,7 +1492,7 @@ function createCanvasPage($item, $res, $course) {
 		}
 		
 		case 'resource/x-bb-externallink': {
-			$text .= '<h3><a href="' . getBbUrl($res) . "\">$title</a></h3>";
+			$text .= '<h3><a href="' . getBbUrl($resXml) . "\">$title</a></h3>";
 			break;
 		}
 		
@@ -1331,11 +1508,11 @@ function createCanvasPage($item, $res, $course) {
 	$page = json_decode($json, true);
 	$page[Bb_ITEM_TITLE] = $title;
 
-	// FIXME: add detail to receipt
-	$item->addAttribute(ATTRIBUTE_CANVAS_IMPORT_TYPE, CANVAS_PAGE);
-	$titleNode = $item->addChild(NODE_TITLE, htmlentities($title));
-	$textNode = dom_import_simplexml($item->addChild(NODE_TEXT));
-	$textNode->appendChild(new DOMCdataSection($text));
+	$page[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_PAGE;
+	$pageXml = addElementToReceipt($course[MANIFEST], NODE_PAGE, $itemXml);
+	addElementToReceipt($course[MANIFEST], NODE_TITLE, $pageXml, $page['title']);
+	addElementToReceipt($course[MANIFEST], NODE_TEXT, $pageXml, $page['body'], true);
+	appendCanvasResponseToReceipt($pageXml, $page);
 	
 	return $page;
 }
@@ -1344,23 +1521,23 @@ function createCanvasPage($item, $res, $course) {
  * Create an Assignment in a module, returning the JSON result of the module
  * item as an associate array
  **/
-function createCanvasAssignment($item, $res, $course, $gradebookNode, $assignmentGroup) {
-	if ($res) {
-		$title = getBbTitle($res);
-		$text = getBbText($res);
+function createCanvasAssignment($itemXml, $resXml, $course, $gradebookXml, $assignmentGroup) {
+	if ($resXml) {
+		$title = getBbTitle($resXml);
+		$text = getBbText($resXml);
 
 		/* remove Bb assignment internals */
 		$text = substr($text, 0, strpos($text, '<!--BB ASSIGNMENT INTERNALS: SKIP REST-->'));
 		
-		$text = relinkEmbeddedLinks($item, $res, $course, $text);
-		$text = appendAttachmentLinks($item, $res, $course, $text);
+		$text = relinkEmbeddedLinks($itemXml, $resXml, $course, $text);
+		$text = appendAttachmentLinks($itemXml, $resXml, $course, $text);
 	} else { /* oy, those uncategorized assignments are wonky! */
-		$title = (string) $item->title->attributes()->value;
-		$text = (string) $item->description->text;
+		$title = (string) $itemXml->title->attributes()->value;
+		$text = (string) $itemXml->description->text;
 	}
 
 	$gradingType = 'points';
-	switch (getBbScaleType($item)) {
+	switch (getBbScaleType($itemXml)) {
 		case 'PERCENT': {
 			$gradingType = 'percent';
 			break;
@@ -1387,11 +1564,11 @@ function createCanvasAssignment($item, $res, $course, $gradebookNode, $assignmen
 	$json = callCanvasApi('post', "/courses/{$course['id']}/assignments",
 		array(
 			'assignment[name]' => $title,
-			//'assignment[position]' => getBbPosition($item), // TODO: doesn't seem to "take" in Canvas if position is more than the current number of items -- need to sort by position and add in order
+			//'assignment[position]' => getBbPosition($itemXml), // TODO: doesn't seem to "take" in Canvas if position is more than the current number of items -- need to sort by position and add in order
 			'assignment[submission_types]' => '["online_upload"]',
-			'assignment[points_possible]' => getBbPointsPossible($item),
+			'assignment[points_possible]' => getBbPointsPossible($itemXml),
 			'assignment[grading_type]' => $gradingType,
-			'assignment[due_at]' => getBbDue($item, $res),
+			'assignment[due_at]' => getBbDue($itemXml),
 			'assignment[description]' => $text,
 			'assignment[assignment_group_id]' => $assignmentGroup['id'],
 			'assignment[published]' => 'true'
@@ -1400,13 +1577,13 @@ function createCanvasAssignment($item, $res, $course, $gradebookNode, $assignmen
 	
 	$assignment = json_decode($json, true);
 	
-	// FIXME: should make the receipt more complete!
-	$item->addAttribute(ATTRIBUTE_CANVAS_IMPORT_TYPE, CANVAS_ASSIGNMENT);
-	$item->addAttribute(ATTRIBUTE_CANVAS_ID, $assignment['id']);
-	$item->addAttribute(ATTRIBUTE_CANVAS_URL, $assignment['html_url']);
-	$item->addChild(NODE_TITLE, htmlentities($title));
-	$textNode = dom_import_simplexml($item->addChild(NODE_TEXT));
-	$textNode->appendChild(new DOMCdataSection($text));
+	/* find the assignments tag (or create it, if it hasn't yet been created) */
+	// TODO: should group by assignment group!
+	$assignment[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_ASSIGNMENT;
+	$assignmentXml = addElementToReceipt($course[MANIFEST], NODE_ASSIGNMENT, array('name' => NODE_ASSIGNMENTS));
+	addElementToReceipt($course[MANIFEST], NODE_TITLE, $assignmentXml, $assignment['name']);
+	addElementToReceipt($course[MANIFEST], NODE_TEXT, $assignmentXml, $assignment['description'], true);
+	appendCanvasResponseToReceipt($assignmentXml, $assignment);
 
 	return $assignment;
 }
@@ -1414,41 +1591,37 @@ function createCanvasAssignment($item, $res, $course, $gradebookNode, $assignmen
 /**
  * Create a Canvas assignment group
  **/
-function createCanvasAssignmentGroup($item, $course) {
+function createCanvasAssignmentGroup($itemXml, $course) {
 	$json = callCanvasApi('post', "/courses/{$course['id']}/assignment_groups",
 		array(
-			// FIXME: name needs to include grading period
-			'name' => str_replace('.name', '', getBbTitle($item))
+			// TODO: name needs to include grading period
+			'name' => str_replace('.name', '', getBbTitle($itemXml))
 		)
 	);
 	
 	$assignmentGroup = json_decode($json, true);
 	
-	// FIXME: save to receipt
+	$assignmentGroup[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_ASSIGNMENT_GROUP;
+	$assignmentGroupXml = addElementToReceipt($course[MANIFEST], NODE_ASSIGNMENT_GROUP, array('name' => NODE_ASSIGNMENTS));
+	appendCanvasResponseToReceipt($assignmentGroupXml, $assignmentGroup);
 	
 	return $assignmentGroup;
-}
-
-function createCanvasCourseLink($item, $res, $course) {
-	// FIXME: need to actually build the dang link
-	debug_log('Canvas course link would have been created');
-	$item->addAttribute(ATTRIBUTE_CANVAS_IMPORT_TYPE, CANVAS_MODULE_ITEM);
 }
 
 /**
  * Create an announcement in Canvas, returning the associative array
  * describing it
  **/
-function createCanvasAnnouncement($item, $res, $course) {
+function createCanvasAnnouncement($itemXml, $resXml, $course) {
 	/* can't seem to change the post date in canvas... ugh */
-	$postDate = getBbRestrictStart($res);
-	$title = getBbTitle($res);
+	$postDate = getBbRestrictStart($resXml);
+	$title = getBbTitle($resXml);
 	$date = date_create_from_format(CANVAS_TIMESTAMP_FORMAT, $postDate);
 	$title .= date_format($date, ' (n/j/Y \a\t g:i A)');
 	
-	$text = getBbText($res);
-	$text = appendAttachmentLinks($item, $res, $course, $text);
-	$text = relinkEmbeddedLinks($item, $res, $course, $text);
+	$text = getBbText($resXml);
+	$text = appendAttachmentLinks($itemXml, $resXml, $course, $text);
+	$text = relinkEmbeddedLinks($itemXml, $resXml, $course, $text);
 	$json = callCanvasApi('post', "/courses/{$course['id']}/discussion_topics",
 		array (
 			'title' => $title,
@@ -1458,23 +1631,22 @@ function createCanvasAnnouncement($item, $res, $course) {
 	);
 	
 	$announcement = json_decode($json, true);
+
+	$announcementXml = addElementToReceipt($course[MANIFEST], NODE_ANNOUNCEMENT, array('name' => NODE_ANNOUNCEMENTS));
+	addElementToReceipt($course[MANIFEST], NODE_TITLE, $announcementXml, $announcement['title']);
+	addElementToReceipt($course[MANIFEST], NODE_TEXT, $announcementXml, $announcement['message'], true);
+	appendCanvasResponseToReceipt($announcementXml, $announcement);
 	
-	// TODO: verify that this is writing to receipt
-	$item->addAttribute(ATTRIBUTE_CANVAS_IMPORT_TYPE, CANVAS_ANNOUNCEMENT);
-	$item->addAttribute(ATTRIBUTE_CANVAS_ID, $announcement['id']);
-	$item->addAttribute(ATTRIBUTE_CANVAS_URL, $announcement['html_url']);
-	$item->addAttribute(ATTRIBUTE_Bb_RELEASE_DATE, $postDate);
-	$item->addChild(NODE_TITLE, htmlentities($title));
-	$textNode = dom_import_simplexml($item->addChild(NODE_TEXT));
-	$textNode->appendChild(new DOMCdataSection($text));
+	return $announcement;
 }
 
 /**
  * We're not going to import this information (either because there is no
  * matching type, or we're just not ready yet...
  **/
-function createCanvasNoImport($item, $res) {
-	$item->addAttribute(ATTRIBUTE_CANVAS_IMPORT_TYPE, CANVAS_NO_IMPORT);
+function createCanvasNoImport($itemXml) {
+	$receipt[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_NO_IMPORT;
+	appendCanvasResponseToReceipt($itemXml, $receipt);
 }
 
 /***********************************************************************
@@ -1516,7 +1688,8 @@ function main() {
 	}
 	
 	#arrow input[type=submit] {
-		font-size: 24pt;
+		appearance: none;
+		font-size: 48pt;
 	}
 --></style>	
 <form enctype="multipart/form-data" action="' . $_SERVER['PHP_SELF'] . '" method="POST">
