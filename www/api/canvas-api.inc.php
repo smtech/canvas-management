@@ -66,7 +66,7 @@ function displayPage($content) {
 	echo '<html>
 <head>
 	<title>' . TOOL_NAME . '</title>
-	<link rel="stylesheet" href="script-ui.css" />
+	<link rel="stylesheet" href="../script-ui.css" />
 </head>
 <body>
 <h1>' . TOOL_NAME . '</h1>

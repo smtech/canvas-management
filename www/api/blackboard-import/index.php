@@ -33,13 +33,13 @@ require_once('.ignore.blackboard-import-authentication.inc.php');
 
 
 /* configurable options */
-require_once('blackboard-import.config.inc.php');
+require_once('config.inc.php');
 
 /* handles the core of the Canvas API interactions */
-require_once('canvas-api.inc.php');
+require_once('../canvas-api.inc.php');
 
 /* we do directly work with Pest on some AWS API calls */
-require_once('Pest.php');
+require_once('../Pest.php');
 
 
 
