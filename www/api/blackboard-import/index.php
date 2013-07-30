@@ -205,7 +205,7 @@ function loadFileAsSimpleXmlWithLowercaseNodesAndAttributes($fileName) {
 	if (file_exists($fileName)) {
 		$xmlWoNkYcAsE = simplexml_load_file($fileName);
 		$xslt = new XSLTProcessor();
-		$xsl = simplexml_load_file('./lowercase-transform.xsl');
+		$xsl = simplexml_load_file('../lowercase-transform.xsl');
 		$xslt->importStylesheet($xsl);
 		return (simplexml_load_string($xslt->transformToXML($xmlWoNkYcAsE)));
 	} else {
@@ -434,7 +434,11 @@ function processManifest($manifestName, $course) {
 		
 		//processCourseLinks($course);
 		
-		$html = "<h3>&ldquo;{$course['name']}&rdquo; Imported</h3><p>Open <a target=\"_blank\" href=\"http://" . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/courses/' . $course['id'] . "\">{$course['name']}</a> in Canvas.";
+		$html = "<h3>&ldquo;{$course['name']}&rdquo; Imported</h3><p>" .
+			basename($_FILES['BbExportFile']['name']) .
+			' has been imported into <a target="_blank" href="http://' .
+			parse_url(CANVAS_API_URL, PHP_URL_HOST) .
+			"/courses/{$course['id']}\">{$course['name']}</a> in Canvas.";
 
 		$receiptFile = buildPath(getWorkingDir(), CANVAS_IMPORT_RECEIPT_FILENAME);
 		if ($course[MANIFEST]->asXml($receiptFile)) {
