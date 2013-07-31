@@ -1652,6 +1652,10 @@ function createCanvasPage($itemXml, $resXml, $course) {
 	$text = appendAttachmentLinks($itemXml, $resXml, $course, $text);
 	$text = relinkEmbeddedLinks($itemXml, $resXml, $course, $text);
 
+	/* the Ken Wells test */
+	if (!strlen($text)) {
+		$text = '&nbsp;';
+	}
 	
 	/* there may be some additional body text to add, depending on mimetype */
 	$contentHandler = getBbContentHandler($resXml);
@@ -1707,6 +1711,11 @@ function createCanvasAssignment($itemXml, $resXml, $course, $gradebookXml, $assi
 		$text = (string) $itemXml->description->text;
 	}
 
+	/* the Ken Wells test */
+	if (!strlen($text)) {
+		$text = '&nbsp;';
+	}
+	
 	$gradingType = 'points';
 	switch (getBbScaleType($itemXml)) {
 		case 'PERCENT': {
@@ -1795,6 +1804,12 @@ function createCanvasAnnouncement($itemXml, $resXml, $course) {
 	$text = getBbText($resXml);
 	$text = appendAttachmentLinks($itemXml, $resXml, $course, $text);
 	$text = relinkEmbeddedLinks($itemXml, $resXml, $course, $text);
+
+	/* the Ken Wells test */
+	if (!strlen($text)) {
+		$text = '&nbsp;';
+	}
+	
 	$json = callCanvasApi('post', "/courses/{$course['id']}/discussion_topics",
 		array (
 			'title' => $title,
