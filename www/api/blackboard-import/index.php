@@ -675,7 +675,7 @@ function processItem($itemXml, $course, $module, $indent = 0, $breadcrumbs = '')
 			$subitemsXml = $itemXml->item;
 			if ($subitemsXml) {
 				foreach ($subitemsXml as $subitemXml) {
-					// TODO: actually make use of the breadcrumbs!
+					// TODO: actually make use of the breadcrumbs! (The idea is that subfolders could be created for files attached within content folders... and that page names could be prefixed by the breadcrumb trail)
 					processItem($subitemXml, $course, $module, $indent + 1,
 						$breadcrumbs . (strlen($breadcrumbs) ? BREADCUMB_SEPARATOR : '') . $subheader['title']
 					);
@@ -698,14 +698,26 @@ function processItem($itemXml, $course, $module, $indent = 0, $breadcrumbs = '')
 				$attachments = uploadCanvasFileAttachments($itemXml, $resXml, $course);
 				$keys = array_keys($attachments);
 				$attachments[$keys[0]][Bb_ITEM_TITLE] = getBbTitle($resXml);
-				createCanvasModuleItem(
-					$itemXml,
-					CANVAS_FILE,
-					getCanvasIndentLevel($itemXml),
-					$attachments[$keys[0]],
-					$course,
-					$module
-				);
+				
+				/* if this is a link to a missing file, then it's actually a page */
+				if (isset($attachments[$keys[0]]['title'])) {
+					createCanvasModuleItem(
+						$itemXml,
+						CANVAS_PAGE,
+						getCanvasIndentLevel($itemXml),
+						$attachments[$keys[0]],
+						$course,
+						$module);
+				} else {
+					createCanvasModuleItem(
+						$itemXml,
+						CANVAS_FILE,
+						getCanvasIndentLevel($itemXml),
+						$attachments[$keys[0]],
+						$course,
+						$module
+					);
+				}
 			} else {
 				createCanvasModuleItem(
 					$itemXml,
@@ -1429,7 +1441,17 @@ function uploadCanvasFile($fileName, $localPath, &$fileInfo, $course) {
 		}
 		
 	} else {
-		exitOnError('Failed to Stage File for Upload', "We tried to get a file ($fileName) staged for upload to Canvas, but it failed.");
+		displayError(
+			array(
+				'fileName' => $fileName,
+				'localPath' => $localPath,
+				'fileInfo' => $fileInfo,
+			),
+			true,
+			'Failed to Stage File for Upload',
+			"We tried to get a file ($fileName) staged for upload to Canvas, but it failed."
+		);
+		exit;
 	}
 }
 
