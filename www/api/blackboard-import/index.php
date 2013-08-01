@@ -103,6 +103,7 @@ define('NODE_TITLE', 'title');
 define('NODE_TEXT', 'text');
 define('NODE_ATTACHMENTS', 'files');
 define('NODE_EMBEDDED_FILES', 'embedded');
+define('NODE_EXTERNAL_URL', 'external-url');
 
 
 /***********************************************************************
@@ -459,7 +460,6 @@ function processManifest($manifestName, $course) {
 		}
 
 		displayPage($html);
-		debug_log('FINISH ' . getWorkingDir());
 		return $course;
 		
 	} else exitOnError('Missing Manifest', "The manifest file ($manifestName) that should have been included in your Blackboard Exportfile cannot be found.");
@@ -698,26 +698,15 @@ function processItem($itemXml, $course, $module, $indent = 0, $breadcrumbs = '')
 				$attachments = uploadCanvasFileAttachments($itemXml, $resXml, $course);
 				$keys = array_keys($attachments);
 				$attachments[$keys[0]][Bb_ITEM_TITLE] = getBbTitle($resXml);
-				
-				/* if this is a link to a missing file, then it's actually a page */
-				if (isset($attachments[$keys[0]]['title'])) {
-					createCanvasModuleItem(
-						$itemXml,
-						CANVAS_PAGE,
-						getCanvasIndentLevel($itemXml),
-						$attachments[$keys[0]],
-						$course,
-						$module);
-				} else {
-					createCanvasModuleItem(
-						$itemXml,
-						CANVAS_FILE,
-						getCanvasIndentLevel($itemXml),
-						$attachments[$keys[0]],
-						$course,
-						$module
-					);
-				}
+
+				createCanvasModuleItem(
+					$itemXml,
+					CANVAS_FILE,
+					getCanvasIndentLevel($itemXml),
+					$attachments[$keys[0]],
+					$course,
+					$module
+				);
 			} else {
 				createCanvasModuleItem(
 					$itemXml,
@@ -1005,16 +994,31 @@ function getBbText($node) {
 }
 
 /**
- *  Extract the number of files attached to this item
+ * Extract the number of files attached to this item
+ * This returns either the number of attached files or -1 if any attached file
+ * is actually an HTTP link (and therefore needs to be appended to a page).
  **/
 function getBbFileAttachmentCount($node) {
+	if ($xpathResult = $node->xpath("//files/file/linkname[@value='http']")) {
+		if (count($xpathResult)) {
+			return -1;
+		}
+	}
 	if ($xpathResult = $node->xpath('//files/file')) {
 		return count($xpathResult);
 	}
 	return 0;
 }
 
-
+/**
+ * Extract the linkname for a file attachment
+ **/
+function getBbLinkName($node) {
+	if ($linkName = (string) $node->linkname->attributes()->value) {
+		return $linkName;
+	}
+	return false;
+}
 
 /**
  * Extract the name of the first file attachment
@@ -1223,6 +1227,7 @@ function getBbScoreProviderHandle($node) {
 	}
 	return false;
 }
+
 
 /***********************************************************************
  *                                                                     *
@@ -1476,6 +1481,10 @@ function uploadCanvasFileAttachments($itemXml, $resXml, $course) {
 			/* we get lucky and file names match*/
 			if (($i = array_search("$localFilePath{$fileInfo['name']}", $localFiles)) !== false) {
 				$file = uploadCanvasFile(basename($localFiles[$i]), dirname($localFiles[$i]), $fileInfo, $course);
+		
+			/* perhaps it's not even a file, but simply a URL (weird, right?) */
+			} elseif (getBbLinkName($attachmentXml) == 'http') {
+				$fileInfo['import-match-rationale'] ="based on linkname='http'";
 				
 			/* it's in the content collection, and we look it up by XID */
 			} elseif ($xid = parseBbXid($fileInfo['name'])) {
@@ -1514,11 +1523,24 @@ function uploadCanvasFileAttachments($itemXml, $resXml, $course) {
 				$fileXml = addElementToReceipt($course[MANIFEST], NODE_FILE, $filesXml);
 				$file[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_FILE;
 				appendCanvasResponseToReceipt($fileXml, $file);
+			
+			/* the Steve Lynch exception: apparently you can attach a web URL like a file in Blackboard... seriously? Whiskey. Tango. Foxtrot. */
+			} elseif (getBbLinkName($attachmentXml) == 'http') {
+				$link = array(
+					CANVAS_SMART_URL => $fileInfo['name'],
+					'display_name' => $fileInfo['name']
+				);
+				foreach($fileInfo as $key => $value) {
+					$link["bb-$key"] = $value;
+				}
+				$attachments[$link['display_name']] = $link;
+				$linkXml = addElementToReceipt($course[MANIFEST], NODE_EXTERNAL_URL, $filesXml);
+				$link[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_EXTERNAL_URL;
+				appendCanvasResponseToReceipt($linkXml, $link);
 
-				break;
 			} else {
 				// TODO: this generates a new page for each broken link to the same file -- it would be more elegant to link to one page for all broken links to the same file
-				$linkName = (string) $attachmentXml->linkname->attributes()->value;
+				$linkName = getBbLinkName($attachmentXml);
 				$json = callCanvasApi('post', "/courses/{$course['id']}/pages",
 					array(
 						'wiki_page[title]' => "Missing \"$linkName\"", 
@@ -1531,7 +1553,13 @@ function uploadCanvasFileAttachments($itemXml, $resXml, $course) {
 				
 				$page[CANVAS_SMART_URL] = "/courses/{$course['id']}/wiki/{$page['url']}";
 				$page['display_name'] = $linkName . ' (Missing)';
+				foreach($fileInfo as $key => $value) {
+					$page["bb-$key"] = $value;
+				}
 				$attachments[$page['display_name']] = $page;
+				$pageXml = addElementToReceipt($course[MANIFEST], NODE_PAGE, $filesXml);
+				$page[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_PAGE;
+				appendCanvasResponseToReceipt($pageXml, $page);
 			}
 		}
 		return $attachments;
@@ -1890,6 +1918,8 @@ function main() {
 			unlink($zipArchive);
 			flushDir(getWorkingDir());
 			rmdir(getWorkingDir());
+			debug_log('FINISH ' . getWorkingDir());
+
 		}
 	} else {
 		/* well, it appears that nothing has happened yet, so let's just start with
