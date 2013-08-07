@@ -3,6 +3,9 @@
 /* we use Pest to interact with the RESTful API */
 require_once('Pest.php');
 
+/* handles HTML page generation */
+require_once('page-generator.inc.php');
+
 /**
  * Generate the Canvas API authorization header
  **/
@@ -14,11 +17,12 @@ function buildCanvasAuthorizationHeader() {
  * Pass-through a Pest request with added Canvas authorization token
  **/
 $PEST = new Pest(CANVAS_API_URL);
-function callCanvasApi($verb, $url, $data) {
+function callCanvasApi($verb, $url, $data = array()) {
 	global $PEST;
 	
 	$json = null;
 
+	$cautiousRetryCount = 0;
 	do {
 		$retry = false;
 		try {
@@ -26,46 +30,45 @@ function callCanvasApi($verb, $url, $data) {
 		} catch (Pest_ServerError $e) {
 			/* who knows what goes on in the server's mind... try again */
 			$retry = true;
+			debug_log('Retrying after Canvas API server error. ' . $e->getMessage());
+		} catch (Pest_ClientError $e) {
+			/* I just watched the Canvas API throw an unauthorized error when, in fact,
+			   I was authorized. Everything gets retried a few times before I give up */
+			$cautiousRetryCount++;
+			$retry = true;
+			debug_log('Retrying after Canvas API client error. ' . $e->getMessage()); 
 		} catch (Exception $e) {
-			exitOnError('API Error',
-				array(
-					'Something went awry in the API.',
-					$e->getMessage(),
-					"<dl><dt>Verb</dt><dd>$verb</dd>" .
-					"<dt>URL</dt><dd>$url</dd>" .
-					'<dt>Data</dt>' .
-					'<dd><pre>' . print_r($data, true) . '</pre></dd></dl>'
-				)
-			);
+			displayError(array(
+				'Error' => $e->getMessage(),
+				'Verb' => $verb,
+				'URL' => $url,
+				'Data' => $data
+			), true, 'API Error', 'Something went awry in the API');
+			exit;
 		}
-	} while ($retry == true);
+	} while ($retry == true && $cautiousRetryCount < API_CLIENT_ERROR_RETRIES);
+	
+	if ($cautiousRetryCount == API_CLIENT_ERROR_RETRIES) {
+		displayError(array(
+			'Status' => $PEST->lastStatus(),
+			'Error' => $PEST->lastBody(),
+			'Verb' => $verb,
+			'URL' => $url,
+			'Data' => $data
+		), true, 'Probable Client Error', 'After trying ' . API_CLIENT_ERROR_RETRIES . ' times, we still got this error message from the API.');
+		exit;
+	}
 	
 	return $json;
 }
 
 /**
- * Echo a page of HTML content to the browser, wrapped in some CSS niceities
+ * Helper function to conditionally fill the log file with notes!
  **/
-function displayPage($content) {
-	echo '<html>
-<head>
-	<title>' . TOOL_NAME . '</title>
-	<link rel="stylesheet" href="script-ui.css" />
-</head>
-<body>
-<h1>' . TOOL_NAME . '</h1>
-<h2>St. Mark&rsquo;s School</h2>
-<div id="header">
-	<a href="' . $_SERVER['PHP_SELF'] . '">Start Over</a>
-</div>
-<div id="content">
-'. $content . '
-</div>
-<div id="footer">
-	St. Mark&rsquo;s School Academic Technology
-</div>
-</body>
-</html>';
+function debug_log($message) {
+	if (DEBUGGING) {
+		error_log($message);
+	}
 }
 
 ?>
