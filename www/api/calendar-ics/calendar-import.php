@@ -1,9 +1,9 @@
 <?php
 
 require_once('.ignore.calendar-ics-authentication.inc.php');
-require_once('calendar-ics.config.inc.php');
-require_once('canvas-api.inc.php');
-require_once './iCalcreator.class.php';
+require_once('../page-generator.inc.php');
+require_once('../canvas-api.inc.php');
+require_once('config.inc.php');
 
 if (isset($_REQUEST['feed'])) {
 	$feed = file_get_contents($_REQUEST['feed']);
