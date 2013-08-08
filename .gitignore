@@ -16,3 +16,7 @@ Thumbs.db
 # Files full of secrets #
 #########################
 .ignore.*
+
+# Merge files #
+###############
+*.orig
