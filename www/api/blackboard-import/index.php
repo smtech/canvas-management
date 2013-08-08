@@ -113,23 +113,6 @@ define('NODE_EXTERNAL_URL', 'external-url');
 
 /***********************************************************************
  *                                                                     *
- * Helpers                                                             *
- *                                                                     *
- ***********************************************************************/
- 
-// DEPRECATED use displayError and then exit!
-/**
- * A handy little helper function to print a (somewhat) friendly error
- * message and fail out when things get hairy.
- **/
-function exitOnError($title, $text = '') {
-	displayError($text, is_array($text), $title);
-	exit;
-}
-
-
-/***********************************************************************
- *                                                                     *
  * XML Helpers                                                         *
  *                                                                     *
  ***********************************************************************/
@@ -323,9 +306,33 @@ function stageUpload() {
 					$zip->extractTo(getWorkingDir());
 					$zip->close();
 					return $uploadFile;
-				} else exitOnError('Unzipping Failed', 'The file you uploaded could not be unzipped.');
-			} else exitOnError('Upload Error', array('There was an error with your file upload.', 'Error ' . $_FILES['BbExportFile']['error'] . ': See the <a href="http://www.php.net/manual/en/features.file-upload.errors.php">PHP Documentation</a> for more information.'));
-		} else exitOnError('No File Uploaded');
+				} else {
+					displayError(
+						$_FILES['BbExportFile'], false,
+						'Unzipping Failed',
+						'The file you uploaded could not be unzipped.');
+					exit;
+				}
+			} else {
+				displayError(
+					array(
+						'BBExportFile[error]' => $_FILES['BbExportFile']['error'],
+						'Request' => $_REQUEST
+					), true,
+					'Upload Error',
+					'There was an error with your file upload. See the <a href="http://www.php.net/manual/en/features.file-upload.errors.php">PHP Documentation</a> for more information.'
+				);
+				exit;
+			}
+		} else {
+			displayError(
+				array(
+					'Request' => $_REQUEST
+				), true,
+				'No File Uploaded'
+			);
+			exit;
+		}
 	}
 	return false;
 }
@@ -398,7 +405,14 @@ function processManifest($manifestName, $course) {
 		displayPage($html);
 		return $course;
 		
-	} else exitOnError('Missing Manifest', "The manifest file ($manifestName) that should have been included in your Blackboard Exportfile cannot be found.");
+	} else {
+		displayError(
+			null, false,
+			'Missing Manifest',
+			"The manifest file ($manifestName) that should have been included in your Blackboard Exportfile cannot be found."
+		);
+		exit;
+	}
 }
 
 /**
@@ -450,7 +464,12 @@ function processCourseSettings($manifest, $course) {
 			exit;
 		}		
 	} else {
-		exitOnError('Missing Course Settings', 'The course settings resource file for your course could not be identified.');
+		displayError(
+			null, false,
+			'Missing Course Settings',
+			'The course settings resource file for your course could not be identified.'
+		);
+		exit;
 	}
 	return false;
 }
@@ -1308,12 +1327,8 @@ function getCanvasCourse($courseId) {
 		$json = callCanvasApi('get', "/courses/$courseId", array());
 		$course = json_decode($json, true);
 		if (!$course['id']) {
-			exitOnError('Invalid Course ID',
-				array (
-					"The course ID in the URL you entered for the target Canvas course ($courseUrl) could not be found by the Canvas API.",
-					'<pre>' . print_r($json, true) . '</pre>'
-				)
-			);
+			displayError($json, false, 'Invalid Course ID', "The course ID in the URL you entered for the target Canvas course ($courseUrl) could not be found by the Canvas API.");
+			exit;
 		}
 		
 		/* $course[] not included in receipt because we need to process the manifest
@@ -1373,12 +1388,12 @@ function uploadCanvasFile($fileName, $localPath, &$fileInfo, $course) {
 			unlink($stageFile);
 			return $uploadProcess['attachment'];
 		} else {
-			exitOnError('File Upload Problem',
-				array(
-					"There was a problem uploading a file ($fileName)",
-					'<pre>' . print_r($uploadProcess, true) . '</pre>'
-				)
+			displayError(
+				$uploadProcess, false,
+				'File Upload Problem',
+				"There was a problem uploading a file ($fileName)"
 			);
+			exit;
 		}
 		
 	} else {
