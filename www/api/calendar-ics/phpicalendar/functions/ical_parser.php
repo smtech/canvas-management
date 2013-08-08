@@ -547,9 +547,9 @@ $template_started = getmicrotime();
 
 
 //If you want to see the values in the arrays, uncomment below.
-print '<pre>';
+# print '<pre>';
 #var_dump($phpiCal_config);
-print_r($master_array);
+# print_r($master_array);
 #var_dump($overlap_array['20081211']);
 //print_r($day_array);
 //print_r($rrule_array);
@@ -558,5 +558,5 @@ print_r($master_array);
 //print_r($cal_displaynames);
 //print_r($cal_filelist);
 //print_r($tz_array);
-print '</pre>';
+# print '</pre>';
 ?>
