@@ -32,8 +32,11 @@
 require_once('.ignore.blackboard-import-authentication.inc.php');
 
 
-/* configurable options */
-require_once('config.inc.php');
+/* handles HTML page generation */
+require_once('../page-generator.inc.php');
+
+/* handles working directory functions */
+require_once('../working-directory.inc.php');
 
 /* handles the core of the Canvas API interactions */
 require_once('../canvas-api.inc.php');
@@ -41,6 +44,8 @@ require_once('../canvas-api.inc.php');
 /* we do directly work with Pest on some AWS API calls */
 require_once('../Pest.php');
 
+/* configurable options */
+require_once('config.inc.php');
 
 
 /***********************************************************************
@@ -103,6 +108,7 @@ define('NODE_TITLE', 'title');
 define('NODE_TEXT', 'text');
 define('NODE_ATTACHMENTS', 'files');
 define('NODE_EMBEDDED_FILES', 'embedded');
+define('NODE_EXTERNAL_URL', 'external-url');
 
 
 /***********************************************************************
@@ -111,6 +117,7 @@ define('NODE_EMBEDDED_FILES', 'embedded');
  *                                                                     *
  ***********************************************************************/
  
+// DEPRECATED use displayError and then exit!
 /**
  * A handy little helper function to print a (somewhat) friendly error
  * message and fail out when things get hairy.
@@ -118,76 +125,6 @@ define('NODE_EMBEDDED_FILES', 'embedded');
 function exitOnError($title, $text = '') {
 	displayError($text, is_array($text), $title);
 	exit;
-}
-
-/**
- * Helper function to conditionally fill the log file with notes!
- **/
-function debug_log($message) {
-	if (DEBUGGING) {
-		error_log($message);
-	}
-}
-
-/**
- * Delete all the files from a directory
- **/
-function flushDir($dir) {
-	$files = glob("$dir/*");
-	foreach($files as $file) {
-		if (is_dir($file)) {
-			flushDir($file);
-			rmdir($file);
-		} elseif (is_file($file)) {
-			unlink($file);
-		}
-	}
-	
-	$hiddenFiles = glob("$dir/.*");
-	foreach($hiddenFiles as $hiddenFile)
-	{
-		if (is_file($hiddenFile)) {
-			unlink($hiddenFile);
-		}
-	}
-}
-
-/**
- * build a file path out of component directories and filenames
- **/
-function buildPath() {
-	$args = func_get_args();
-	$path = '';
-	foreach ($args as $arg) {
-		if (strlen($path)) {
-			$path .= "/$arg";
-		} else {
-			$path = $arg;
-		}
-	}
-
-	/* DO NOT USE realpath() -- it hoses everything! */
-	$path = str_replace('//', '/', $path);
-	
-	/* 'escape' the squirrely-ness of Bb's pseudo-windows paths-in-filenames */
-	$path = preg_replace("|(^\\\\]\\\\)([^\\\\])|", '\\1\\\2', $path);
-	
-	return $path;
-}
-
-/**
- * Allow for session-based temp directories
- **/
-$WORKING_DIR_FIRST_RUN = true;
-$SESSION_WORKING_DIR = null;
-function getWorkingDir()
-{
-	if ($GLOBALS['WORKING_DIR_FIRST_RUN']) {
-		$GLOBALS['SESSION_WORKING_DIR'] = buildPath(WORKING_DIR, md5($_SERVER['REMOTE_ADDR'] . time()));
-		mkdir($GLOBALS['SESSION_WORKING_DIR']);
-		$GLOBALS['WORKING_DIR_FIRST_RUN'] = false;
-	}
-	return buildPath($GLOBALS['SESSION_WORKING_DIR']);
 }
 
 
@@ -205,7 +142,7 @@ function loadFileAsSimpleXmlWithLowercaseNodesAndAttributes($fileName) {
 	if (file_exists($fileName)) {
 		$xmlWoNkYcAsE = simplexml_load_file($fileName);
 		$xslt = new XSLTProcessor();
-		$xsl = simplexml_load_file('./lowercase-transform.xsl');
+		$xsl = simplexml_load_file('../lowercase-transform.xsl');
 		$xslt->importStylesheet($xsl);
 		return (simplexml_load_string($xslt->transformToXML($xmlWoNkYcAsE)));
 	} else {
@@ -434,7 +371,11 @@ function processManifest($manifestName, $course) {
 		
 		//processCourseLinks($course);
 		
-		$html = "<h3>&ldquo;{$course['name']}&rdquo; Imported</h3><p>Open <a target=\"_blank\" href=\"http://" . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/courses/' . $course['id'] . "\">{$course['name']}</a> in Canvas.";
+		$html = "<h3>&ldquo;{$course['name']}&rdquo; Imported</h3><p>" .
+			basename($_FILES['BbExportFile']['name']) .
+			' has been imported into <a target="_blank" href="http://' .
+			parse_url(CANVAS_API_URL, PHP_URL_HOST) .
+			"/courses/{$course['id']}\">{$course['name']}</a> in Canvas.";
 
 		$receiptFile = buildPath(getWorkingDir(), CANVAS_IMPORT_RECEIPT_FILENAME);
 		if ($course[MANIFEST]->asXml($receiptFile)) {
@@ -455,7 +396,6 @@ function processManifest($manifestName, $course) {
 		}
 
 		displayPage($html);
-		debug_log('FINISH ' . getWorkingDir());
 		return $course;
 		
 	} else exitOnError('Missing Manifest', "The manifest file ($manifestName) that should have been included in your Blackboard Exportfile cannot be found.");
@@ -671,7 +611,7 @@ function processItem($itemXml, $course, $module, $indent = 0, $breadcrumbs = '')
 			$subitemsXml = $itemXml->item;
 			if ($subitemsXml) {
 				foreach ($subitemsXml as $subitemXml) {
-					// TODO: actually make use of the breadcrumbs!
+					// TODO: actually make use of the breadcrumbs! (The idea is that subfolders could be created for files attached within content folders... and that page names could be prefixed by the breadcrumb trail)
 					processItem($subitemXml, $course, $module, $indent + 1,
 						$breadcrumbs . (strlen($breadcrumbs) ? BREADCUMB_SEPARATOR : '') . $subheader['title']
 					);
@@ -694,6 +634,7 @@ function processItem($itemXml, $course, $module, $indent = 0, $breadcrumbs = '')
 				$attachments = uploadCanvasFileAttachments($itemXml, $resXml, $course);
 				$keys = array_keys($attachments);
 				$attachments[$keys[0]][Bb_ITEM_TITLE] = getBbTitle($resXml);
+
 				createCanvasModuleItem(
 					$itemXml,
 					CANVAS_FILE,
@@ -989,16 +930,31 @@ function getBbText($node) {
 }
 
 /**
- *  Extract the number of files attached to this item
+ * Extract the number of files attached to this item
+ * This returns either the number of attached files or -1 if any attached file
+ * is actually an HTTP link (and therefore needs to be appended to a page).
  **/
 function getBbFileAttachmentCount($node) {
+	if ($xpathResult = $node->xpath("//files/file/linkname[@value='http']")) {
+		if (count($xpathResult)) {
+			return -1;
+		}
+	}
 	if ($xpathResult = $node->xpath('//files/file')) {
 		return count($xpathResult);
 	}
 	return 0;
 }
 
-
+/**
+ * Extract the linkname for a file attachment
+ **/
+function getBbLinkName($node) {
+	if ($linkName = (string) $node->linkname->attributes()->value) {
+		return $linkName;
+	}
+	return false;
+}
 
 /**
  * Extract the name of the first file attachment
@@ -1207,6 +1163,7 @@ function getBbScoreProviderHandle($node) {
 	}
 	return false;
 }
+
 
 /***********************************************************************
  *                                                                     *
@@ -1425,7 +1382,17 @@ function uploadCanvasFile($fileName, $localPath, &$fileInfo, $course) {
 		}
 		
 	} else {
-		exitOnError('Failed to Stage File for Upload', "We tried to get a file ($fileName) staged for upload to Canvas, but it failed.");
+		displayError(
+			array(
+				'fileName' => $fileName,
+				'localPath' => $localPath,
+				'fileInfo' => $fileInfo,
+			),
+			true,
+			'Failed to Stage File for Upload',
+			"We tried to get a file ($fileName) staged for upload to Canvas, but it failed."
+		);
+		exit;
 	}
 }
 
@@ -1450,6 +1417,10 @@ function uploadCanvasFileAttachments($itemXml, $resXml, $course) {
 			/* we get lucky and file names match*/
 			if (($i = array_search("$localFilePath{$fileInfo['name']}", $localFiles)) !== false) {
 				$file = uploadCanvasFile(basename($localFiles[$i]), dirname($localFiles[$i]), $fileInfo, $course);
+		
+			/* perhaps it's not even a file, but simply a URL (weird, right?) */
+			} elseif (getBbLinkName($attachmentXml) == 'http') {
+				$fileInfo['import-match-rationale'] ="based on linkname='http'";
 				
 			/* it's in the content collection, and we look it up by XID */
 			} elseif ($xid = parseBbXid($fileInfo['name'])) {
@@ -1488,11 +1459,24 @@ function uploadCanvasFileAttachments($itemXml, $resXml, $course) {
 				$fileXml = addElementToReceipt($course[MANIFEST], NODE_FILE, $filesXml);
 				$file[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_FILE;
 				appendCanvasResponseToReceipt($fileXml, $file);
+			
+			/* the Steve Lynch exception: apparently you can attach a web URL like a file in Blackboard... seriously? Whiskey. Tango. Foxtrot. */
+			} elseif (getBbLinkName($attachmentXml) == 'http') {
+				$link = array(
+					CANVAS_SMART_URL => $fileInfo['name'],
+					'display_name' => $fileInfo['name']
+				);
+				foreach($fileInfo as $key => $value) {
+					$link["bb-$key"] = $value;
+				}
+				$attachments[$link['display_name']] = $link;
+				$linkXml = addElementToReceipt($course[MANIFEST], NODE_EXTERNAL_URL, $filesXml);
+				$link[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_EXTERNAL_URL;
+				appendCanvasResponseToReceipt($linkXml, $link);
 
-				break;
 			} else {
 				// TODO: this generates a new page for each broken link to the same file -- it would be more elegant to link to one page for all broken links to the same file
-				$linkName = (string) $attachmentXml->linkname->attributes()->value;
+				$linkName = getBbLinkName($attachmentXml);
 				$json = callCanvasApi('post', "/courses/{$course['id']}/pages",
 					array(
 						'wiki_page[title]' => "Missing \"$linkName\"", 
@@ -1505,7 +1489,13 @@ function uploadCanvasFileAttachments($itemXml, $resXml, $course) {
 				
 				$page[CANVAS_SMART_URL] = "/courses/{$course['id']}/wiki/{$page['url']}";
 				$page['display_name'] = $linkName . ' (Missing)';
+				foreach($fileInfo as $key => $value) {
+					$page["bb-$key"] = $value;
+				}
 				$attachments[$page['display_name']] = $page;
+				$pageXml = addElementToReceipt($course[MANIFEST], NODE_PAGE, $filesXml);
+				$page[ATTRIBUTE_CANVAS_IMPORT_TYPE] = CANVAS_PAGE;
+				appendCanvasResponseToReceipt($pageXml, $page);
 			}
 		}
 		return $attachments;
@@ -1648,6 +1638,10 @@ function createCanvasPage($itemXml, $resXml, $course) {
 	$text = appendAttachmentLinks($itemXml, $resXml, $course, $text);
 	$text = relinkEmbeddedLinks($itemXml, $resXml, $course, $text);
 
+	/* the Ken Wells test */
+	if (!strlen($text)) {
+		$text = '&nbsp;';
+	}
 	
 	/* there may be some additional body text to add, depending on mimetype */
 	$contentHandler = getBbContentHandler($resXml);
@@ -1703,6 +1697,11 @@ function createCanvasAssignment($itemXml, $resXml, $course, $gradebookXml, $assi
 		$text = (string) $itemXml->description->text;
 	}
 
+	/* the Ken Wells test */
+	if (!strlen($text)) {
+		$text = '&nbsp;';
+	}
+	
 	$gradingType = 'points';
 	switch (getBbScaleType($itemXml)) {
 		case 'PERCENT': {
@@ -1791,6 +1790,12 @@ function createCanvasAnnouncement($itemXml, $resXml, $course) {
 	$text = getBbText($resXml);
 	$text = appendAttachmentLinks($itemXml, $resXml, $course, $text);
 	$text = relinkEmbeddedLinks($itemXml, $resXml, $course, $text);
+
+	/* the Ken Wells test */
+	if (!strlen($text)) {
+		$text = '&nbsp;';
+	}
+	
 	$json = callCanvasApi('post', "/courses/{$course['id']}/discussion_topics",
 		array (
 			'title' => $title,
@@ -1849,6 +1854,8 @@ function main() {
 			unlink($zipArchive);
 			flushDir(getWorkingDir());
 			rmdir(getWorkingDir());
+			debug_log('FINISH ' . getWorkingDir());
+
 		}
 	} else {
 		/* well, it appears that nothing has happened yet, so let's just start with
