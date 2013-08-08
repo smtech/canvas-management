@@ -25,19 +25,19 @@ Note that the allow_webcals setting allows webcals to be passed as URLs.  You do
 
 The salt parameter is used to obfuscate things like webcal links that may have usernames and passwords.  This should be changed.
 */
-#     'calendar_path'        => '/Library/WebServer/Documents/phpicalendar/calendars/recur_tests',
+     'calendar_path'        => '/var/www-data/canvas/calendar-ics',
 #     'default_path'         => '', 	
 #     'save_parsed_cals'     => 'yes', 
 #     'cookie_uri'           => '', 
 #     'download_uri'         => '', 	
-#     'allow_webcals'          => 'yes',
+     'allow_webcals'          => 'yes',
 #     'recursive_path'          => 'yes',
-#     'salt'                => 'SaLt4',
+     'salt'                => 'AjeoRZ9rC5pDzV6xk9nD',
 
 /*     ** Timezones **
 If timezone is not set, all events show in the local time of the source calendar.  This isn't a problem if all your calendars are in the same timezone.  If you set a timezone for the server, events in other timezones are shown when they occur at the server's time.
 */
-#     'timezone'             => 'US/Central',
+     'timezone'             => 'US/Eastern',
 #     'second_offset'        => $secs,
 
 /*     ** Appearance **      
@@ -48,7 +48,7 @@ phpicalendar currently supports about 30 language variants.  For a list of suppo
 
 */
 
-#     'language'             => 'Spanish',
+     'language'             => 'English',
 #     'default_cal'          => 'US Holidays',	   // Exact filename of calendar without .ics.
 #     'template'             => 'green',           // Template support: change this to have a different "skin" for your installation.     
 #    'default_view'         => 'year',           // Default view for calendars'     => 'day', 'week', 'month', 'year'
@@ -75,7 +75,7 @@ phpicalendar currently supports about 30 language variants.  For a list of suppo
 	file.
 */
 
-	'phpicalendar_publishing'=> 1,
+#	'phpicalendar_publishing'=> 1,
 
 
 
