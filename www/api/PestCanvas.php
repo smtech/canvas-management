@@ -28,7 +28,20 @@ class PestCanvas extends PestJSON
      */
     public function post($url, $data, $headers = array())
     {
-        return Pest::post($url, $data, $headers);
+        $data = $this->prepData($data);
+
+        $curl_opts = $this->curl_opts;
+        $curl_opts[CURLOPT_CUSTOMREQUEST] = 'POST';
+        if (!is_array($data)) $headers[] = 'Content-Length: ' . strlen($data);
+        $curl_opts[CURLOPT_HTTPHEADER] = $this->prepHeaders($headers);
+        $curl_opts[CURLOPT_POSTFIELDS] = $data;
+
+        $curl = $this->prepRequest($curl_opts, $url);
+        $body = $this->doRequest($curl);
+
+        $body = $this->processBody($body);
+
+        return $body;
     }
 
     /**
@@ -41,7 +54,20 @@ class PestCanvas extends PestJSON
      */
     public function put($url, $data, $headers = array())
     {
-        return Pest::put($url, $data, $headers);
+        $data = $this->prepData($data);
+
+        $curl_opts = $this->curl_opts;
+        $curl_opts[CURLOPT_CUSTOMREQUEST] = 'PUT';
+        if (!is_array($data)) $headers[] = 'Content-Length: ' . strlen($data);
+        $curl_opts[CURLOPT_HTTPHEADER] = $this->prepHeaders($headers);
+        $curl_opts[CURLOPT_POSTFIELDS] = $data;
+
+        $curl = $this->prepRequest($curl_opts, $url);
+        $body = $this->doRequest($curl);
+
+        $body = $this->processBody($body);
+
+        return $body;
     }
 
     /**

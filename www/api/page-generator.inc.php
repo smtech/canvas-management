@@ -1,10 +1,14 @@
 <?php
 
+require_once('debug.inc.php');
+
 if (!defined('TOOL_NAME')) {
 	define('TOOL_NAME', 'Canvas API Tool');
+	debug_log('Using default TOOL_NAME = "' . TOOL_NAME . '"');
 }
 if (!defined('TOOL_START_PAGE')) {
 	define('TOOL_START_PAGE', $_SERVER['PHP_SELF']);
+	debug_log('Using default TOOL_START_PAGE = "' . TOOL_START_PAGE . '"');
 }
 
 /**
@@ -30,7 +34,7 @@ function displayPage($content) {
 </div>
 </body>
 </html>';
-	flushBuffers();
+	flush();
 }
 
 /**
@@ -57,16 +61,5 @@ function displayError($object, $isList = false, $title = null, $message = null) 
 	$content .= '</div>';
 	displayPage($content);
 }
-
-/**
- * Flush the output buffer for more responsive interface
- * http://www.php.net/manual/en/function.ob-flush.php#90529
- **/
-function flushBuffers() { 
-    ob_end_flush(); 
-    ob_flush(); 
-    flush(); 
-    ob_start(); 
-} 
 
 ?>

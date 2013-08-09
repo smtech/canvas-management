@@ -1,13 +1,14 @@
 <?php
 
+require_once('debug.inc.php');
+
 if(!defined('API_CLIENT_ERROR_RETRIES')) {
 	define('API_CLIENT_ERROR_RETRIES', 5);
+	debug_log('Using default API_CLIENT_ERROR_RETRIES = ' . API_CLIENT_ERROR_RETRIES);
 }
 if(!defined('API_SERVER_ERROR_RETRIES')) {
 	define('API_SERVER_ERROR_RETRIES', API_CLIENT_ERROR_RETRIES * 5);
-}
-if (!defined('DEBUGGING')) {
-	define('DEBUGGING', false);
+	debug_log('Using default API_SERVER_ERROR_RETRIES = ' . API_SERVER_ERROR_RETRIES);
 }
 
 /* we use Pest to interact with the RESTful API */
@@ -30,14 +31,14 @@ $PEST = new PestCanvas(CANVAS_API_URL);
 function callCanvasApi($verb, $url, $data = array()) {
 	global $PEST;
 	
-	$json = null;
+	$response = null;
 
 	$clientRetryCount = 0;
 	$serverRetryCount = 0;
 	do {
 		$retry = false;
 		try {
-			$json = $PEST->$verb($url, $data, buildCanvasAuthorizationHeader());
+			$response = $PEST->$verb($url, $data, buildCanvasAuthorizationHeader());
 		} catch (Pest_ServerError $e) {
 			/* who knows what goes on in the server's mind... try again */
 			$serverRetryCount++;
@@ -71,16 +72,19 @@ function callCanvasApi($verb, $url, $data = array()) {
 		exit;
 	}
 	
-	return $json;
-}
-
-/**
- * Helper function to conditionally fill the log file with notes!
- **/
-function debug_log($message) {
-	if (DEBUGGING) {
-		error_log($message);
-	}
+	if(DEBUGGING) displayError(
+		array(
+			'API Call' => array(
+				'Verb' => $verb,
+				'URL' => $url,
+				'Data' => $data
+			),
+			'Response' => $response
+		), true,
+		'API Call'
+	);
+	
+	return $response;
 }
 
 ?>
