@@ -27,7 +27,7 @@ The salt parameter is used to obfuscate things like webcal links that may have u
 */
      'calendar_path'        => '/var/www-data/canvas/calendar-ics',
 #     'default_path'         => '', 	
-#     'save_parsed_cals'     => 'yes', 
+     'save_parsed_cals'     => 'yes', 
 #     'cookie_uri'           => '', 
 #     'download_uri'         => '', 	
      'allow_webcals'          => 'yes',
@@ -48,7 +48,7 @@ phpicalendar currently supports about 30 language variants.  For a list of suppo
 
 */
 
-     'language'             => 'English',
+#     'language'             => 'English',
 #     'default_cal'          => 'US Holidays',	   // Exact filename of calendar without .ics.
 #     'template'             => 'green',           // Template support: change this to have a different "skin" for your installation.     
 #    'default_view'         => 'year',           // Default view for calendars'     => 'day', 'week', 'month', 'year'

@@ -17,6 +17,8 @@ define('TABLE_CALENDARS', '`calendars`');
 define('TABLE_EVENTS', '`events`');
 define('TABLE_SCHEDULES', '`schedules`');
 
+define('CANVAS_TIMESTAMP_FORMAT', 'Y-m-d\TH:iP');
+
 if (isset($_REQUEST['cal']) && isset($_REQUEST['course_url'])) {
 	define('BASE', './phpicalendar/');
 	require_once(BASE . 'functions/date_functions.php');
@@ -27,8 +29,72 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['course_url'])) {
 	$json = callCanvasApi('get', "/courses/$courseId");
 	$course = json_decode($json, true);
 	
-	displayError($master_array);
-	exit;
+	$pairId = md5($_REQUEST['cal'] . CANVAS_API_URL . $course['id']);
+	mysqlQuery(
+		"INSERT INTO " . TABLE_CALENDARS . "
+			(
+				`url`,
+				`canvas_id`,
+				`canvas_context`,
+				`pair_id`)
+			VALUES (
+				'{$_REQUEST['cal']}',
+				'{$course['id']}',
+				'course',
+				'$pairId'
+			)"
+	);
+	$response = mysqlQuery(
+		"SELECT *
+			FROM " . TABLE_CALENDARS . "
+			WHERE
+				`pair_id` = '$pairId'
+			ORDER BY
+				`id` DESC
+			LIMIT 1"
+	);
+	$calendar = $response->fetch_assoc();
+
+	foreach($master_array as $date => $times) {
+		if (date_create_from_format('Ymd', $date)) {
+			foreach($times as $time => $uids) {
+				foreach($uids as $uid => $event) {
+					$uniqueUid = "{$date}_{$time}_{$uid}";
+					$json = callCanvasApi(
+						'post',
+						"/calendar_events",
+						array(
+							'calendar_event[context_code]' => "course_{$course['id']}",
+							'calendar_event[title]' => urldecode($event['event_text']),
+							'calendar_event[description]' => urldecode($event['description']),
+							'calendar_event[start_at]' => date(CANVAS_TIMESTAMP_FORMAT, $event['start_unixtime']),
+							'calendar_event[end_at]' => date(CANVAS_TIMESTAMP_FORMAT, $event['end_unixtime']),
+							'calendar_event[location_name]' => urldecode($event['location'])
+						)
+					);
+					$calendarEvent = json_decode($json, true);
+					mysqlQuery(
+						"INSERT INTO " . TABLE_EVENTS . "
+							(
+								`calendar`,
+								`canvas_id`,
+								`uid`,
+								`phpicalendar`,
+								`json`
+							)
+							VALUES (
+								'{$calendar['id']}',
+								'{$calendarEvent['id']}',
+								'$uniqueUid',
+								'" . serialize($event) . "',
+								'$json'
+							)"
+					);
+				}
+			}
+		}
+	}
+	displayPage('All events have been imported into the <a href="https://' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/calendar2?include_contexts=course_' . $course['id'] .'">' . $course['name'] . ' calendar</a>.');
 } else {
 		displayPage('
 <style><!--

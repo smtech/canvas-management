@@ -5,4 +5,12 @@ function mysqlQuery($query) {
 	return $GLOBALS['MYSQLi']->query($query);
 }
 
+function mysqlEscapeString($string) {
+	return $GLOBALS['MYSQLi']->escape_string($string);
+}
+
+function mysqlError() {
+	return $GLOBALS['MYSQLi']->error;
+}
+
 ?>
