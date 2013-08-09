@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('WORKING_DIR')) {
+	define('WORKING_DIR', '/var/www-data/canvas/tmp/');
+}
+
 /**
  * Delete all the files from a directory
  **/

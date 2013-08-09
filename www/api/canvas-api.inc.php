@@ -1,7 +1,17 @@
 <?php
 
+if(!defined('API_CLIENT_ERROR_RETRIES')) {
+	define('API_CLIENT_ERROR_RETRIES', 5);
+}
+if(!defined('API_SERVER_ERROR_RETRIES')) {
+	define('API_SERVER_ERROR_RETRIES', API_CLIENT_ERROR_RETRIES * 5);
+}
+if (!defined('DEBUGGING')) {
+	define('DEBUGGING', false);
+}
+
 /* we use Pest to interact with the RESTful API */
-require_once('Pest.php');
+require_once('PestCanvas.php');
 
 /* handles HTML page generation */
 require_once('page-generator.inc.php');
@@ -16,25 +26,27 @@ function buildCanvasAuthorizationHeader() {
 /**
  * Pass-through a Pest request with added Canvas authorization token
  **/
-$PEST = new Pest(CANVAS_API_URL);
+$PEST = new PestCanvas(CANVAS_API_URL);
 function callCanvasApi($verb, $url, $data = array()) {
 	global $PEST;
 	
 	$json = null;
 
-	$cautiousRetryCount = 0;
+	$clientRetryCount = 0;
+	$serverRetryCount = 0;
 	do {
 		$retry = false;
 		try {
 			$json = $PEST->$verb($url, $data, buildCanvasAuthorizationHeader());
 		} catch (Pest_ServerError $e) {
 			/* who knows what goes on in the server's mind... try again */
+			$serverRetryCount++;
 			$retry = true;
 			debug_log('Retrying after Canvas API server error. ' . $e->getMessage());
 		} catch (Pest_ClientError $e) {
 			/* I just watched the Canvas API throw an unauthorized error when, in fact,
 			   I was authorized. Everything gets retried a few times before I give up */
-			$cautiousRetryCount++;
+			$clientRetryCount++;
 			$retry = true;
 			debug_log('Retrying after Canvas API client error. ' . $e->getMessage()); 
 		} catch (Exception $e) {
@@ -46,9 +58,9 @@ function callCanvasApi($verb, $url, $data = array()) {
 			), true, 'API Error', 'Something went awry in the API');
 			exit;
 		}
-	} while ($retry == true && $cautiousRetryCount < API_CLIENT_ERROR_RETRIES);
+	} while ($retry == true && $clientRetryCount < API_CLIENT_ERROR_RETRIES && $serverRetryCount < API_SERVER_ERROR_RETRIES);
 	
-	if ($cautiousRetryCount == API_CLIENT_ERROR_RETRIES) {
+	if ($clientRetryCount == API_CLIENT_ERROR_RETRIES) {
 		displayError(array(
 			'Status' => $PEST->lastStatus(),
 			'Error' => $PEST->lastBody(),
