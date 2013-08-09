@@ -1,5 +1,12 @@
 <?php
 
+if (!defined('TOOL_NAME')) {
+	define('TOOL_NAME', 'Canvas API Tool');
+}
+if (!defined('TOOL_START_PAGE')) {
+	define('TOOL_START_PAGE', $_SERVER['PHP_SELF']);
+}
+
 /**
  * Echo a page of HTML content to the browser, wrapped in some CSS niceities
  **/
