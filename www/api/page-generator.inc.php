@@ -30,6 +30,7 @@ function displayPage($content) {
 </div>
 </body>
 </html>';
+	flushBuffers();
 }
 
 /**
@@ -56,5 +57,16 @@ function displayError($object, $isList = false, $title = null, $message = null) 
 	$content .= '</div>';
 	displayPage($content);
 }
+
+/**
+ * Flush the output buffer for more responsive interface
+ * http://www.php.net/manual/en/function.ob-flush.php#90529
+ **/
+function flushBuffers() { 
+    ob_end_flush(); 
+    ob_flush(); 
+    flush(); 
+    ob_start(); 
+} 
 
 ?>
