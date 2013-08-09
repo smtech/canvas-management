@@ -28,6 +28,10 @@ input[type=text] {
 	width: 100%;
 }
 
+input[type=radio] {
+	display: inline;
+}
+
 pre, code {
 	font-family: Inconsolata, 'Courier New', Monaco, Courier, monospace;
 	font-size: 10pt;
@@ -54,6 +58,13 @@ h2 {
 	text-transform: uppercase;
 }
 
+em  {
+	font-style: normal;
+	color: red;
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
 #header, #footer {
 	padding: 10px;
 	margin: 10px;
@@ -78,7 +89,8 @@ h2 {
 }
 
 #content h1, #content h2 {
-	font-family: Helvetica, Arial, sans-serif;
+	font-family: Helvetica, Arial, sa
+	ns-serif;
 	color: black;
 	background-color: white;
 	text-transform: none;
