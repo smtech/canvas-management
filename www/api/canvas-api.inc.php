@@ -11,7 +11,7 @@ if (!defined('DEBUGGING')) {
 }
 
 /* we use Pest to interact with the RESTful API */
-require_once('Pest.php');
+require_once('PestCanvas.php');
 
 /* handles HTML page generation */
 require_once('page-generator.inc.php');
@@ -26,7 +26,7 @@ function buildCanvasAuthorizationHeader() {
 /**
  * Pass-through a Pest request with added Canvas authorization token
  **/
-$PEST = new Pest(CANVAS_API_URL);
+$PEST = new PestCanvas(CANVAS_API_URL);
 function callCanvasApi($verb, $url, $data = array()) {
 	global $PEST;
 	
