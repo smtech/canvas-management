@@ -31,6 +31,8 @@
 /* what Canvas API user are we going to connect as? */
 require_once('.ignore.blackboard-import-authentication.inc.php');
 
+/* configurable options */
+require_once('config.inc.php');
 
 /* handles HTML page generation */
 require_once('../page-generator.inc.php');
@@ -42,10 +44,7 @@ require_once('../working-directory.inc.php');
 require_once('../canvas-api.inc.php');
 
 /* we do directly work with Pest on some AWS API calls */
-require_once('../PestCanvas.php');
-
-/* configurable options */
-require_once('config.inc.php');
+require_once('../Pest.php');
 
 
 /***********************************************************************
@@ -1367,7 +1366,7 @@ function uploadCanvasFile($fileName, $localPath, &$fileInfo, $course) {
 			sleep($delay);
 			$delay = 0.5; // default delay after our first guess
 			try {
-				$uploadProcess = $statusCheck->get('', '', buildCanvasAuthorizationHeader());
+				$uploadProcess = json_decode($statusCheck->get('', '', buildCanvasAuthorizationHeader()), true);
 			} catch (Pest_ServerError $e) {
 				// Not. My. Problem. Ignoring it. Will retry as usual.
 				debug_log('AWS API server error. ' . $e->getMessage() . ' Retrying.');
