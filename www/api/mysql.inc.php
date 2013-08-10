@@ -22,7 +22,15 @@ function mysqlQuery($query) {
 		displayError(
 			array(
 				'Query' => $query,
-				'Response' => $response
+				'Response' => (
+					is_array($response) ?
+						$response :
+						(
+							$response ?
+								'True' :
+								mysqlError()
+						)
+					)
 			), true,
 			'MySQL Query'
 		);
