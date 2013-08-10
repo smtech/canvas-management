@@ -1,8 +1,8 @@
 <?php
 
-require_once('../page-generator.inc.php');
-
 require_once('config.inc.php');
+
+require_once('../page-generator.inc.php');
 
 displayPage('
 	<h3>Choose Import/Export Direction</h3>

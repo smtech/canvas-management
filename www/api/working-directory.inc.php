@@ -1,7 +1,10 @@
 <?php
 
+require_once('debug.inc.php');
+
 if (!defined('WORKING_DIR')) {
 	define('WORKING_DIR', '/var/www-data/canvas/tmp/');
+	debug_log('Using default WORKING_DIR = "' . WORKING_DIR . '"');
 }
 
 /**
