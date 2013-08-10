@@ -23,7 +23,7 @@ function mysqlQuery($query) {
 			array(
 				'Query' => $query,
 				'Response' => (
-					is_array($response) ?
+					get_class($response) == 'mysqli_result' ?
 						$response :
 						(
 							$response ?
