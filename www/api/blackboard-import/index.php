@@ -53,8 +53,6 @@ require_once('../Pest.php');
  *                                                                     *
  ***********************************************************************/
 
-define('DEBUGGING', true);
-
 /* Blackboard-specific names */
 define('Bb_MANIFEST_NAME', 'imsmanifest.xml'); // name of the manifest file
 define('NAMESPACE_Bb', 'bb'); // prefix for the Blackboard xml namespace
