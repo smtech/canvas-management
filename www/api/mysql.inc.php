@@ -2,16 +2,16 @@
 
 require_once('debug.inc.php');
 
-$MYSQLi = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
+$MYSQL = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
 function mysqlQuery($query) {
 	try {
-		$response = $GLOBALS['MYSQLi']->query($query);
+		$response = $GLOBALS['MYSQL']->query($query);
 	} catch (Exception $e) {
 		displayError(
 			array(
 				'Query' => $query,
 				'Exception' => $e->getMessage(),
-				'Error' => $GLOBALS['MYSQLi']->error
+				'Error' => $GLOBALS['MYSQL']->error
 			), true,
 			'MySQL Exception'
 		);
@@ -32,11 +32,11 @@ function mysqlQuery($query) {
 }
 
 function mysqlEscapeString($string) {
-	return $GLOBALS['MYSQLi']->escape_string($string);
+	return $GLOBALS['MYSQL']->real_escape_string($string);
 }
 
 function mysqlError() {
-	return $GLOBALS['MYSQLi']->error;
+	return $GLOBALS['MYSQL']->error;
 }
 
 ?>

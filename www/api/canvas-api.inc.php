@@ -11,8 +11,14 @@ if(!defined('API_SERVER_ERROR_RETRIES')) {
 	debug_log('Using default API_SERVER_ERROR_RETRIES = ' . API_SERVER_ERROR_RETRIES);
 }
 
+define('CANVAS_API_DELETE', 'delete');
+define('CANVAS_API_GET', 'get');
+// define('CANVAS_API_PATCH', 'patch'); // supported by Pest, but not the Canvas API
+define('CANVAS_API_POST', 'post');
+define('CANVAS_API_PUT', 'put');
+
 /* we use Pest to interact with the RESTful API */
-require_once('PestCanvas.php');
+require_once('Pest.php');
 
 /* handles HTML page generation */
 require_once('page-generator.inc.php');
@@ -27,10 +33,9 @@ function buildCanvasAuthorizationHeader() {
 /**
  * Pass-through a Pest request with added Canvas authorization token
  **/
-$PEST = new PestCanvas(CANVAS_API_URL);
+$PEST = new Pest(CANVAS_API_URL);
 function callCanvasApi($verb, $url, $data = array()) {
 	global $PEST;
-	
 	$response = null;
 
 	$clientRetryCount = 0;
@@ -43,13 +48,13 @@ function callCanvasApi($verb, $url, $data = array()) {
 			/* who knows what goes on in the server's mind... try again */
 			$serverRetryCount++;
 			$retry = true;
-			debug_log('Retrying after Canvas API server error. ' . $e->getMessage());
+			debug_log('Retrying after Canvas API server error. ' . substr($e->getMessage(), 0, 100));
 		} catch (Pest_ClientError $e) {
 			/* I just watched the Canvas API throw an unauthorized error when, in fact,
 			   I was authorized. Everything gets retried a few times before I give up */
 			$clientRetryCount++;
 			$retry = true;
-			debug_log('Retrying after Canvas API client error. ' . $e->getMessage()); 
+			debug_log('Retrying after Canvas API client error. ' . substr($e->getMessage(), 0, 100)); 
 		} catch (Exception $e) {
 			displayError(array(
 				'Error' => $e->getMessage(),
@@ -72,6 +77,19 @@ function callCanvasApi($verb, $url, $data = array()) {
 		exit;
 	}
 	
+	if ($serverRetryCount == API_SERVER_ERROR_RETRIES) {
+		displayError(array(
+			'Status' => $PEST->lastStatus(),
+			'Error' => $PEST->lastBody(),
+			'Verb' => $verb,
+			'URL' => $url,
+			'Data' => $data
+		), true, 'Probable Server Error', 'After trying ' . API_CLIENT_ERROR_RETRIES . ' times, we still got this error message from the API.');
+		exit;
+	}
+	
+	$responseArray = json_decode($response, true);
+	
 	if(DEBUGGING) displayError(
 		array(
 			'API Call' => array(
@@ -79,12 +97,12 @@ function callCanvasApi($verb, $url, $data = array()) {
 				'URL' => $url,
 				'Data' => $data
 			),
-			'Response' => $response
+			'Response' => $responseArray
 		), true,
 		'API Call'
 	);
 	
-	return $response;
+	return $responseArray;
 }
 
 ?>
