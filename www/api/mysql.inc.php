@@ -18,7 +18,7 @@ function mysqlQuery($query) {
 		exit;
 	}
 	
-	if (DEBUGGING) {
+	if (DEBUGGING & DEBUGGING_MYSQL) {
 		displayError(
 			array(
 				'Query' => $query,

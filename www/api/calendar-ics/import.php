@@ -1,6 +1,7 @@
 <?php
 
-define('DEBUGGING', true);
+require_once('../debug.inc.php');
+define('DEBUGGING', DEBUGGING_CANVAS_API | DEBUGGING_LOG);
 
 require_once('.ignore.calendar-ics-authentication.inc.php');
 require_once('config.inc.php');
@@ -8,6 +9,8 @@ require_once('config.inc.php');
 require_once('../page-generator.inc.php');
 require_once('../canvas-api.inc.php');
 require_once('../mysql.inc.php');
+
+define('VALUE_OVERWRITE_CANVAS_CALENDAR', 'overwrite');
 
 define('SCHEDULE_ONCE', 'once');
 define('SCHEDULE_WEEKLY', 'weekly');
@@ -55,15 +58,6 @@ function getPairingHash($icsUrl, $canvasContext) {
 }
 
 /**
- * Generate a UID for an event instance that is unique (so that instances of
- * recurring events are stored in the cache database with identifiably separate
- * UIDs)
- **/
-function getUniqueUid($date, $time, $uid) {
-	return mysqlEscapeString($date . SEPARATOR . $time . SEPARATOR . $uid);
-}
-
-/**
  * Generate a hash of this version of an event to cache in the database
  **/
 function getEventHash($date, $time, $uid, $event) {
@@ -80,7 +74,7 @@ function getSyncTimestamp() {
 		return $SYNC_TIMESTAMP;
 	} else {
 		$timestamp = new DateTime();
-		$SYNC_TIMESTAMP = $timestamp->format(SYNC_TIMESTAMP_FORMAT) . SEPARATOR . md5($_SERVER['REMOTE_HOST']);
+		$SYNC_TIMESTAMP = $timestamp->format(SYNC_TIMESTAMP_FORMAT) . SEPARATOR . md5($_SERVER['REMOTE_ADDR']);
 		return $SYNC_TIMESTAMP;
 	}
 }
@@ -104,7 +98,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 	require_once(BASE . 'functions/date_functions.php');
 	require_once(BASE . 'functions/init.inc.php');
 	require_once(BASE . 'functions/ical_parser.php');
-	if(DEBUGGING) displayError($master_array);
+	if(DEBUGGING & DEBUGGING_GENERAL) displayError($master_array);
 
 	/* get the context (user, course or group) for the canvas URL */
 	// FIXME: actually get the context
@@ -117,34 +111,53 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 	$course = callCanvasApi(CANVAS_API_GET, "/{$canvasContext}s/$canvasId");
 	
 	/* calculate the unique pairing ID of this ICS feed and canvas object */
-	$pairId = getPairingHash($_REQUEST['cal'], $canvasContext . $course['id']);
+	$pairingHash = getPairingHash($_REQUEST['cal'], $canvasContext . $course['id']);
 
 	/* log this pairing in the database cache, if it doesn't already exist */
-	// FIXME: actually check to make sure it isn't there before logging it!
-	mysqlQuery("
-		INSERT INTO `calendars`
-			(
-				`id`,
-				`ics_url`,
-				`canvas_context`,
-				`canvas_id`
-			)
-			VALUES (
-				'$pairId',
-				'{$_REQUEST['cal']}',
-				'course',
-				'{$course['id']}'
-			)
+	$calendarCacheResponse = mysqlQuery("
+		SELECT * FROM `calendars`
+			WHERE
+				`id` = '$pairingHash'
 	");
+	$calendarCache = $calendarCacheResponse->fetch_assoc();
 	
-	/* get information about this pairing from the database cache */
-	$response = mysqlQuery("
+	/* if the calendar is already cached, just update the sync timestamp */
+	if ($calendarCache) {
+		mysqlQuery("
+			UPDATE `calendars`
+				SET
+					`synced` = '" . getSyncTimestamp() . "'
+				WHERE
+					`id` = '$pairingHash'
+		");
+	} else {
+		mysqlQuery("
+			INSERT INTO `calendars`
+				(
+					`id`,
+					`ics_url`,
+					`canvas_context`,
+					`canvas_id`,
+					`synced`
+				)
+				VALUES (
+					'$pairingHash',
+					'{$_REQUEST['cal']}',
+					'course',
+					'{$course['id']}',
+					'" . getSyncTimestamp() . "'
+				)
+		");
+	}
+	
+	/* refresh calendar information from cache database */
+	$calendarCacheResponse = mysqlQuery("
 		SELECT *
 			FROM `calendars`
 			WHERE
-				`id` = '$pairId'
+				`id` = '$pairingHash'
 	");
-	$calendar = $response->fetch_assoc();
+	$calendarCache = $calendarCacheResponse->fetch_assoc();
 
 	/* walk through $master_array and update the Canvas calendar to match the
 	   ICS feed, caching changes in the database */
@@ -160,48 +173,106 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 					foreach ($event as $key => $value) {
 						$event[$key] = urldecode($value);
 					}
-
-					/* multi-day event instance start times need to be changed to _this_ date */
-					$start = new DateTime("@{$event['start_unixtime']}");
-					$start->setTimeZone(new DateTimeZone(LOCAL_TIMEZONE));
-					$start->setDate(substr($date, 0, 4), substr($date, 4, 2), substr($date, 6, 2));
 					
-					$end = new DateTime("@{$event['end_unixtime']}");
-					$end->setTimeZone(new DateTimeZone(LOCAL_TIMEZONE));
-					$end->setDate(substr($date, 0, 4), substr($date, 4, 2), substr($date, 6, 2));
-
-					// FIXME: strip HTML out of title
-					$calendarEvent = callCanvasApi(
-						CANVAS_API_POST,
-						"/calendar_events",
-						array(
-							'calendar_event[context_code]' => "course_{$course['id']}",
-							'calendar_event[title]' => $event['event_text'],
-							'calendar_event[description]' => $event['description'],
-							'calendar_event[start_at]' => $start->format(CANVAS_TIMESTAMP_FORMAT),
-							'calendar_event[end_at]' => $end->format(CANVAS_TIMESTAMP_FORMAT),
-							'calendar_event[location_name]' => urldecode($event['location'])
-						)
-					);
-					// FIXME: ics_data and canvas_data don't seem to be being entered!
-					$icalEventJson = json_encode($event);
-					$calendarEventJson = json_encode($calendarEvent);
-					mysqlQuery("
-						INSERT INTO `events`
-							(
-								`calendar`,
-								`calendar_event[id]`,
-								`event_hash`
-							)
-							VALUES (
-								'" . $calendar['id'] ."',
-								'" . $calendarEvent['id'] . "',
-								'" . getEventHash($date, $time, $uid, $event) . "'
-							)
+					/* does this event already exist in Canvas? */
+					$eventHash = getEventHash($date, $time, $uid, $event);
+					$eventCacheResponse = mysqlQuery("
+						SELECT * FROM `events`
+							WHERE
+								`calendar` = '{$calendarCache['id']}' AND
+								`event_hash` = '$eventHash'
 					");
+					
+					/* if we already have the event cached in its current form, just update
+					   the timestamp */
+					$eventCache = $eventCacheResponse->fetch_assoc();
+					if (DEBUGGING & DEBUGGING_MYSQL) displayError($eventCache);
+					if ($eventCache) {
+						mysqlQuery("
+							UPDATE `events`
+								SET
+									`synced` = '" . getSyncTimestamp() . "'
+								WHERE
+									`id` = '{$eventCache['id']}'
+						");
+						
+					/* otherwise, cache the new version of the event */
+					} else {
+						/* multi-day event instance start times need to be changed to _this_ date */
+						$start = new DateTime("@{$event['start_unixtime']}");
+						$start->setTimeZone(new DateTimeZone(LOCAL_TIMEZONE));
+						$start->setDate(substr($date, 0, 4), substr($date, 4, 2), substr($date, 6, 2));
+						
+						$end = new DateTime("@{$event['end_unixtime']}");
+						$end->setTimeZone(new DateTimeZone(LOCAL_TIMEZONE));
+						$end->setDate(substr($date, 0, 4), substr($date, 4, 2), substr($date, 6, 2));
+	
+						// FIXME: strip HTML out of title
+						// FIXME: replace newlines with <br/> or <p> in description
+						$calendarEvent = callCanvasApi(
+							CANVAS_API_POST,
+							"/calendar_events",
+							array(
+								'calendar_event[context_code]' => "course_{$course['id']}",
+								'calendar_event[title]' => $event['event_text'],
+								'calendar_event[description]' => $event['description'],
+								'calendar_event[start_at]' => $start->format(CANVAS_TIMESTAMP_FORMAT),
+								'calendar_event[end_at]' => $end->format(CANVAS_TIMESTAMP_FORMAT),
+								'calendar_event[location_name]' => urldecode($event['location'])
+							)
+						);
+						// FIXME: ics_data and canvas_data don't seem to be being entered!
+						$icalEventJson = json_encode($event);
+						$calendarEventJson = json_encode($calendarEvent);
+						mysqlQuery("
+							INSERT INTO `events`
+								(
+									`calendar`,
+									`calendar_event[id]`,
+									`event_hash`,
+									`synced`
+								)
+								VALUES (
+									'{$calendarCache['id']}',
+									'{$calendarEvent['id']}',
+									'$eventHash',
+									'" . getSyncTimestamp() . "'
+								)
+						");
+					}
 				}
 			}
 		}
+	}
+
+	/* clean out previously synced events that are no longer correct */
+	$deletedEventsResponse = mysqlQuery("
+		SELECT * FROM `events`
+			WHERE
+				`calendar` = '{$calendarCache['id']}' AND
+				`synced` != '" . getSyncTimestamp() . "'
+	");
+	while ($deletedEventCache = $deletedEventsResponse->fetch_assoc()) {
+		$deletedEvent = callCanvasApi(
+			CANVAS_API_DELETE,
+			"/calendar_events/{$deletedEventCache['calendar_event[id]']}"/*,
+			array(
+				'cancel_reason' => getSyncTimestamp()
+			)*/
+		);
+		mysqlQuery("
+			DELETE * FROM `events`
+				WHERE
+					`id` = '{$deletedEventCache['id']}' AND
+					`calendar` = '{$calendarCache['id']}'
+					`calendar_event[id]` = '{$deletedEvent['id']}' AND
+					`synced` != '" . getSyncTimestamp() . "'
+		");
+	}
+	
+	/* if we're ovewriting data (for example, if this is a recurring sync, we
+	   need to remove the events that were _not_ synced this in this round */
+	if ($_REQUEST['overwrite'] == VALUE_OVERWRITE_CANVAS_CALENDAR) {
 	}
 	
 	// FIXME: deal with messaging based on context
@@ -249,9 +320,9 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 				<input id="canvas_url" name="canvas_url" type="text" />
 			</td>
 		</tr>
-		<tr>
+		<!--<tr>
 			<td colspan="3">
-				<label for="overwrite"><input id="overwrite" name="overwrite" type="checkbox" value="yes" disabled /> Replace existing calendar information <span class="comment">Required for recurring synchronization, but optional for one-time imports. Checking this box will <em>delete</em> all of your current Canvas calendar information for this user/group/course.</span></label>
+				<label for="overwrite"><input id="overwrite" name="overwrite" type="checkbox" value="' . VALUE_OVERWRITE_CANVAS_CALENDAR . '" disabled /> Replace existing calendar information <span class="comment">Checking this box will <em>delete</em> all of your current Canvas calendar information for this user/group/course.</span></label>
 			</td>
 		</tr>
 		<tr>
@@ -266,7 +337,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 					</optgroup>
 				</select>
 			</td>
-		</tr>
+		</tr>-->
 	</table>
 </form>
 	');

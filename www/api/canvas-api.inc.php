@@ -90,7 +90,7 @@ function callCanvasApi($verb, $url, $data = array()) {
 	
 	$responseArray = json_decode($response, true);
 	
-	if(DEBUGGING) displayError(
+	if(DEBUGGING & DEBUGGING_CANVAS_API) displayError(
 		array(
 			'API Call' => array(
 				'Verb' => $verb,
