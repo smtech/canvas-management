@@ -424,7 +424,7 @@ function processCourseSettings($manifest, $course) {
 		
 		$courseTitle = getBbTitle($courseSettings);
 		
-		$courseUpdate = callCanvasApi('put', "/courses/{$course['id']}",
+		$courseUpdate = callCanvasApi(CANVAS_API_PUT, "/courses/{$course['id']}",
 			array(
 				'course[name]' => $courseTitle,
 				'course[course_code]' => $courseTitle,
@@ -760,7 +760,7 @@ function processCourseLinks($course) {
 					switch($referrer[ATTRIBUTE_CANVAS_IMPORT_TYPE]) {
 						case CANVAS_PAGE: {
 							$canvasResponseArray = callCanvasApi(
-								'put',
+								CANVAS_API_PUT,
 								"/courses/{$course['id']}/pages/{$referrer['url']}",
 								array(
 									'wiki_page[body]' => $text
@@ -770,7 +770,7 @@ function processCourseLinks($course) {
 						}
 						case CANVAS_ASSIGNMENT: {
 							$canvasResponseArray = callCanavsApi(
-								'put',
+								CANVAS_API_PUT,
 								"/courses/{$course['id']}/assignments/{$referrer['id']}",
 								array(
 									'assignment[description]' => $text
@@ -780,7 +780,7 @@ function processCourseLinks($course) {
 						}
 						case CANVAS_ANNOUNCEMENT: {
 							$canvasResponseArray = callCanvasApi(
-								'put',
+								CANVAS_API_PUT,
 								"/courses/{$course['id']}/discussion_topics/{$referrer['id']}",
 								array(
 									'message' => $text
@@ -1320,7 +1320,7 @@ function getCanvasIndentLevel($node) {
  **/
 function getCanvasCourse($courseId) {
 	if ($courseId) {
-		$course = callCanvasApi('get', "/courses/$courseId", array());
+		$course = callCanvasApi(CANVAS_API_GET, "/courses/$courseId", array());
 		if (!$course['id']) {
 			displayError($course, false, 'Invalid Course ID', "The course ID in the URL you entered for the target Canvas course ($courseUrl) could not be found by the Canvas API.");
 			exit;
@@ -1347,7 +1347,7 @@ function uploadCanvasFile($fileName, $localPath, &$fileInfo, $course) {
 	$fileSize = filesize($originalFile);
 	$stageFile = buildPath(UPLOAD_STAGING_DIR, $stageName);
 	if (copy($originalFile, $stageFile)) {
-		$uploadProcess = callCanvasApi('post', "/courses/{$course['id']}/files",
+		$uploadProcess = callCanvasApi(CANVAS_API_POST, "/courses/{$course['id']}/files",
 			array(
 				'url' => UPLOAD_STAGING_URL . $stageName,
 				'name' => $fileInfo['name'],
@@ -1484,7 +1484,7 @@ function uploadCanvasFileAttachments($itemXml, $resXml, $course) {
 			} else {
 				// TODO: this generates a new page for each broken link to the same file -- it would be more elegant to link to one page for all broken links to the same file
 				$linkName = getBbLinkName($attachmentXml);
-				$page = callCanvasApi('post', "/courses/{$course['id']}/pages",
+				$page = callCanvasApi(CANVAS_API_POST, "/courses/{$course['id']}/pages",
 					array(
 						'wiki_page[title]' => "Missing \"$linkName\"", 
 						'wiki_page[body]' => "<h2>Missing &ldquo;$linkName&rdquo;</h2><p>This file was referred to by an item in the Blackboard ExportFile, but was not included in the ExportFile. Therefore it was not available for import and was not uploaded.</p>",
@@ -1512,7 +1512,7 @@ function uploadCanvasFileAttachments($itemXml, $resXml, $course) {
  * Create a new Canvas course and return as an associative array
  **/
 function createCanvasCourse() {
-	$course = callCanvasApi('post', 'accounts/' . CANVAS_Bb_IMPORT_ACCOUNT_ID . '/courses',
+	$course = callCanvasApi(CANVAS_API_POST, 'accounts/' . CANVAS_Bb_IMPORT_ACCOUNT_ID . '/courses',
 		array(
 			'account_id' => CANVAS_Bb_IMPORT_ACCOUNT_ID
 		)
@@ -1540,7 +1540,7 @@ function createCanvasModule($itemXml, $resXml, $course) {
 	
 	$label = getBbLabel($resXml);
 	
-	$module = callCanvasApi('post', "/courses/{$course['id']}/modules",
+	$module = callCanvasApi(CANVAS_API_POST, "/courses/{$course['id']}/modules",
 		array (
 			'module[name]' => $label,
 			'module[position]' => ++$GLOBALS['MODULE_POSITION']
@@ -1555,7 +1555,7 @@ function createCanvasModule($itemXml, $resXml, $course) {
 }
 
 function createCanvasModuleSubheader($itemXml, $resXml, $course, $module) {
-	$moduleItem = callCanvasApi('post', "/courses/{$course['id']}/modules/{$module['id']}/items",
+	$moduleItem = callCanvasApi(CANVAS_API_POST, "/courses/{$course['id']}/modules/{$module['id']}/items",
 		array (
 			'module_item[title]' => getBbTitle($resXml),
 			'module_item[type]' => 'SubHeader',
@@ -1608,7 +1608,7 @@ function createCanvasModuleItem($itemXml, $moduleItemType, $indent, $canvasItemA
 			break;
 		}
 	}
-	$moduleItem = callCanvasApi('post', "/courses/{$course['id']}/modules/{$module['id']}/items",
+	$moduleItem = callCanvasApi(CANVAS_API_POST, "/courses/{$course['id']}/modules/{$module['id']}/items",
 		array(
 			'module_item[title]' => $title,
 			'module_item[type]' => $moduleItemType,
@@ -1659,7 +1659,7 @@ function createCanvasPage($itemXml, $resXml, $course) {
 		
 	}
 		
-	$page = callCanvasApi('post', "/courses/{$course['id']}/pages",
+	$page = callCanvasApi(CANVAS_API_POST, "/courses/{$course['id']}/pages",
 		array(
 			'wiki_page[title]' => $canvasTitle,
 			'wiki_page[body]' => $text,
@@ -1727,7 +1727,7 @@ function createCanvasAssignment($itemXml, $resXml, $course, $gradebookXml, $assi
 		}
 	}
 	
-	$assignment = callCanvasApi('post', "/courses/{$course['id']}/assignments",
+	$assignment = callCanvasApi(CANVAS_API_POST, "/courses/{$course['id']}/assignments",
 		array(
 			'assignment[name]' => $title,
 			//'assignment[position]' => getBbPosition($itemXml), // TODO: doesn't seem to "take" in Canvas if position is more than the current number of items -- need to sort by position and add in order
@@ -1757,7 +1757,7 @@ function createCanvasAssignment($itemXml, $resXml, $course, $gradebookXml, $assi
  * Create a Canvas assignment group
  **/
 function createCanvasAssignmentGroup($itemXml, $course) {
-	$assignmentGroup = callCanvasApi('post', "/courses/{$course['id']}/assignment_groups",
+	$assignmentGroup = callCanvasApi(CANVAS_API_POST, "/courses/{$course['id']}/assignment_groups",
 		array(
 			// TODO: name needs to include grading period
 			'name' => str_replace('.name', '', getBbTitle($itemXml))
@@ -1792,7 +1792,7 @@ function createCanvasAnnouncement($itemXml, $resXml, $course) {
 		$text = '&nbsp;';
 	}
 	
-	$announcement = callCanvasApi('post', "/courses/{$course['id']}/discussion_topics",
+	$announcement = callCanvasApi(CANVAS_API_POST, "/courses/{$course['id']}/discussion_topics",
 		array (
 			'title' => $title,
 			'message' => $text,
