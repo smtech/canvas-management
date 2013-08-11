@@ -17,11 +17,6 @@ define('DEBUGGING_ALL', DEBUGGING_GENERAL |
  * Helper function to conditionally fill the log file with notes!
  **/
 function debug_log($message) {
-	if (!defined('DEBUGGING')) {
-		define('DEBUGGING', DEBUGGING_LOG);
-		error_log('Using default DEBUGGING = ' . DEBUGGING);
-	}
-
 	if (DEBUGGING & DEBUGGING_LOG) {
 		error_log($message);
 	}
