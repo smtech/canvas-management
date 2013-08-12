@@ -3,6 +3,9 @@
 /* what Canvas API user are we going to connect as? */
 require_once('../.ignore.read-only-authentication.inc.php');
 
+/* configurable options */
+require_once('config.inc.php');
+
 /* handles HTML page generation */
 require_once('../page-generator.inc.php');
 
@@ -15,12 +18,10 @@ require_once('../working-directory.inc.php');
 /* we do directly work with Pest on some AWS API calls */
 require_once('../Pest.php');
 
-/* configurable options */
-require_once('config.inc.php');
-
-define('DEBUGGING', true);
+// TODO: implement an import as well as an export!
 
 if (isset($_REQUEST['organizational_unit_url'])) {
+	debugFlag('START', getWorkingDir());
 	$path = parse_url($_REQUEST['organizational_unit_url'], PHP_URL_PATH);
 	$path = preg_replace('|(accounts/\d+/)?(\w+/\d+).*|', '$2', $path);
 	$json = calLCanvasApi('get', "$path/discussion_topics",
@@ -61,6 +62,7 @@ if (isset($_REQUEST['organizational_unit_url'])) {
 	/* clean up */
 	flushDir(getWorkingDir());
 	rmdir(getWorkingDir());
+	debugFlag('FINISH');
 	exit;
 	
 } else {

@@ -18,15 +18,24 @@ function mysqlQuery($query) {
 		exit;
 	}
 	
-	if (DEBUGGING) {
-		displayError(
-			array(
-				'Query' => $query,
-				'Response' => $response
-			), true,
-			'MySQL Query'
-		);
-	}
+	displayError(
+		array(
+			'Query' => $query,
+			'Response' => (
+				get_class($response) == 'mysqli_result' ?
+					$response :
+					(
+						$response ?
+							'True' :
+							mysqlError()
+					)
+				)
+		),
+		true,
+		'MySQL Query',
+		null,
+		DEBUGGING_MYSQL
+	);
 	
 	return $response;
 }
