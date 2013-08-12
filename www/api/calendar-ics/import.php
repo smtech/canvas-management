@@ -9,13 +9,6 @@
 /* REQUIRES crontab
    http://en.wikipedia.org/wiki/Cron */
 
-/* REQUIRES MySQL access
-   Configuration for access happens in the authentication file */
-
-/* REQUIRES HTTP Authentication
-   The sync process will assume a user with the same name and password
-   as the MySQL user */
-
 require_once('.ignore.calendar-ics-authentication.inc.php');
 require_once('config.inc.php');
 
@@ -43,6 +36,8 @@ function getCanvasContext($canvasUrl) {
 	return false;
 }
 
+// TODO: it would be nice to be able to cleanly remove a synched calendar
+
 /* do we have the vital information (an ICS feed and a URL to a canvas
    object)? */
 if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
@@ -69,7 +64,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 			require_once(BASE . 'functions/date_functions.php');
 			require_once(BASE . 'functions/init.inc.php');
 			require_once(BASE . 'functions/ical_parser.php');
-			displayError($master_array, false, 'phpicalendar $master_array', null, DEBUGGING_GENERAL);
+			displayError($master_array, false, null, null, DEBUGGING_GENERAL);
 		
 			/* log this pairing in the database cache, if it doesn't already exist */
 			$calendarCacheResponse = mysqlQuery("
@@ -127,7 +122,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 							foreach ($event as $key => $value) {
 								$event[$key] = urldecode($value);
 							}
-							
+														
 							/* does this event already exist in Canvas? */
 							$eventHash = getEventHash($date, $time, $uid, $event);
 							$eventCacheResponse = mysqlQuery("
@@ -138,10 +133,11 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 										`event_hash` = '$eventHash'
 							");
 							
+			
 							/* if we already have the event cached in its current form, just update
 							   the timestamp */
 							$eventCache = $eventCacheResponse->fetch_assoc();
-							if (DEBUGGING & DEBUGGING_MYSQL) displayError($eventCache, false, 'Event Cache');
+							if (DEBUGGING & DEBUGGING_MYSQL) displayError($eventCache);
 							if ($eventCache) {
 								mysqlQuery("
 									UPDATE `events`
@@ -161,17 +157,19 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 								$end = new DateTime("@{$event['end_unixtime']}");
 								$end->setTimeZone(new DateTimeZone(LOCAL_TIMEZONE));
 								$end->setDate(substr($date, 0, 4), substr($date, 4, 2), substr($date, 6, 2));
-			
+
+								/* strip off [bracket style] tags at the end of the event title */
+								$cleanEventTitle = preg_replace('%^(.*) (\[[^\]]+\])+$%', '\\1', $event['event_text']);
+								
+								/* strip HTML tags from the event title */
+								$cleanEventTitle = preg_replace('%<[^>]*>%', '', $cleanEventTitle);
+
 								$calendarEvent = callCanvasApi(
 									CANVAS_API_POST,
 									"/calendar_events",
 									array(
 										'calendar_event[context_code]' => "{$canvasContext['context']}_{$canvasObject['id']}",
-										'calendar_event[title]' => preg_replace( // strip HTML -- Canvas does not accept it
-											'%<[^>]*>%',
-											'',
-											$event['event_text']
-										),
+										'calendar_event[title]' => $cleanEventTitle,
 										'calendar_event[description]' => str_replace( // replace newlines with <br /> to maintain formatting
 											"\n",
 											"<br />\n",
@@ -214,6 +212,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 						`synced` != '" . getSyncTimestamp() . "'
 			");
 			while ($deletedEventCache = $deletedEventsResponse->fetch_assoc()) {
+				// FIXME: if this fails for one event, we need to be able to keep going (and it fails because the event isn't there... perhaps check to make sure it's really in the calendar before deleting it?)
 				$deletedEvent = callCanvasApi(
 					CANVAS_API_DELETE,
 					"/calendar_events/{$deletedEventCache['calendar_event[id]']}",
@@ -222,9 +221,12 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 					)
 				);
 				mysqlQuery("
-					DELETE FROM `events`
+					DELETE * FROM `events`
 						WHERE
-							`id` = '{$deletedEventCache['id']}'
+							`id` = '{$deletedEventCache['id']}' AND
+							`calendar` = '{$calendarCache['id']}'
+							`calendar_event[id]` = '{$deletedEvent['id']}' AND
+							`synced` != '" . getSyncTimestamp() . "'
 				");
 			}
 			

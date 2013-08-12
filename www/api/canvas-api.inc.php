@@ -89,7 +89,7 @@ function callCanvasApi($verb, $url, $data = array()) {
 			),
 			true,
 			'Probable Client Error',
-			'After trying ' . API_CLIENT_ERROR_RETRIES . ' times, we still got this error message from the API.'
+			'After trying ' . API_CLIENT_ERROR_RETRIES . ' times, we still got this error message from the API. (Remember to check to be sure that the object ID passed to the API is valid and exists if the API tells you that you\'re not authorized... because you\'re not authorized to work with things that don\'t exist!)'
 		);
 		exit;
 	}
