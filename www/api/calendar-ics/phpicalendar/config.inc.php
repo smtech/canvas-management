@@ -27,7 +27,7 @@ The salt parameter is used to obfuscate things like webcal links that may have u
 */
      'calendar_path'        => '/var/www-data/canvas/calendar-ics',
 #     'default_path'         => '', 	
-     'save_parsed_cals'     => 'yes', 
+#     'save_parsed_cals'     => 'yes', 
 #     'cookie_uri'           => '', 
 #     'download_uri'         => '', 	
      'allow_webcals'          => 'yes',

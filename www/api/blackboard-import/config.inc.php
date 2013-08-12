@@ -1,7 +1,6 @@
 <?php
 
 define('TOOL_NAME', 'Blackboard 8 &rarr; Canvas Import Tool'); // what the tool calls itself
-define('TOOL_START_PAGE', $_SERVER['PHP_SELF']); // the start page (and where Start Over links back to
 
 define('UPLOAD_DIR', '/var/www-data/canvas/blackboard-import'); // where we'll store uploaded files
 define('WORKING_DIR', UPLOAD_DIR . '/tmp'); // where we'll be dumping temp files (and cleaning up, too!)
@@ -9,8 +8,6 @@ require_once('../working-directory.inc.php');
 
 define('UPLOAD_STAGING_DIR', buildPath(dirname(__FILE__), 'upload-staging')); // directory of the publicly accessible directory files will be staged in to transfer to Canvas
 define('UPLOAD_STAGING_URL', 'http://' . buildPath($_SERVER['SERVER_NAME'] . dirname($_SERVER['REQUEST_URI']), 'upload-staging') . '/'); // URL to the upload staging directory from the web
-
-define('API_CLIENT_ERROR_RETRIES', 2); // how many times to retry requests for which we got client errors that we don't entirely believe
 
 define('FILE_ATTACHMENT_PREFIX', '<h3>Attached Files</h3><blockquote>');
 define('FILE_ATTACHMENT_SUFFIX', '</blockquote>');

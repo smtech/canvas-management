@@ -18,7 +18,7 @@ $schedulesResponse = mysqlQuery("
 			`synced` ASC
 ");
 
-$import = new Pest($argv[INDEX_WEB_PATH]);
+$import = new Pest(preg_replace('%(https?://)(.*)%', '\\1' . MYSQL_USER . ':' . MYSQL_PASSWORD . '@\\2', $argv[INDEX_WEB_PATH]));
 while($schedule = $schedulesResponse->fetch_assoc()) {
 	$calendarResponse = mysqlQuery("
 		SELECT *
