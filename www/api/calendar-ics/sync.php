@@ -1,8 +1,5 @@
 <?php
 
-require_once('../debug.inc.php');
-define('DEBUGGING', DEBUGGING_GENERAL | DEBUGGING_LOG | DEBUGGING_CANVAS_API);
-
 require_once('.ignore.calendar-ics-authentication.inc.php');
 require_once('config.inc.php');
 

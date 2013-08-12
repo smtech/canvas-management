@@ -10,6 +10,9 @@ if(!defined('API_SERVER_ERROR_RETRIES')) {
 	define('API_SERVER_ERROR_RETRIES', API_CLIENT_ERROR_RETRIES * 5);
 	debug_log('Using default API_SERVER_ERROR_RETRIES = ' . API_SERVER_ERROR_RETRIES);
 }
+if(!defined('DEBUGGING')) {
+	define('DEBUGGING', DEBUGGING_LOG);
+}
 
 define('CANVAS_API_DELETE', 'delete');
 define('CANVAS_API_GET', 'get');

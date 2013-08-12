@@ -22,4 +22,38 @@ function debug_log($message) {
 	}
 }
 
+/**
+ * Render a console-friendly version of the toolname
+ **/
+function getToolNameForConsole() {
+	return str_replace(
+		array(
+			'&larr;',
+			'&rarr;',
+			'&harr;'
+		),
+		array(
+			'<--',
+			'-->',
+			'<-->'
+		),
+		TOOL_NAME);
+}
+
+/**
+ * Log script start
+ **/
+$DEBUG_FLAG_TAG = null;
+function debugFlag($message, $tag = null) {
+	if (!isset($GLOBALS['DEBUG_FLAG_TAG'])) {
+		$GLOBALS['DEBUG_FLAG_TAG'] = time();
+		if (isset($tag)) {
+			if (function_exists($tag)) $GLOBALS['DEBUG_TAG_FLAG'] = $tag();
+			else $GLOBALS['DEBUG_TAG_FLAG'] = $tag;
+		}
+	}
+	debug_log(getToolNameForConsole(). ' ' . $GLOBALS['DEBUG_TAG_FLAG'] . ' ' . $message);
+}
+
+
 ?>

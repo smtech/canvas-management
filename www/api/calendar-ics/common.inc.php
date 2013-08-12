@@ -10,6 +10,7 @@ define('SCHEDULE_ONCE', 'once');
 define('SCHEDULE_WEEKLY', 'weekly');
 define('SCHEDULE_DAILY', 'daily');
 define('SCHEDULE_HOURLY', 'hourly');
+define('SCHEDULE_CUSTOM', 'custom');
 
 /* cache database tables */
 

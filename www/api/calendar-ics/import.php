@@ -9,9 +9,6 @@
 /* REQUIRES crontab
    http://en.wikipedia.org/wiki/Cron */
 
-require_once('../debug.inc.php');
-define('DEBUGGING', DEBUGGING_CANVAS_API | DEBUGGING_LOG);
-
 require_once('.ignore.calendar-ics-authentication.inc.php');
 require_once('config.inc.php');
 
@@ -24,17 +21,6 @@ define('VALUE_OVERWRITE_CANVAS_CALENDAR', 'overwrite');
 define('SYNC_WARNING', '<em>Warning:</em> if you have set this synchronization to occur automatically, <em>do not</em> make any changes to your calendar in Canvas. Any changes you make in Canvas may be overwritten, deleted or even corrupt the synchronization process!');
 
 require_once('common.inc.php');
-
-function isValidCrontab($crontab) {
-	preg_match('%((\d+)|(\*)) ((\d+)|(\*)) ((\d+)|(\*)) ((\d+)|(\*)) ((\d+)|(\*))%', $crontab, $matches);
-	return
-		($matches[1] == '*' || ($matches[1] >= 0 && $matches[1] <= 59)) &&
-		($matches[4] == '*' || ($matches[4] >= 0 && $matches[4] <= 23)) &&
-		($matches[7] == '*' || ($matches[7] >= 1 && $matches[7] <= 31)) &&
-		($matches[10] == '*' || ($matches[10] >= 1 && $matches[10] <= 12)) &&
-		($matches[13] == '*' || ($matches[13] >= 0 && $matches[13] <= 6)) &&
-		($matches[1] != '*' || $matches[7] != '*' || $matches[10] != '*' || $matches[13] != '*');
-}
 
 function getCanvasContext($canvasUrl) {
 	// TODO: accept calendar2?contexts links too (they would be an intuitively obvious link to use, after all)
@@ -63,7 +49,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 			/* calculate the unique pairing ID of this ICS feed and canvas object */
 			$pairingHash = getPairingHash($_REQUEST['cal'], $canvasContext['canonical_url']);
 		
-			debug_log(TOOL_NAME . ' START ' . getSyncTimestamp());
+			debugFlag('START', getSyncTimestamp());
 		
 			/* tell users that it's started and to cool their jets */
 			displayPage('
@@ -251,7 +237,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 			
 			/* are we setting up a regular synchronization? */
 			if (isset($_REQUEST['sync']) && $_REQUEST['sync'] != SCHEDULE_ONCE) {
-				$shellArguments[INDEX_COMMAND] = dirname(__FILE__) . '/sync.php';
+				$shellArguments[INDEX_COMMAND] = dirname(__FILE__) . '/sync.sh';
 				$shellArguments[INDEX_SCHEDULE] = $_REQUEST['sync'];
 				$shellArguments[INDEX_WEB_PATH] = 'http://localhost' . dirname($_SERVER['PHP_SELF']);
 				$crontab = null;
@@ -268,12 +254,28 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 						$crontab = '0 * * * *';
 						break;
 					}
-					default: {
-						$shellArguments[INDEX_SCHEDULE] = md5($_REQUEST['sync'] . getSyncTimestamp());
-						$crontab = $_REQUEST['sync'];
+					case SCHEDULE_CUSTOM: {
+						$shellArguments[INDEX_SCHEDULE] = md5($_REQUEST['crontab'] . getSyncTimestamp());
+						$crontab = trim($_REQUEST['crontab']);
 					}
 				}
 				
+				/* schedule crontab trigger, if it doesn't already exist */
+				$crontab .= ' ' . implode(' ', $shellArguments);
+				
+				/* thank you http://stackoverflow.com/a/4421284 ! */
+				$crontabs = shell_exec('crontab -l');
+				/* check to see if this sync is already scheduled */
+				if (strpos($crontabs, $crontab) === false) {
+					$filename = md5(getSyncTimestamp()) . '.txt';
+					file_put_contents("/tmp/$filename", $crontabs . $crontab . PHP_EOL);
+					shell_exec("crontab /tmp/$filename");
+					debugFlag("added new schedule '" . $shellArguments[INDEX_SCHEDULE] . "' to crontab");
+				}
+				
+				/* try to make sure that we have execute access to sync.sh */
+				chmod('sync.sh', 0775);
+
 				/* add to the cache database schedule, replacing any schedules for this
 				   calendar that are already there */
 				$schedulesResponse = mysqlQuery("
@@ -282,15 +284,38 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 						WHERE
 							`calendar` = '{$calendarCache['id']}'
 				");
+				
 				if ($schedule = $schedulesResponse->fetch_assoc()) {
-					mysqlQuery("
-						UPDATE `schedules`
-							SET
-								`schedule` = '" . $shellArguments[INDEX_SCHEDULE] . "',
-								`synced` = '" . getSyncTimestamp() . "'
-							WHERE
-								`calendar` = '{$calendarCache['id']}'
-					");
+	
+					/* only need to worry if the cached schedule is different from the
+					   new one we just set */
+					if ($shellArguments[INDEX_SCHEDULE] != $schedule['schedule']) {
+						/* was this the last schedule to require this trigger? */
+						$schedulesResponse = mysqlQuery("
+							SELECT *
+								FROM `schedules`
+								WHERE
+									`calendar` != '{$calendarCache['id']}' AND
+									`schedule` == '{$schedule['schedule']}'
+						");
+						/* we're the last one, delete it from crontab */
+						if ($schedulesResponse->num_rows == 0) {
+							$crontabs = preg_replace("%^.*{$schedule['schedule']}.*" . PHP_EOL . '%', '', shell_exec('crontab -l'));
+							$filename = md5(getSyncTimestamp()) . '.txt';
+							file_put_contents("/tmp/$filename", $crontabs);
+							shell_exec("crontab /tmp/$filename");
+							debugFlag("removed unused schedule '{$schedule['schedule']}' from crontab");
+						}
+					
+						mysqlQuery("
+							UPDATE `schedules`
+								SET
+									`schedule` = '" . $shellArguments[INDEX_SCHEDULE] . "',
+									`synced` = '" . getSyncTimestamp() . "'
+								WHERE
+									`calendar` = '{$calendarCache['id']}'
+						");
+					}
 				} else {
 					mysqlQuery("
 						INSERT INTO `schedules`
@@ -306,28 +331,6 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 							)
 					");
 				}
-				
-				/* schedule crontab trigger, if it doesn't already exist */
-				if (isValidCrontab($crontab)) {
-					$crontab .= ' php ' . implode(' ', $shellArguments);
-					
-					/* thank you http://stackoverflow.com/a/4421284 ! */
-					$crontabs = shell_exec('crontab -l');
-					/* check to see if this sync is already scheduled */
-					if (strpos($crontabs, $crontab) === false) {
-						$filename = md5(getSyncTimestamp()) . '.txt';
-						file_put_contents("/tmp/$filename", $crontabs . $crontab . PHP_EOL);
-						shell_exec("crontab /tmp/$filename");
-						debug_log(TOOL_NAME . ' scheduled crontab ' . $crontab);
-					}					
-				} else {
-					displayError(
-						$_REQUEST['sync'],
-						false,
-						'Invalid crontab',
-						'The crontab you submitted is invalid and will not be scheduled for recurring syncs.'
-					);
-				}
 			}
 			
 			/* if we're ovewriting data (for example, if this is a recurring sync, we
@@ -337,7 +340,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 			
 			// FIXME: deal with messaging based on context
 		
-			debug_log(TOOL_NAME . ' FINISH ' . getSyncTimestamp());
+			debugFlag('FINISH');
 			exit;
 		} else {
 			displayError(
@@ -385,7 +388,26 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 	td {
 		padding: 20px;
 	}
---></style>	
+	
+	#crontab {
+		font-family: Inconsolata, Monaco, "Courier New", Courier, monospace;
+		width: 10em;
+	}
+	
+	#crontab-section {
+		margin-top: 10px;
+		visibility: hidden;
+	}
+--></style>
+<script type="text/javascript"><!--' . "
+function checkCrontabVisibility() {
+	if (document.getElementById('schedule').value == '" . SCHEDULE_CUSTOM . "') {
+		document.getElementById('crontab-section').style.visibility = 'visible';
+	} else {
+		document.getElementById('crontab-section').style.visibility = 'hidden';
+	}
+}
+" . '//--></script>
 <form enctype="multipart/form-data" action="' . $_SERVER['PHP_SELF'] . '" method="get">
 	<table>
 		<tr valign="middle">
@@ -401,22 +423,27 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 				<input id="canvas_url" name="canvas_url" type="text" />
 			</td>
 		</tr>
-		<!--<tr>
+		<tr>
 			<td colspan="3">
 				<label for="overwrite"><input id="overwrite" name="overwrite" type="checkbox" value="' . VALUE_OVERWRITE_CANVAS_CALENDAR . '" disabled /> Replace existing calendar information <span class="comment">Checking this box will <em>delete</em> all of your current Canvas calendar information for this user/group/course.</span></label>
 			</td>
-		</tr>-->
+		</tr>
 		<tr>
 			<td colspan="3">
 				<label for="schedule">Schedule automatic updates from this feed to this course <span class="comment">' . SYNC_WARNING . '</span></label>
-				<select id="schedule" name="sync">
+				<select id="schedule" name="sync" onChange="checkCrontabVisibility();">
 					<option value="' . SCHEDULE_ONCE . '">One-time import only</option>
 					<optgroup label="Recurring">
 						<option value="' . SCHEDULE_WEEKLY . '">Weekly (Saturday at midnight)</option>
-						<option value="' . SCHEDULE_DAILY . '">Daily (midnight)</option>
-						<option value="' . SCHEDULE_HOURLY . '">Hourly</option>
+						<option value="' . SCHEDULE_DAILY . '">Daily (at midnight)</option>
+						<option value="' . SCHEDULE_HOURLY . '">Hourly (at the top of the hour)</option>
+						<option value="' . SCHEDULE_CUSTOM . '">Custom (define your own schedule)</option>
 					</optgroup>
 				</select>
+				<div id="crontab-section">
+					<label for="crontab">Custom Sync Schedule <span class="comment"><em>Warning:</em> Not for the faint of heart! Enter a valid crontab time specification. For more information, <a target="_blank" href="http://www.linuxweblog.com/crotab-tutorial">refer to this tutorial.</a></span>
+					<input id="crontab" name="crontab" type="text" value="0 0 * * *" />
+				</div>
 			</td>
 		</tr>
 	</table>
