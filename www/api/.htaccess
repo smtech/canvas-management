@@ -1,0 +1,6 @@
+# Access pages without showing file extensions
+# e.g. calendar-ics/import loads calendar-ics/import.php
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php
