@@ -221,12 +221,9 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 					)
 				);
 				mysqlQuery("
-					DELETE * FROM `events`
+					DELETE FROM `events`
 						WHERE
-							`id` = '{$deletedEventCache['id']}' AND
-							`calendar` = '{$calendarCache['id']}'
-							`calendar_event[id]` = '{$deletedEvent['id']}' AND
-							`synced` != '" . getSyncTimestamp() . "'
+							`id` = '{$deletedEventCache['id']}'
 				");
 			}
 			
