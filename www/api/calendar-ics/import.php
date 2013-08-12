@@ -62,7 +62,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 			require_once(BASE . 'functions/date_functions.php');
 			require_once(BASE . 'functions/init.inc.php');
 			require_once(BASE . 'functions/ical_parser.php');
-			displayError($master_array, false, null, null, DEBUGGING_GENERAL);
+			displayError($master_array, false, 'phpicalendar $master_array', null, DEBUGGING_GENERAL);
 		
 			/* log this pairing in the database cache, if it doesn't already exist */
 			$calendarCacheResponse = mysqlQuery("
@@ -134,7 +134,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 							/* if we already have the event cached in its current form, just update
 							   the timestamp */
 							$eventCache = $eventCacheResponse->fetch_assoc();
-							if (DEBUGGING & DEBUGGING_MYSQL) displayError($eventCache);
+							if (DEBUGGING & DEBUGGING_MYSQL) displayError($eventCache, false, 'Event Cache');
 							if ($eventCache) {
 								mysqlQuery("
 									UPDATE `events`
@@ -215,12 +215,9 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 					)
 				);
 				mysqlQuery("
-					DELETE * FROM `events`
+					DELETE FROM `events`
 						WHERE
-							`id` = '{$deletedEventCache['id']}' AND
-							`calendar` = '{$calendarCache['id']}'
-							`calendar_event[id]` = '{$deletedEvent['id']}' AND
-							`synced` != '" . getSyncTimestamp() . "'
+							`id` = '{$deletedEventCache['id']}'
 				");
 			}
 			
