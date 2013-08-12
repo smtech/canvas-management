@@ -1,0 +1,5 @@
+# these values should be changed in sync with MAX_FILE_SIZE in
+# blackboard-import.php (the largest export file we have to deal
+# with is under 250MB).
+php_value	post_max_size		250M
+php_value	upload_max_filesize	250M

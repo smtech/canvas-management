@@ -15,7 +15,13 @@ require_once('../canvas-api.inc.php');
 /* handles working directory functions */
 require_once('../working-directory.inc.php');
 
+/* we do directly work with Pest on some AWS API calls */
+require_once('../Pest.php');
+
+// TODO: implement an import as well as an export!
+
 if (isset($_REQUEST['organizational_unit_url'])) {
+	debugFlag('START', getWorkingDir());
 	$path = parse_url($_REQUEST['organizational_unit_url'], PHP_URL_PATH);
 	$path = preg_replace('|(accounts/\d+/)?(\w+/\d+).*|', '$2', $path);
 	$discussionTopics = calLCanvasApi(CANVAS_API_GET, "$path/discussion_topics",
@@ -53,6 +59,7 @@ if (isset($_REQUEST['organizational_unit_url'])) {
 	/* clean up */
 	flushDir(getWorkingDir());
 	rmdir(getWorkingDir());
+	debugFlag('FINISH');
 	exit;
 	
 } else {

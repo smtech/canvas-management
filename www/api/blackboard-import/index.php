@@ -53,8 +53,6 @@ require_once('../Pest.php');
  *                                                                     *
  ***********************************************************************/
 
-define('DEBUGGING', true);
-
 /* Blackboard-specific names */
 define('Bb_MANIFEST_NAME', 'imsmanifest.xml'); // name of the manifest file
 define('NAMESPACE_Bb', 'bb'); // prefix for the Blackboard xml namespace
@@ -62,7 +60,6 @@ define('Bb_RES_FILE_EXT', '.dat'); // file extension of resource files
 define('Bb_EMBED_DIR', 'embedded'); // name of the embedded files directory in the res00000 directory
 define('Bb_CONTENT_COLLECTION_DIR', 'csfiles'); // name of the content collection directory in ExportFile
 define('Bb_TIMESTAMP_FORMAT', '!Y-m-d H:i:s T');
-define('CANVAS_TIMESTAMP_FORMAT', 'Y-m-d\TH:iP');
 
 /* indices */
 define('MANIFEST', 'Manifest'); // $course[]
@@ -482,7 +479,7 @@ function uploadContentCollection($course) {
 	$contentCollection = array();
 	$ccXml = addElementToReceipt($course[MANIFEST], NODE_CONTENT_COLLECTION, 'manifest');
 	foreach ($ccFilenames as $ccFilename) {
-		if (is_file($ccFilename) && !preg_match('|^.*\.xml$|i', $ccFilename)) {
+		if (is_file($ccFilename) && !preg_match('%^.*\.xml$%i', $ccFilename)) {
 			$fileInfo = getBbLomFileInfo($ccFilename);
 			$fileInfo['bb-path'] = $fileInfo['path'];
 			$fileInfo['path'] = buildPath(CANVAS_CONTENT_COLLECTION_PATH, $fileInfo['bb-path']);
@@ -870,13 +867,13 @@ function getBbLabel($node) {
 	if ($xpathResult = $node->xpath('/coursetoc/label')) {
 
 		/* strip off Bb default name tagging */
-		$label = preg_replace('|COURSE_DEFAULT\.(.*)\.\w+\.label|i', '\\1', (string) $xpathResult[0]->attributes()->value);
+		$label = preg_replace('%COURSE_DEFAULT\.(.*)\.\w+\.label%i', '\\1', (string) $xpathResult[0]->attributes()->value);
 		
 		/* it looks like some things still come through as .labels, just rip that stuff off... */
-		$label = preg_replace('|.*\.([^\.]*)\.label|i', '\\1', $label);
+		$label = preg_replace('%.*\.([^\.]*)\.label%i', '\\1', $label);
 		
 		/* deCamelCase --> de Camel Case */
-		$label = preg_replace('|(.*[a-z])([A-Z].*)|', '\\1 \\2', $label);
+		$label = preg_replace('%(.*[a-z])([A-Z].*)%', '\\1 \\2', $label);
 		
 		return $label;	
 	} 
@@ -999,8 +996,8 @@ function getBbLomFileInfo($fileName) {
 	if ($lomXml = loadFileAsSimpleXmlWithLowercaseNodesAndAttributes("$fileName.xml")) {
 		$identifier = (string) $lomXml->relation->resource->identifier;
 		if ($identifier) {
-			$fileInfo['xid'] = preg_replace('|^([_0-9]+)#.*|', '$1', $identifier);
-			$fileInfo['path'] = preg_replace("|^{$fileInfo['xid']}#(.*)|", '\\1', $identifier);
+			$fileInfo['xid'] = preg_replace('%^([_0-9]+)#.*%', '$1', $identifier);
+			$fileInfo['path'] = preg_replace("%^{$fileInfo['xid']}#(.*)%", '\\1', $identifier);
 			$fileInfo['name'] = basename($fileInfo['path']);
 			$fileInfo['path'] = dirname($fileInfo['path']);
 			return $fileInfo;
@@ -1149,11 +1146,11 @@ function getBbReferredToId($node) {
  **/
 function parseBbXid($string) {
 	/* there is an explicitly identified XID */
-	if (preg_match('|^/xid-([_0-9]+)|i', $string, $matches)) {
+	if (preg_match('%^/xid-([_0-9]+)%i', $string, $matches)) {
 		return $matches[1];
 		
 	/* ...or the string is just an XID entirely */
-	} elseif (preg_match('|^[_0-9]+$|', $string)) {
+	} elseif (preg_match('%^[_0-9]+$%', $string)) {
 		return $string;
 	}
 	return false;
@@ -1220,7 +1217,7 @@ function appendAttachmentLinks($itemXml, $resXml, $course, $text) {
  **/
 function relinkEmbeddedLinks($itemXml, $resXml, $course, $text) {
 	/* links to attached files */
-	if (preg_match_all('|@X@EmbeddedFile\.location@X@([^"]+)|', $text, $embeddedAttachments, PREG_SET_ORDER)) {
+	if (preg_match_all('%@X@EmbeddedFile\.location@X@([^"]+)%', $text, $embeddedAttachments, PREG_SET_ORDER)) {
 		foreach($embeddedAttachments as $embeddedAttachment) {
 			$fileName = urldecode($embeddedAttachment[1]);
 			
@@ -1277,7 +1274,7 @@ function relinkEmbeddedLinks($itemXml, $resXml, $course, $text) {
 		}
 		
 	/* links to content collection items */
-	} elseif (preg_match_all('|@X@EmbeddedFile\.requestUrlStub@X@bbcswebdav/xid-([_0-9]+)|', $text, $embeddedContentCollectionAttachments, PREG_SET_ORDER)) {
+	} elseif (preg_match_all('%@X@EmbeddedFile\.requestUrlStub@X@bbcswebdav/xid-([_0-9]+)%', $text, $embeddedContentCollectionAttachments, PREG_SET_ORDER)) {
 		foreach($embeddedContentCollectionAttachments as $embeddedAttachment) {
 			$xid = $embeddedAttachment[1];
 			if (isset($course[CONTENT_COLLECTION][$xid])) {
@@ -1289,17 +1286,17 @@ function relinkEmbeddedLinks($itemXml, $resXml, $course, $text) {
 		}
 		
 	/* miscellaneous internal links -- humorously including /, which will now redirect to Canvas! */
-	} elseif (preg_match_all('|@X@EmbeddedFile\.requestUrlStub@X@([^"]+)|', $text, $embeddedBbLinks, PREG_PATTERN_ORDER)) {
+	} elseif (preg_match_all('%@X@EmbeddedFile\.requestUrlStub@X@([^"]+)%', $text, $embeddedBbLinks, PREG_PATTERN_ORDER)) {
 		$text = str_replace($embeddedBbLinks[0], $embeddedBbLinks[1], $text);
-	} elseif (preg_match_all('|@X@[^"]*|', $text, $unmatchedEmbedCodes)) {
+	} elseif (preg_match_all('%@X@[^"]*%', $text, $unmatchedEmbedCodes)) {
 		debug_log(count($unmatchedEmbedCodes) . " unmatched embed codes in " . getBbXid($resXml));
 	}
 
 	// <img src="/courses/903/files/10539/preview" alt="Giant Purple Snorklewhacker.png" />
-	$text = preg_replace('|(src="/courses/[^"]+)(")|', '\\1/preview\\2', $text);
+	$text = preg_replace('%(src="/courses/[^"]+)(")%', '\\1/preview\\2', $text);
 	
 	// <a class=" instructure_image_thumbnail instructure_file_link" title="Giant Purple Snorklewhacker.png" href="/courses/903/files/10539/download?wrap=1">link to image</a>
-	$text = preg_replace('|(href="/courses/[^"]+)(")|', '\\1/download?wrap=1\\2', $text);
+	$text = preg_replace('%(href="/courses/[^"]+)(")%', '\\1/download?wrap=1\\2', $text);
 	
 	return $text;
 }
@@ -1630,7 +1627,7 @@ function createCanvasModuleItem($itemXml, $moduleItemType, $indent, $canvasItemA
  **/
 function createCanvasPage($itemXml, $resXml, $course) {
 	$title = getBbTitle($resXml);
-	if (preg_match('|[0-9a-z]|i', $title) == false) {
+	if (preg_match('%[0-9a-z]%i', $title) == false) {
 		$canvasTitle = getBbXid($resXml);
 	} else {
 		$canvasTitle = $title;
@@ -1830,7 +1827,7 @@ function main() {
 
 	/* are we uploading a file? */
 	if (isset($_FILES['BbExportFile'])) {
-	debug_log('START ' . getWorkingDir());
+	debugFlag('START', getWorkingDir());
 		if ($zipArchive = stageUpload()) {
 			$courseId = parseCourseUrl($_REQUEST["courseUrl"]);
 			$course = null;
@@ -1848,7 +1845,7 @@ function main() {
 			unlink($zipArchive);
 			flushDir(getWorkingDir());
 			rmdir(getWorkingDir());
-			debug_log('FINISH ' . getWorkingDir());
+			debugFlag('FINISH');
 
 		}
 	} else {
