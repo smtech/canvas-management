@@ -9,6 +9,13 @@
 /* REQUIRES crontab
    http://en.wikipedia.org/wiki/Cron */
 
+/* REQUIRES MySQL access
+   Configuration for access happens in the authentication file */
+
+/* REQUIRES HTTP Authentication
+   The sync process will assume a user with the same name and password
+   as the MySQL user */
+
 require_once('.ignore.calendar-ics-authentication.inc.php');
 require_once('config.inc.php');
 
