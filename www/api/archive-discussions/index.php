@@ -24,26 +24,23 @@ if (isset($_REQUEST['organizational_unit_url'])) {
 	debugFlag('START', getWorkingDir());
 	$path = parse_url($_REQUEST['organizational_unit_url'], PHP_URL_PATH);
 	$path = preg_replace('|(accounts/\d+/)?(\w+/\d+).*|', '$2', $path);
-	$json = calLCanvasApi('get', "$path/discussion_topics",
+	$discussionTopics = calLCanvasApi(CANVAS_API_GET, "$path/discussion_topics",
 		array(
 			'per_page' => '50'
 		)
 	); // FIXME: this doesn't really take into account pagination...
-	$discussionTopics = json_decode($json, true);
 	for ($i = 0; $i < count($discussionTopics); $i++) {
-		$json = callCanvasApi('get', "$path/discussion_topics/{$discussionTopics[$i]['id']}/entries",
+		$topicEntries = callCanvasApi(CANVAS_API_GET, "$path/discussion_topics/{$discussionTopics[$i]['id']}/entries",
 			array(
 				'per_page' => '50'
 			)
 		); // FIXME: this doesn't really take into account pagination...
-		$topicEntries = json_decode($json, true);
 		if (count($topicEntries)) {
 			$discussionTopics[$i]['entries'] = $topicEntries;
 		}
 	}
 	$jsonExport = json_encode($discussionTopics);
-	$json = callCanvasApi('get', $path);
-	$organizationalUnit = json_decode($json, true);
+	$organizationalUnit = callCanvasApi(CANVAS_API_GET, $path);
 	$fileName = buildPath(getWorkingDir(), date(TIMESTAMP_FORMAT) . preg_replace('|[^\w _]+|', '-', $organizationalUnit['name']) . NAME_SEPARATOR . (INCLUDE_ORGANIZATIONAL_UNIT_ID ? $organizationalUnit['id'] . NAME_SEPARATOR : '') . FILE_NAME . '.json');
 	file_put_contents($fileName, $jsonExport);
 	
