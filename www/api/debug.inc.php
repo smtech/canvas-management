@@ -45,14 +45,11 @@ function getToolNameForConsole() {
  **/
 $DEBUG_FLAG_TAG = null;
 function debugFlag($message, $tag = null) {
-	if (!isset($GLOBALS['DEBUG_FLAG_TAG'])) {
-		$GLOBALS['DEBUG_FLAG_TAG'] = time();
-		if (isset($tag)) {
-			if (function_exists($tag)) $GLOBALS['DEBUG_TAG_FLAG'] = $tag();
-			else $GLOBALS['DEBUG_TAG_FLAG'] = $tag;
-		}
+	global $DEBUG_FLAG_TAG;
+	if (!isset($DEBUG_FLAG_TAG)) {
+		$DEBUG_FLAG_TAG = (isset($tag) ? $tag : time());
 	}
-	debug_log(getToolNameForConsole(). ' ' . $GLOBALS['DEBUG_TAG_FLAG'] . ' ' . $message);
+	debug_log(getToolNameForConsole() . " $DEBUG_FLAG_TAG $message");
 }
 
 

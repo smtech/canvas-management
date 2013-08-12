@@ -1828,7 +1828,7 @@ function main() {
 
 	/* are we uploading a file? */
 	if (isset($_FILES['BbExportFile'])) {
-	debug_log(TOOL_NAME . ' START ' . getWorkingDir());
+	debugFlag('START', getWorkingDir());
 		if ($zipArchive = stageUpload()) {
 			$courseId = parseCourseUrl($_REQUEST["courseUrl"]);
 			$course = null;
@@ -1846,7 +1846,7 @@ function main() {
 			unlink($zipArchive);
 			flushDir(getWorkingDir());
 			rmdir(getWorkingDir());
-			debug_log(TOOL_NAME . ' FINISH ' . getWorkingDir());
+			debugFlag('FINISH');
 
 		}
 	} else {
