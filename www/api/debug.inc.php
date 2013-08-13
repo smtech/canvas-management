@@ -6,6 +6,7 @@ define('DEBUGGING_GENERAL', 1);
 define('DEBUGGING_LOG', 2);
 define('DEBUGGING_CANVAS_API', 4);
 define('DEBUGGING_MYSQL', 8);
+define('DEBUGGING_INFORMATION', 16);
 
 define('DEBUGGING_ALL', DEBUGGING_GENERAL |
 						DEBUGGING_LOG |
@@ -16,8 +17,8 @@ define('DEBUGGING_ALL', DEBUGGING_GENERAL |
 /**
  * Helper function to conditionally fill the log file with notes!
  **/
-function debug_log($message) {
-	if (DEBUGGING & DEBUGGING_LOG) {
+function debug_log($message, $debuggingLevel = DEBUGGING_LOG) {
+	if (DEBUGGING & $debuggingLevel) {
 		error_log($message);
 	}
 }
@@ -26,6 +27,8 @@ function debug_log($message) {
  * Render a console-friendly version of the toolname
  **/
 function getToolNameForConsole() {
+	$toolNameForConsole = (defined('TOOL_NAME_ABBREVIATION') ? TOOL_NAME_ABBREVIATION :TOOL_NAME);
+
 	return str_replace(
 		array(
 			'&larr;',
@@ -37,7 +40,7 @@ function getToolNameForConsole() {
 			'-->',
 			'<-->'
 		),
-		TOOL_NAME);
+		$toolNameForConsole);
 }
 
 /**

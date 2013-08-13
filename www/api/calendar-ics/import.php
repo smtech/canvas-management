@@ -16,6 +16,8 @@ require_once('../page-generator.inc.php');
 require_once('../canvas-api.inc.php');
 require_once('../mysql.inc.php');
 
+define('TOOL_NAME_ABBREVIATION', 'ICS Import');
+
 define('VALUE_OVERWRITE_CANVAS_CALENDAR', 'overwrite');
 
 define('SYNC_WARNING', '<em>Warning:</em> if you have set this synchronization to occur automatically, <em>do not</em> make any changes to your calendar in Canvas. Any changes you make in Canvas may be overwritten, deleted or even corrupt the synchronization process!');
@@ -213,13 +215,34 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 			");
 			while ($deletedEventCache = $deletedEventsResponse->fetch_assoc()) {
 				// FIXME: if this fails for one event, we need to be able to keep going (and it fails because the event isn't there... perhaps check to make sure it's really in the calendar before deleting it?)
-				$deletedEvent = callCanvasApi(
-					CANVAS_API_DELETE,
-					"/calendar_events/{$deletedEventCache['calendar_event[id]']}",
-					array(
-						'cancel_reason' => getSyncTimestamp()
-					)
-				);
+				try {
+					$deletedEvent = callCanvasApi(
+						CANVAS_API_DELETE,
+						"/calendar_events/{$deletedEventCache['calendar_event[id]']}",
+						array(
+							'cancel_reason' => getSyncTimestamp()
+						),
+						CANVAS_API_EXCEPTION_CLENT
+					);
+				} catch (Pest_Unauthorized $e) {
+					/* if the event has been deleted in Canvas, we'll get an error when
+					   we try to delete it a second time. We still need to delete it from
+					   our cache database, however */
+					debugFlag("cache out-of-sync: calendar_event[{$deletedEventCache['calendar_event[id]']}] no longer exists");
+				} catch (Pest_ClientError $e) {
+					displayError(
+						array(
+							'Status' => $PEST->lastStatus(),
+							'Error' => $PEST->lastBody(),
+							'Verb' => $verb,
+							'URL' => $url,
+							'Data' => $data
+						),
+						true,
+						'API Client Error'
+					);
+					exit;
+				}
 				mysqlQuery("
 					DELETE FROM `events`
 						WHERE
@@ -443,7 +466,7 @@ function checkCrontabVisibility() {
 						<option value="' . SCHEDULE_CUSTOM . '">Custom (define your own schedule)</option>
 					</optgroup>
 				</select>
-				<div id="crontab-section">
+				<div id="crontab-section" onLoad="checkCrontabVisibility();">
 					<label for="crontab">Custom Sync Schedule <span class="comment"><em>Warning:</em> Not for the faint of heart! Enter a valid crontab time specification. For more information, <a target="_blank" href="http://www.linuxweblog.com/crotab-tutorial">refer to this tutorial.</a></span>
 					<input id="crontab" name="crontab" type="text" value="0 0 * * *" />
 				</div>
