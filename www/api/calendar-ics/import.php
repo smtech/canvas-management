@@ -19,13 +19,22 @@ require_once('../mysql.inc.php');
 define('TOOL_NAME_ABBREVIATION', 'ICS Import');
 
 define('VALUE_OVERWRITE_CANVAS_CALENDAR', 'overwrite');
+define('VALUE_ENABLE_TAG_FILTER', 'enable_filter');
+	
+//TODO: make this warning more accurate and (perhaps) less scary
+define('WARNING_SYNC', '<em>Warning:</em> if you have set this synchronization to occur automatically, <em>do not</em> make any changes to your calendar in Canvas. Any changes you make in Canvas may be overwritten, deleted or even corrupt the synchronization process!');
 
-define('SYNC_WARNING', '<em>Warning:</em> if you have set this synchronization to occur automatically, <em>do not</em> make any changes to your calendar in Canvas. Any changes you make in Canvas may be overwritten, deleted or even corrupt the synchronization process!');
+define('WARNING_TAG_FILTER', '<em>Note:</em> included tags will take precedence over excluded tags (so, if an event is tagged with both an included tag and an excluded tag, it will be included).');
 
 require_once('common.inc.php');
 
+/**
+ * compute the calendar context for the canvas object based on its URL
+ **/
 function getCanvasContext($canvasUrl) {
 	// TODO: accept calendar2?contexts links too (they would be an intuitively obvious link to use, after all)
+	// FIXME: users aren't working
+	// TODO: it would probably be better to look up users by email address than URL
 	/* get the context (user, course or group) for the canvas URL */
 	$canvasContext = array();
 	if (preg_match('%(https?://)?(' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/(((course)|(accounts/\d+/((group)|(user))))s)/(\d+)).*%', $_REQUEST['canvas_url'], $matches)) {
@@ -38,7 +47,29 @@ function getCanvasContext($canvasUrl) {
 	return false;
 }
 
+/**
+ * Filter and clean event data before posting to Canvas
+ *
+ * This must happen AFTER the event hash has been calculated!
+ **/
+function filterEvent($event) {
+	// TODO: implement filtering by [tags] -- return false if this event should not be included
+
+	/* strip off [bracket style] tags at the end of the event title */
+	$event['event_text'] = preg_replace('%^(.*) (\[[^\]]+\])+$%', '\\1', $event['event_text']);
+	
+	/* strip HTML tags from the event title */
+	$$event['event_text'] = preg_replace('%<[^>]*>%', '', $event['event_text']);
+
+	/* replace newlines with <br /> to maintain formatting */
+	$event['description'] = str_replace( "\n", "<br />\n", $event['description']);
+	
+	return $event;
+}
+
 // TODO: it would be nice to be able to cleanly remove a synched calendar
+// TODO: it would be nice to be able unschedule a scheduled sync without removing the calendar
+// TODO: how about something to extirpate non-synced data (could be done right now by brute force -- once overwrite is implemented -- by marking all of the cached events as invalid and then importing the calendar and overwriting, but that's a little icky)
 
 /* do we have the vital information (an ICS feed and a URL to a canvas
    object)? */
@@ -149,8 +180,8 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 											`id` = '{$eventCache['id']}'
 								");
 								
-							/* otherwise, cache the new version of the event */
-							} else {
+							/* otherwise, filter this new event into the database */
+							} elseif ($$event = filterEvent($event)) {
 								/* multi-day event instance start times need to be changed to _this_ date */
 								$start = new DateTime("@{$event['start_unixtime']}");
 								$start->setTimeZone(new DateTimeZone(LOCAL_TIMEZONE));
@@ -160,26 +191,16 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 								$end->setTimeZone(new DateTimeZone(LOCAL_TIMEZONE));
 								$end->setDate(substr($date, 0, 4), substr($date, 4, 2), substr($date, 6, 2));
 
-								/* strip off [bracket style] tags at the end of the event title */
-								$cleanEventTitle = preg_replace('%^(.*) (\[[^\]]+\])+$%', '\\1', $event['event_text']);
-								
-								/* strip HTML tags from the event title */
-								$cleanEventTitle = preg_replace('%<[^>]*>%', '', $cleanEventTitle);
-
 								$calendarEvent = callCanvasApi(
 									CANVAS_API_POST,
 									"/calendar_events",
 									array(
 										'calendar_event[context_code]' => "{$canvasContext['context']}_{$canvasObject['id']}",
-										'calendar_event[title]' => $cleanEventTitle,
-										'calendar_event[description]' => str_replace( // replace newlines with <br /> to maintain formatting
-											"\n",
-											"<br />\n",
-											$event['description']
-										),
+										'calendar_event[title]' => $event['event_text'],
+										'calendar_event[description]' => $event['description'],
 										'calendar_event[start_at]' => $start->format(CANVAS_TIMESTAMP_FORMAT),
 										'calendar_event[end_at]' => $end->format(CANVAS_TIMESTAMP_FORMAT),
-										'calendar_event[location_name]' => urldecode($event['location'])
+										'calendar_event[location_name]' => $event['location']
 									)
 								);
 								// FIXME: ics_data and canvas_data don't seem to be being entered!
@@ -415,22 +436,31 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 		padding: 20px;
 	}
 	
-	#crontab {
+	.code {
 		font-family: Inconsolata, Monaco, "Courier New", Courier, monospace;
-		width: 10em;
+		width: 20em;
 	}
 	
-	#crontab-section {
-		margin-top: 10px;
+	#crontab-section, #tag-filter-section {
 		visibility: hidden;
+		margin-top: 0px;
 	}
 --></style>
 <script type="text/javascript"><!--' . "
-function checkCrontabVisibility() {
-	if (document.getElementById('schedule').value == '" . SCHEDULE_CUSTOM . "') {
-		document.getElementById('crontab-section').style.visibility = 'visible';
+
+var crontabSection = '<label for=\"crontab\">Custom Sync Schedule <span class=\"comment\"><em>Warning:</em> Not for the faint of heart! Enter a valid crontab time specification. For more information, <a target=\"_blank\" href=\"http://www.linuxweblog.com/crotab-tutorial\">refer to this tutorial.</a></span></label><input id=\"crontab\" name=\"crontab\" type=\"text\" class=\"code\" value=\"0 0 * * *\" />';
+
+var tagFilterSection = '<label for=\"include_tags\">Tags to Include <span class=\"comment\">A list of tags to include in the import (e.g. <code>[PAR][FAC][Avocados][Pears]</code>). " . WARNING_TAG_FILTER . "</span></label><input id=\"include_tags\ name=\"include_tags\" class=\"code\" type=\"text\" /><label for=\"exclude_tags\">Tags to Exclude <span class=\"comment\">A list of tags to exclude from the import (e.g. <code>[PAR][FAC][Avocados][Pears]</code>). " . WARNING_TAG_FILTER . "</span></label><input id=\"exclude_tags\ name=\"exclude_tags\" class=\"code\" type=\"text\" />';
+
+function toggleVisibility(target, visibleTrigger, innerHTML) {
+	var targetElement = document.getElementById(target);
+	if (visibleTrigger) {
+		targetElement.style.visibility = 'visible';
+		targetElement.innerHTML = innerHTML;
+		toggleVisibilityCache[target] = null;
 	} else {
-		document.getElementById('crontab-section').style.visibility = 'hidden';
+		targetElement.style.visibility = 'hidden';
+		targetElement.innerHTML = '';
 	}
 }
 " . '//--></script>
@@ -451,25 +481,36 @@ function checkCrontabVisibility() {
 		</tr>
 		<tr>
 			<td colspan="3">
-				<label for="overwrite"><input id="overwrite" name="overwrite" type="checkbox" value="' . VALUE_OVERWRITE_CANVAS_CALENDAR . '" disabled /> Replace existing calendar information <span class="comment">Checking this box will <em>delete</em> all of your current Canvas calendar information for this user/group/course.</span></label>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<label for="schedule">Schedule automatic updates from this feed to this course <span class="comment">' . SYNC_WARNING . '</span></label>
-				<select id="schedule" name="sync" onChange="checkCrontabVisibility();">
-					<option value="' . SCHEDULE_ONCE . '">One-time import only</option>
-					<optgroup label="Recurring">
-						<option value="' . SCHEDULE_WEEKLY . '">Weekly (Saturday at midnight)</option>
-						<option value="' . SCHEDULE_DAILY . '">Daily (at midnight)</option>
-						<option value="' . SCHEDULE_HOURLY . '">Hourly (at the top of the hour)</option>
-						<option value="' . SCHEDULE_CUSTOM . '">Custom (define your own schedule)</option>
-					</optgroup>
-				</select>
-				<div id="crontab-section" onLoad="checkCrontabVisibility();">
-					<label for="crontab">Custom Sync Schedule <span class="comment"><em>Warning:</em> Not for the faint of heart! Enter a valid crontab time specification. For more information, <a target="_blank" href="http://www.linuxweblog.com/crotab-tutorial">refer to this tutorial.</a></span>
-					<input id="crontab" name="crontab" type="text" value="0 0 * * *" />
-				</div>
+				<dl>
+					<dt>
+						<label for="overwrite"><input id="overwrite" name="overwrite" type="checkbox" value="' . VALUE_OVERWRITE_CANVAS_CALENDAR . '" unchecked disabled /> Replace existing calendar information <span class="comment">Checking this box will <em>delete</em> all of your current Canvas calendar information for this user/group/course.</span></label>
+					</dt>
+					<dt>
+						<label for="enable_tag_filter"><input id="enable_tag_filter" name="enable_tag_filter" type="checkbox" value="' . VALUE_ENABLE_TAG_FILTER . '" onChange="toggleVisibility(\'tag-filter-section\', this.checked, tagFilterSection);" disabled />Filter by tags <span class="comment">Filter calendar events by text tags included in the event title (e.g. "All Day Workshop [Faculty][Administration]").</span></label>
+					</dt>
+					<dd>
+						<div id="tag-filter-section" onLoad="toggleVisibility(this.id, document.getElementById(\'enable_tag_filter\').checked, tagFilterSection);">
+						TAG FILTER INFO
+						</div>
+					</dd>
+				<dl>
+					<dt>
+						<label for="schedule">Schedule automatic updates from this feed to this course <span class="comment">' . WARNING_SYNC . '</span></label>
+						<select id="schedule" name="sync" onChange="toggleVisibility(\'crontab-section\', this.value == \'' . SCHEDULE_CUSTOM . '\', crontabSection);">
+							<option value="' . SCHEDULE_ONCE . '">One-time import only</option>
+							<optgroup label="Recurring">
+								<option value="' . SCHEDULE_WEEKLY . '">Weekly (Saturday at midnight)</option>
+								<option value="' . SCHEDULE_DAILY . '">Daily (at midnight)</option>
+								<option value="' . SCHEDULE_HOURLY . '">Hourly (at the top of the hour)</option>
+								<option value="' . SCHEDULE_CUSTOM . '">Custom (define your own schedule)</option>
+							</optgroup>
+						</select>
+					</dt>
+					<dd>
+						<div id="crontab-section" onLoad="toggleVisibility(this.id, document.getElementById(\'schedule\').value == \'' . SCHEDULE_CUSTOM . '\', crontabSection);">
+						</div>
+					</dd>
+				</dl>
 			</td>
 		</tr>
 	</table>
