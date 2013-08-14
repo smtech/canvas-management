@@ -70,12 +70,13 @@ function filterEvent($event) {
 // TODO: it would be nice to be able to cleanly remove a synched calendar
 // TODO: it would be nice to be able unschedule a scheduled sync without removing the calendar
 // TODO: how about something to extirpate non-synced data (could be done right now by brute force -- once overwrite is implemented -- by marking all of the cached events as invalid and then importing the calendar and overwriting, but that's a little icky)
+// TODO: right now, if a user changes a synced event in Canvas, it will never get "corrected" back to the ICS feed... we could cache the Canvas events as well as the ICS feed and do a periodic (much less frequent, given the speed of looking everything up in the API) check and re-sync modified events too
 
 /* do we have the vital information (an ICS feed and a URL to a canvas
    object)? */
 if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 
-	// FIXME: need to do OAuth here, so that users are forced to authenticate to verify that they have permission to update these calendars!
+	// TODO: need to do OAuth here, so that users are forced to authenticate to verify that they have permission to update these calendars!
 	
 	if ($canvasContext = getCanvasContext($_REQUEST['canvas_url'])) {
 		/* look up the canvas object -- mostly to make sure that it exists! */
@@ -203,7 +204,6 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 										'calendar_event[location_name]' => $event['location']
 									)
 								);
-								// FIXME: ics_data and canvas_data don't seem to be being entered!
 								$icalEventJson = json_encode($event);
 								$calendarEventJson = json_encode($calendarEvent);
 								mysqlQuery("
@@ -235,7 +235,6 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 						`synced` != '" . getSyncTimestamp() . "'
 			");
 			while ($deletedEventCache = $deletedEventsResponse->fetch_assoc()) {
-				// FIXME: if this fails for one event, we need to be able to keep going (and it fails because the event isn't there... perhaps check to make sure it's really in the calendar before deleting it?)
 				try {
 					$deletedEvent = callCanvasApi(
 						CANVAS_API_DELETE,
@@ -385,7 +384,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 			if ($_REQUEST['overwrite'] == VALUE_OVERWRITE_CANVAS_CALENDAR) {
 			}
 			
-			// FIXME: deal with messaging based on context
+			// TODO: deal with messaging based on context
 		
 			debugFlag('FINISH');
 			exit;
@@ -412,7 +411,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 	}	
 } else {
 	/* display form to collect target and source URLs */
-	// FIXME: add javascript to force selection of overwrite if a recurring sync is selected
+	// TODO: add javascript to force selection of overwrite if a recurring sync is selected
 	displayPage('
 <style><!--
 	.calendarUrl {
