@@ -56,13 +56,13 @@ function filterEvent($event) {
 	// TODO: implement filtering by [tags] -- return false if this event should not be included
 
 	/* strip off [bracket style] tags at the end of the event title */
-	$event['event_text'] = strip_tags($event['event_text']);
+	$event['event_text'] = preg_replace('%^(.*) (\[[^\]]+\])+$%', '\\1', $event['event_text']);
 	
 	/* strip HTML tags from the event title */
-	$$event['event_text'] = preg_replace('%<[^>]*>%', '', $event['event_text']);
+	$event['event_text'] = strip_tags($event['event_text']);
 
 	/* replace newlines with <br /> to maintain formatting */
-	$event['description'] = str_replace( "\n", "<br />\n", $event['description']);
+	$event['description'] = str_replace( PHP_EOL , '<br />' . PHP_EOL, $event['description']);
 	
 	return $event;
 }
@@ -182,7 +182,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 								");
 								
 							/* otherwise, filter this new event into the database */
-							} elseif ($$event = filterEvent($event)) {
+							} elseif ($event = filterEvent($event)) {
 								/* multi-day event instance start times need to be changed to _this_ date */
 								$start = new DateTime("@{$event['start_unixtime']}");
 								$start->setTimeZone(new DateTimeZone(LOCAL_TIMEZONE));
