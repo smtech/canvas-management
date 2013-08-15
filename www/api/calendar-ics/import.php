@@ -56,7 +56,7 @@ function filterEvent($event) {
 	// TODO: implement filtering by [tags] -- return false if this event should not be included
 
 	/* strip off [bracket style] tags at the end of the event title */
-	$event['event_text'] = preg_replace('%^(.*) (\[[^\]]+\])+$%', '\\1', $event['event_text']);
+	$event['event_text'] = strip_tags($event['event_text']);
 	
 	/* strip HTML tags from the event title */
 	$$event['event_text'] = preg_replace('%<[^>]*>%', '', $event['event_text']);
