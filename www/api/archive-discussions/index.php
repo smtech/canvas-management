@@ -7,16 +7,16 @@ require_once('../.ignore.read-only-authentication.inc.php');
 require_once('config.inc.php');
 
 /* handles HTML page generation */
-require_once('../page-generator.inc.php');
+require_once('../stable/page-generator.inc.php');
 
 /* handles the core of the Canvas API interactions */
-require_once('../canvas-api.inc.php');
+require_once('../stable/canvas-api.inc.php');
 
 /* handles working directory functions */
-require_once('../working-directory.inc.php');
+require_once('../stable/working-directory.inc.php');
 
 /* we do directly work with Pest on some AWS API calls */
-require_once('../Pest.php');
+require_once('../stable/Pest.php');
 
 // TODO: implement an import as well as an export!
 
