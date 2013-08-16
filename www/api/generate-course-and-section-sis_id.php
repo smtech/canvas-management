@@ -4,7 +4,7 @@
 <?php
 
 require_once('.ignore.stmarksschool-test-authentication.inc.php');
-require_once('stable/canvas-api.inc.php');
+require_once('dev/canvas-api.inc.php');
 
 $apiUrl = '/accounts/1/courses';
 
