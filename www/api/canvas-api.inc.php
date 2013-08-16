@@ -41,10 +41,12 @@ function buildCanvasAuthorizationHeader() {
  * Parse Canvas API JSON response pagination
  **/
 $CANVAS_API_PAGINATION = array();
+$CANVAS_API_PAGINATION_PEST = null; // Separating this out into a separate Pest instance, in case the pagination takes me to a different server, for whatever reason (¡paranoia!)
 function processCanvasPaginationLinks($apiInstance) {
-	global $CANVAS_API_PAGINATION;
+	global $CANVAS_API_PAGINATION, $CANVAS_API_PAGINATION_PEST;
+	$CANVAS_API_PAGINATION_PEST = $apiInstance;
 	$CANVAS_API_PAGINATION = array();
-	preg_match('%<([^>]*)>\s*,\s*rel="([^"]+)"%', $apiInstance->lastHeader('link'), $links, PREG_SET_ORDER);
+	preg_match_all('%<([^>]*)>\s*;\s*rel="([^"]+)"%', $CANVAS_API_PAGINATION_PEST->lastHeader('link'), $links, PREG_SET_ORDER);
 	foreach ($links as $link)
 	{
 		$CANVAS_API_PAGINATION[$link[2]] = $link[1];
@@ -52,10 +54,10 @@ function processCanvasPaginationLinks($apiInstance) {
 }
 
 function callCanvasApiPageLink($page) {
-	global $CANVAS_API_PAGINATION;
+	global $CANVAS_API_PAGINATION, $CANVAS_API_PAGINATION_PEST;
 	if ($CANVAS_API_PAGINATION[$page]) {
-		$pagePest = new Pest($CANVAS_API_PAGINATION[$page]);
-		return callCanvasApi(CANVAS_API_GET, '', '', $pagePest);
+		$CANVAS_API_PAGINATION_PEST = new Pest($CANVAS_API_PAGINATION[$page]);
+		return callCanvasApiPaginated(CANVAS_API_GET, '', '', $CANVAS_API_PAGINATION_PEST);
 	}
 	return false;
 }
@@ -74,6 +76,45 @@ function callCanvasApiFirstPage() {
 
 function callCanvasApiLastPage() {
 	return callCanvasApiPageLink('last');
+}
+
+function getCanvasApiPageNumber($page) {
+	global $CANVAS_API_PAGINATION;
+	if (isset($CANVAS_API_PAGINATION[$page])) {
+		parse_str(parse_url($CANVAS_API_PAGINATION[$page], PHP_URL_QUERY), $query);
+		return $query['page'];
+	}
+	return -1;
+}
+
+function getCanvasApiNextPageNumber() {
+	return getCanvasApiPageNumber('next');
+}
+
+function getCanvasApiPrevPageNumber() {
+	return getCanvasApiPageNumber('prev');
+}
+
+function getCanvasApiFirstPageNumber() {
+	return getCanvasApiPageNumber('first');
+}
+
+function getCanvasApiLastPageNumber() {
+	return getCanvasApiPageNumber('last');
+}
+
+function getCanvasApiCurrentPageNumber() {
+	$next = getCanvasApiNextPageNumber();
+	if ($next > -1) {
+		return $next - 1;
+	} else {
+		$prev = getCanvasApiPrevPageNumber();
+		if ($prev > -1) {
+			return $prev + 1;
+		} else {
+			return getCanvasApiFirstPageNumber();
+		}
+	}
 }
 
 /**
@@ -151,7 +192,6 @@ function callCanvasApi($verb, $url, $data = array(), $apiInstance = null) {
 		exit;
 	}
 	
-	processCanvasPaginationLinks($apiInstance);
 	$responseArray = json_decode($response, true);
 	
 	displayError(
@@ -170,6 +210,15 @@ function callCanvasApi($verb, $url, $data = array(), $apiInstance = null) {
 	);
 	
 	return $responseArray;
+}
+
+function callCanvasApiPaginated($verb, $url, $data = array(), $apiInstance = null) {
+	if (!$apiInstance) {
+		$apiInstance = $GLOBALS['CANVAS_API_PEST'];
+	}
+	$response = callCanvasApi($verb, $url, $data, $apiInstance);
+	processCanvasPaginationLinks($apiInstance);
+	return $response;
 }
 
 ?>

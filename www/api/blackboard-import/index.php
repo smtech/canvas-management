@@ -35,16 +35,16 @@ require_once('.ignore.blackboard-import-authentication.inc.php');
 require_once('config.inc.php');
 
 /* handles HTML page generation */
-require_once('../stable/page-generator.inc.php');
+require_once('../page-generator.inc.php');
 
 /* handles working directory functions */
-require_once('../stable/working-directory.inc.php');
+require_once('../working-directory.inc.php');
 
 /* handles the core of the Canvas API interactions */
-require_once('../stable/canvas-api.inc.php');
+require_once('../canvas-api.inc.php');
 
 /* we do directly work with Pest on some AWS API calls */
-require_once('../stable/Pest.php');
+require_once('../Pest.php');
 
 
 /***********************************************************************

@@ -12,11 +12,13 @@ define('DEBUGGING_ALL', DEBUGGING_GENERAL |
 						DEBUGGING_CANVAS_API |
 						DEBUGGING_MYSQL);
 
-
 /**
  * Helper function to conditionally fill the log file with notes!
  **/
 function debug_log($message) {
+	if (!defined('DEBUGGING')) {
+		define('DEBUGGING', DEBUGGING_LOG);
+	}
 	if (DEBUGGING & DEBUGGING_LOG) {
 		error_log($message);
 	}
@@ -30,12 +32,22 @@ function getToolNameForConsole() {
 		array(
 			'&larr;',
 			'&rarr;',
-			'&harr;'
+			'&harr;',
+			'&amp;',
+			'&ldquo;',
+			'&rdquo;',
+			'&lsquo;',
+			'&rsquo;'
 		),
 		array(
 			'<--',
 			'-->',
-			'<-->'
+			'<-->',
+			'&',
+			'"',
+			'"',
+			"'",
+			"'"
 		),
 		TOOL_NAME);
 }

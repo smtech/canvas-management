@@ -3,19 +3,24 @@
 <pre>
 <?php
 
-require_once('.ignore.stmarksschool-test-authentication.inc.php');
-require_once('dev/canvas-api.inc.php');
+define ('TOOL_NAME', 'Generate Missing Course &amp; Section SIS ID&rsquo;s');
 
-$apiUrl = '/accounts/1/courses';
+require_once('../.ignore.stmarksschool-test-authentication.inc.php');
+require_once('../debug.inc.php');
+require_once('../canvas-api.inc.php');
+
+debugFlag('START');
+
+$courses = callCanvasApiPaginated(
+	CANVAS_API_GET,
+	'/accounts/1/courses'
+);
+$page = 1;
 
 do {
-	echo $apiUrl . PHP_EOL;
-
-	$courses = callCanvasApi(
-		CANVAS_API_GET,
-		$apiUrl
-	);
-	$apiUrl = preg_replace('%.*<' . CANVAS_API_URL . '([^>]+)>; rel="next".*%', '\\1', $PEST->lastHeader('link'));
+	$pageProgress = 'processing page ' . getCanvasApiCurrentPageNumber() . ' of ' . getCanvasApiLastPageNumber() . '...';
+	echo $pageProgress . PHP_EOL;
+	debugFlag($pageProgress);
 	
 	foreach ($courses as $course) {
 		$courseLabel = false;
@@ -55,7 +60,9 @@ do {
 		}
 	}
 	flush();
-} while (preg_match('%/accounts/1/courses.*%', $apiUrl));
+} while ($courses = callCanvasApiNextPage());
+
+debugFlag('FINISH');
 
 ?>
 </pre>
