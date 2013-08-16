@@ -16,7 +16,7 @@ var customMenu = {
 		{
 			sections: [
 				{
-					title: 'Lion Hub',
+					title: 'Communication &amp; Storage',
 					items: [
 						{
 							title: 'Email',
@@ -24,6 +24,28 @@ var customMenu = {
 							target: '_blank',
 							url: 'http://mail.stmarksschool.org'
 						},
+						{
+							title: 'Google Drive',
+							target: '_blank',
+							url: 'http://drive.google.com/a/stmarksschool.org/'
+						},
+						{
+							title: 'Minerva Web Access',
+							target: '_blank',
+							url: 'http://minerva.stmarksschool.org/',
+							userClass: [USER_CLASS_FACULTY]
+						},
+						{
+							title: 'Athena Web Access',
+							target: '_blank',
+							url: 'http://athena.stmarksschoo.org/',
+							userClass: [USER_CLASS_STUDENT]
+						}
+					]
+				},
+				{
+					title: 'On Campus',
+					items: [
 						{
 							title: 'Weekend Activities Sign-ups',
 							target: '_blank',
@@ -44,48 +66,6 @@ var customMenu = {
 							url: 'http://netclassroom.stmarksschool.org'
 						},
 						{
-							title: 'Help Desk',
-							subtitle: 'Technology Issues',
-							target: '_blank',
-							url: 'http://helpdesk.stmarksschool.org',
-							userClass: [USER_CLASS_FACULTY]
-						},
-						{
-							title: 'School Dude',
-							subtitle: 'School ID 615666807',
-							target: '_blank',
-							url: 'http://www.myschoolbuilding.com/myschoolbuilding/msbdefault_email.asp?frompage=myrequest.asp',
-							userClass: [USER_CLASS_FACULTY]
-						},
-						{
-							title: 'Communications Request',
-							target: '_blank',
-							url: 'http://www.stmarksschool.org/about-st-marks/communications-department/index.aspx',
-							userClass: [USER_CLASS_FACULTY]
-						},
-						{
-							title: 'Google Drive',
-							target: '_blank',
-							url: 'http://drive.google.com/a/stmarksschool.org/'
-						},
-						{
-							title: 'Minerva Web Access',
-							target: '_blank',
-							url: 'http://minerva.stmarksschool.org/',
-							userClass: [USER_CLASS_FACULTY]
-						},
-						{
-							title: 'Athena Web Access',
-							target: '_blank',
-							url: 'http://athena.stmarksschoo.org/',
-							userClass: [USER_CLASS_STUDENT]
-						},
-						{
-							title: 'SMS',
-							target: '_blank',
-							url: 'http://sms.stmarksschool.org'
-						},
-						{
 							title: 'FLIK Menu',
 							target: '_blank',
 							url: 'http://www.myschooldining.com/SMS/?cmd=menus'
@@ -94,11 +74,22 @@ var customMenu = {
 							title: 'Athletics',
 							target: '_blank',
 							url: 'http://www.stmarksschool.org/athletics/teamlisting.aspx'
-						},
+						}
+					]
+				},
+				{
+					title: 'Information',
+					items: [
 						{
 							title: 'Lynda.com',
+							subtitle: 'Software Training &amp; Tutorials',
 							target: '_blank',
-							url: 'http://www.lynda.com'
+							url: 'http://iplogin.lynda.com'
+						},
+						{
+							title: 'SMS',
+							target: '_blank',
+							url: 'http://sms.stmarksschool.org'
 						},
 						{
 							title: 'Tech Support Documents',
@@ -110,6 +101,29 @@ var customMenu = {
 							target: '_blank',
 							url: 'https://lionhub.stmarksschool.org/pages/human-resource-documents',
 							userClass: [USER_CLASS_FACULTY]
+						}
+					]
+				},
+				{
+					title: 'Service Desks',
+					userClass: [USER_CLASS_FACULTY],
+					items: [
+						{
+							title: 'Help Desk',
+							subtitle: 'Technology Issues',
+							target: '_blank',
+							url: 'http://helpdesk.stmarksschool.org'
+						},
+						{
+							title: 'School Dude',
+							subtitle: 'School ID 615666807',
+							target: '_blank',
+							url: 'http://www.myschoolbuilding.com/myschoolbuilding/msbdefault_email.asp?frompage=myrequest.asp'
+						},
+						{
+							title: 'Communications Request',
+							target: '_blank',
+							url: 'http://www.stmarksschool.org/about-st-marks/communications-department/index.aspx'
 						}
 					]
 				}
@@ -172,7 +186,7 @@ function appendMenu(m) {
 		{
 			html += '<td class="menu-item-drop-column">';
 			for (j = 0; j < m.columns[i].sections.length; j++) {
-				if (!m.columns[i].sections[j].userClass || m.columns[i].userClass.indexOf(userClass) > -1) {
+				if (!m.columns[i].sections[j].userClass || m.columns[i].sections[j].userClass.indexOf(userClass) > -1) {
 					html += (m.columns[i].sections[j].title !== undefined ? '<span class="menu-item-heading">' + m.columns[i].sections[j].title + '</span>' : '');
 					html += '<ul class="menu-item-drop-column-list">';
 		
