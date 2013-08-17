@@ -3,9 +3,9 @@
 require_once('.ignore.calendar-ics-authentication.inc.php');
 require_once('config.inc.php');
 
-require_once('../stable/canvas-api.inc.php');
-require_once('../stable/mysql.inc.php');
-require_once('../stable/Pest.php');
+require_once('../canvas-api.inc.php');
+require_once('../mysql.inc.php');
+require_once('../Pest.php');
 
 require_once('common.inc.php');
 
