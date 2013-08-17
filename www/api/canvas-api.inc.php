@@ -38,11 +38,93 @@ function buildCanvasAuthorizationHeader() {
 }
 
 /**
+ * Parse Canvas API JSON response pagination
+ **/
+$CANVAS_API_PAGINATION = array();
+$CANVAS_API_PAGINATION_PEST = null; // Separating this out into a separate Pest instance, in case the pagination takes me to a different server, for whatever reason (¡paranoia!)
+function processCanvasPaginationLinks($apiInstance) {
+	global $CANVAS_API_PAGINATION, $CANVAS_API_PAGINATION_PEST;
+	$CANVAS_API_PAGINATION_PEST = $apiInstance;
+	$CANVAS_API_PAGINATION = array();
+	preg_match_all('%<([^>]*)>\s*;\s*rel="([^"]+)"%', $CANVAS_API_PAGINATION_PEST->lastHeader('link'), $links, PREG_SET_ORDER);
+	foreach ($links as $link)
+	{
+		$CANVAS_API_PAGINATION[$link[2]] = $link[1];
+	}
+}
+
+function callCanvasApiPageLink($page) {
+	global $CANVAS_API_PAGINATION, $CANVAS_API_PAGINATION_PEST;
+	if ($CANVAS_API_PAGINATION[$page]) {
+		$CANVAS_API_PAGINATION_PEST = new Pest($CANVAS_API_PAGINATION[$page]);
+		return callCanvasApiPaginated(CANVAS_API_GET, '', '', $CANVAS_API_PAGINATION_PEST);
+	}
+	return false;
+}
+
+function callCanvasApiNextPage() {
+	return callCanvasApiPageLink('next');
+}
+
+function callCanvasApiPrevPage() {
+	return callCanvasApiPageLink('prev');
+}
+
+function callCanvasApiFirstPage() {
+	return callCanvasApiPageLink('first');
+}
+
+function callCanvasApiLastPage() {
+	return callCanvasApiPageLink('last');
+}
+
+function getCanvasApiPageNumber($page) {
+	global $CANVAS_API_PAGINATION;
+	if (isset($CANVAS_API_PAGINATION[$page])) {
+		parse_str(parse_url($CANVAS_API_PAGINATION[$page], PHP_URL_QUERY), $query);
+		return $query['page'];
+	}
+	return -1;
+}
+
+function getCanvasApiNextPageNumber() {
+	return getCanvasApiPageNumber('next');
+}
+
+function getCanvasApiPrevPageNumber() {
+	return getCanvasApiPageNumber('prev');
+}
+
+function getCanvasApiFirstPageNumber() {
+	return getCanvasApiPageNumber('first');
+}
+
+function getCanvasApiLastPageNumber() {
+	return getCanvasApiPageNumber('last');
+}
+
+function getCanvasApiCurrentPageNumber() {
+	$next = getCanvasApiNextPageNumber();
+	if ($next > -1) {
+		return $next - 1;
+	} else {
+		$prev = getCanvasApiPrevPageNumber();
+		if ($prev > -1) {
+			return $prev + 1;
+		} else {
+			return getCanvasApiFirstPageNumber();
+		}
+	}
+}
+
+/**
  * Pass-through a Pest request with added Canvas authorization token
  **/
-$PEST = new Pest(CANVAS_API_URL);
-function callCanvasApi($verb, $url, $data = array()) {
-	global $PEST;
+$CANVAS_API_PEST = new Pest(CANVAS_API_URL);
+function callCanvasApi($verb, $url, $data = array(), $apiInstance = null) {
+	if (!$apiInstance) {
+		$apiInstance = $GLOBALS['CANVAS_API_PEST'];
+	}
 	$response = null;
 
 	$clientRetryCount = 0;
@@ -50,7 +132,7 @@ function callCanvasApi($verb, $url, $data = array()) {
 	do {
 		$retry = false;
 		try {
-			$response = $PEST->$verb($url, $data, buildCanvasAuthorizationHeader());
+			$response = $apiInstance->$verb($url, $data, buildCanvasAuthorizationHeader());
 		} catch (Pest_ServerError $e) {
 			/* who knows what goes on in the server's mind... try again */
 			$serverRetryCount++;
@@ -81,8 +163,8 @@ function callCanvasApi($verb, $url, $data = array()) {
 	if ($clientRetryCount == API_CLIENT_ERROR_RETRIES) {
 		displayError(
 			array(
-				'Status' => $PEST->lastStatus(),
-				'Error' => $PEST->lastBody(),
+				'Status' => $apiInstance->lastStatus(),
+				'Error' => $apiInstance->lastBody(),
 				'Verb' => $verb,
 				'URL' => $url,
 				'Data' => $data
@@ -97,8 +179,8 @@ function callCanvasApi($verb, $url, $data = array()) {
 	if ($serverRetryCount == API_SERVER_ERROR_RETRIES) {
 		displayError(
 			array(
-				'Status' => $PEST->lastStatus(),
-				'Error' => $PEST->lastBody(),
+				'Status' => $apiInstance->lastStatus(),
+				'Error' => $apiInstance->lastBody(),
 				'Verb' => $verb,
 				'URL' => $url,
 				'Data' => $data
@@ -128,6 +210,15 @@ function callCanvasApi($verb, $url, $data = array()) {
 	);
 	
 	return $responseArray;
+}
+
+function callCanvasApiPaginated($verb, $url, $data = array(), $apiInstance = null) {
+	if (!$apiInstance) {
+		$apiInstance = $GLOBALS['CANVAS_API_PEST'];
+	}
+	$response = callCanvasApi($verb, $url, $data, $apiInstance);
+	processCanvasPaginationLinks($apiInstance);
+	return $response;
 }
 
 ?>
