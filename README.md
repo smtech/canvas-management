@@ -56,6 +56,11 @@ A tool to generate a JSON export of a course or group's discussions. Particularl
 
 
 
+### [dev-canvas-api](http://github.com/smtech/canvas/tree/dev-canvas-api/www/api/dev/canvas-api.inc.php)
+
+Working on a more robust, mature library for interacting with the Canvas API. More work on this means less work on every subsequent script.
+
+
 ### [dev-course-calendar](http://github.com/smtech/canvas/tree/dev-course-calendar/www/javascript/course-calendar.js)
 
 A global JavaScript add-on to insert a link to the course calendar (that is, to a view of the calendar using that course as the filter context) into the course navigation menu. The location of the course calendar link can be customized i nthe javascript file.

@@ -4,6 +4,7 @@ define('TOOL_NAME', 'Blackboard 8 &rarr; Canvas Import Tool'); // what the tool 
 
 define('UPLOAD_DIR', '/var/www-data/canvas/blackboard-import'); // where we'll store uploaded files
 define('WORKING_DIR', UPLOAD_DIR . '/tmp'); // where we'll be dumping temp files (and cleaning up, too!)
+
 require_once('../working-directory.inc.php');
 
 define('UPLOAD_STAGING_DIR', buildPath(dirname(__FILE__), 'upload-staging')); // directory of the publicly accessible directory files will be staged in to transfer to Canvas
