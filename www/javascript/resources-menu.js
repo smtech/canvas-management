@@ -9,7 +9,7 @@ var USER_CLASS_NO_MENU = 'no-menu';
 var userClass = USER_CLASS_NO_MENU;
 
 // define your menu here
-var colorStripe = 'background: #ecf6ff';
+var colorStripe = 'background: #fffffe; border-bottom: #9FA7AF solid 1px; border-right: #9FA7AF solid 1px; border-top: #ffffff solid 1px; border-left: #ffffff solid 1px;';
 var customMenu = {
 	// menu title
 	// can also have a url property, so clicking the menu title sends you somewhere
@@ -20,6 +20,12 @@ var customMenu = {
 		{
 			// columns can be divided into titled sections
 			sections: [
+				{
+					style: colorStripe,
+					items: [
+						{title: 'Faculty Resources', subtitle: 'Calendars, Forms, Policies, Guides', url: '/courses/97', userClass: [USER_CLASS_FACULTY]}
+					]
+				},
 				{
 					// title, target, url are all properties of columns
 					title: 'The Center',
@@ -32,11 +38,11 @@ var customMenu = {
 					]
 				},
 				{
-					title: 'Work Process',
+					title: 'Research &amp; Writing',
+					style: colorStripe,
 					items: [
 						{title: 'Library', url: 'http://library.stmarksschool.org', subtitle: 'Catalog, Online Resources, References', target: '_blank'},
-						{title: 'Writing Manual', subtitle: 'Strunk &amp; White @ SM'},
-						{title: 'Faculty Resources', subtitle: 'Calendars, Forms, Policies, Guides', url: '/courses/97', userClass: [USER_CLASS_FACULTY]}
+						{title: 'Writing Manual', subtitle: 'Camp will write a snappy subtitle for this!'}
 					]
 				}
 			]
@@ -57,17 +63,20 @@ var customMenu = {
 						},
 						{
 							title: 'Google Drive',
+							subtitle: 'Google Apps for Education',
 							target: '_blank',
-							url: 'http://drive.google.com/a/stmarksschool.org/'
+							url: 'http://drive.google.com/a/stmarksschool.org/#my-drive'
 						},
 						{
 							title: 'Minerva Web Access',
+							subtitle: 'Home Directories and Shared Files',
 							target: '_blank',
 							url: 'http://minerva.stmarksschool.org/',
 							userClass: [USER_CLASS_FACULTY]
 						},
 						{
 							title: 'Athena Web Access',
+							subtitle: 'Home Directories and Shared Files',
 							target: '_blank',
 							url: 'http://athena.stmarksschoo.org/',
 							userClass: [USER_CLASS_STUDENT]
@@ -80,13 +89,14 @@ var customMenu = {
 					items: [
 						{
 							title: 'Weekend Activities Sign-ups',
+							subtitle: 'from the Dean of Students&rsquo; Office',
 							target: '_blank',
 							url: 'http://www2.stmarksschool.org',
 							userClass: [USER_CLASS_STUDENT]
 						},
 						{
 							title: 'FAWeb',
-							subtitle: 'Grades &amp; Comments',
+							subtitle: 'Window Grades &amp; Comments',
 							target: '_blank',
 							url: 'http://faweb.stmarksschool.org',
 							userClass: [USER_CLASS_FACULTY]
@@ -99,11 +109,13 @@ var customMenu = {
 						},
 						{
 							title: 'FLIK Menu',
+							subtitle: 'Dining Services',
 							target: '_blank',
 							url: 'http://www.myschooldining.com/SMS/?cmd=menus'
 						},
 						{
 							title: 'Athletics',
+							subtitle: 'Schedules, Scores and News',
 							target: '_blank',
 							url: 'http://www.stmarksschool.org/athletics/teamlisting.aspx'
 						}
@@ -120,16 +132,20 @@ var customMenu = {
 						},
 						{
 							title: 'SMS',
+							subtitle: 'Ye Olde Portal',
 							target: '_blank',
 							url: 'http://sms.stmarksschool.org'
 						},
 						{
 							title: 'Tech Support Documents',
+							subtitle: 'Connection Directions',
 							target: '_blank',
-							url: 'http://www.stmarksschool.org/academics/technology/Tech-Docs/index.aspx'
+							url: 'http://www.stmarksschool.org/academics/technology/Tech-Docs/index.aspx',
+							userClass: [USER_CLASS_FACULTY]
 						},
 						{
 							title: 'Human Resource Documents',
+							subtitle: 'Family & Medical Leave Act',
 							target: '_blank',
 							url: 'https://lionhub.stmarksschool.org/pages/human-resource-documents',
 							userClass: [USER_CLASS_FACULTY]
@@ -149,12 +165,13 @@ var customMenu = {
 						},
 						{
 							title: 'School Dude',
-							subtitle: 'School ID 615666807',
+							subtitle: 'Facilities Requests (School ID 615666807)',
 							target: '_blank',
 							url: 'http://www.myschoolbuilding.com/myschoolbuilding/msbdefault_email.asp?frompage=myrequest.asp'
 						},
 						{
 							title: 'Communications Request',
+							subtitle: 'Publications, Branded Items, Website Updates',
 							target: '_blank',
 							url: 'http://www.stmarksschool.org/about-st-marks/communications-department/index.aspx'
 						}
@@ -175,8 +192,14 @@ var testers = [
 	'Brian Fedy',
 	'Michael Wirtz',
 	'Heather Laudani',
+	'David Vachris',
+	'Lynette Sumpter',
+	'Nat Waters',
+	'Sarah Eslick',
+	'Stacey Lee',
 	// adding new faculty so they never don't have the Resources Menu
 	'Brian Burbank',
+	'Shirley Huettig',
 	'Caitlin Jones',
 	'Eric Monheim',
 	'Elizabeth Ramirez',
