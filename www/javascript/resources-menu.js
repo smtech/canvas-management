@@ -9,7 +9,7 @@ var USER_CLASS_NO_MENU = 'no-menu';
 var userClass = USER_CLASS_NO_MENU;
 
 // define your menu here
-var colorStripe = 'background: #fffffe; border-bottom: #9FA7AF solid 1px; border-right: #9FA7AF solid 1px; border-top: #ffffff solid 1px; border-left: #ffffff solid 1px;';
+var colorStripe = ''; //'background: #fffffe; border-bottom: #9FA7AF solid 1px; border-right: #9FA7AF solid 1px; border-top: #ffffff solid 1px; border-left: #ffffff solid 1px;';
 var customMenu = {
 	// menu title
 	// can also have a url property, so clicking the menu title sends you somewhere
@@ -21,9 +21,15 @@ var customMenu = {
 			// columns can be divided into titled sections
 			sections: [
 				{
+					title: 'General',
 					style: colorStripe,
 					items: [
-						{title: 'Faculty Resources', subtitle: 'Calendars, Forms, Policies, Guides', url: '/courses/97', userClass: [USER_CLASS_FACULTY]}
+						{
+							title: 'Faculty Resources',
+							subtitle: 'Calendars, Forms, Policies, Guides',
+							url: '/courses/97',
+							userClass: [USER_CLASS_FACULTY]
+						}
 					]
 				},
 				{
@@ -31,18 +37,44 @@ var customMenu = {
 					title: 'The Center',
 					items: [
 						// each item can have title, subtitle, target and url
-						{title: 'Writing Lab', subtitle: 'in The Center', url: '/courses/495'},
-						{title: 'Mathematics Lab', subtitle: 'in The Center', url: '/courses/494'},
-						{title: 'Resources for Students', subtitle: 'from The Center', url: '/courses/491'},
-						{title: 'Resources for Faculty', subtitle: 'from The Center', url: '/courses/492', userClass: [USER_CLASS_FACULTY]}
+						{
+							title: 'Writing Lab',
+							subtitle: 'in The Center',
+							url: '/courses/495'
+						},
+						{
+							title: 'Mathematics Lab',
+							subtitle: 'in The Center',
+							url: '/courses/494'
+						},
+						{
+							title: 'Resources for Students',
+							subtitle: 'from The Center',
+							url: '/courses/491'
+						},
+						{
+							title: 'Resources for Faculty',
+							subtitle: 'from The Center',
+							url: '/courses/492',
+							userClass: [USER_CLASS_FACULTY]}
 					]
 				},
 				{
 					title: 'Research &amp; Writing',
 					style: colorStripe,
 					items: [
-						{title: 'Library', url: 'http://library.stmarksschool.org', subtitle: 'Catalog, Online Resources, References', target: '_blank'},
-						{title: 'Writing Manual', subtitle: 'Camp will write a snappy subtitle for this!'}
+						{
+							title: 'Library',
+							url: 'http://library.stmarksschool.org',
+							subtitle: 'Catalog, Online Resources, References',
+							target: '_blank'
+						},
+						{
+							title: 'Writing Manual',
+							subtitle: 'All the news you <i>need</i> to print',
+							target: '_blank',
+							url: 'https://drive.google.com/a/stmarksschool.org/folderview?id=0ByGbqFAT3Vy1aXdRY2hoNlY4WjA&usp=sharing'
+						}
 					]
 				}
 			]
@@ -84,9 +116,44 @@ var customMenu = {
 					]
 				},
 				{
+					title: 'Service Desks',
+					userClass: [USER_CLASS_FACULTY],
+					style: colorStripe,
+					items: [
+						{
+							title: 'Help Desk',
+							subtitle: 'Technology Issues',
+							target: '_blank',
+							url: 'http://helpdesk.stmarksschool.org'
+						},
+						{
+							title: 'School Dude',
+							subtitle: 'Facilities Requests (School ID 615666807)',
+							target: '_blank',
+							url: 'http://www.myschoolbuilding.com/myschoolbuilding/msbdefault_email.asp?frompage=myrequest.asp'
+						},
+						{
+							title: 'Communications Request',
+							subtitle: 'Publications, Branded Items, Website Updates',
+							target: '_blank',
+							url: 'http://www.stmarksschool.org/about-st-marks/communications-department/index.aspx'
+						}
+					]
+				}
+
+			]
+		},
+		{
+			sections: [
+				{
 					title: 'On Campus',
 					style: colorStripe,
 					items: [
+						{
+							title: 'All School',
+							subtitle: 'Information, Organizations, Calendar',
+							url: '/courses/497'
+						},
 						{
 							title: 'Weekend Activities Sign-ups',
 							subtitle: 'from the Dean of Students&rsquo; Office',
@@ -125,6 +192,12 @@ var customMenu = {
 					title: 'Information',
 					items: [
 						{
+							title: 'Canvas Training',
+							subtitle: 'What you need to know',
+							url: '/courses/489',
+							userClass: [USER_CLASS_FACULTY]
+						},
+						{
 							title: 'Lynda.com',
 							subtitle: 'Software Training &amp; Tutorials',
 							target: '_blank',
@@ -151,31 +224,6 @@ var customMenu = {
 							userClass: [USER_CLASS_FACULTY]
 						}
 					]
-				},
-				{
-					title: 'Service Desks',
-					userClass: [USER_CLASS_FACULTY],
-					style: colorStripe,
-					items: [
-						{
-							title: 'Help Desk',
-							subtitle: 'Technology Issues',
-							target: '_blank',
-							url: 'http://helpdesk.stmarksschool.org'
-						},
-						{
-							title: 'School Dude',
-							subtitle: 'Facilities Requests (School ID 615666807)',
-							target: '_blank',
-							url: 'http://www.myschoolbuilding.com/myschoolbuilding/msbdefault_email.asp?frompage=myrequest.asp'
-						},
-						{
-							title: 'Communications Request',
-							subtitle: 'Publications, Branded Items, Website Updates',
-							target: '_blank',
-							url: 'http://www.stmarksschool.org/about-st-marks/communications-department/index.aspx'
-						}
-					]
 				}
 			]
 		}
@@ -197,6 +245,8 @@ var testers = [
 	'Nat Waters',
 	'Sarah Eslick',
 	'Stacey Lee',
+	'John Camp',
+	'Stephen Hebert',
 	// adding new faculty so they never don't have the Resources Menu
 	'Brian Burbank',
 	'Shirley Huettig',
@@ -208,6 +258,7 @@ var testers = [
 	'Channing Weymouth',
 	'Christopher Young'
 ];
+
 function setUserClass() {
 	var i;
 	
@@ -218,13 +269,34 @@ function setUserClass() {
 		return;
 	}
 	
+	userClass = USER_CLASS_STUDENT;
+	
 	// check for Faculty Resources course to identify USER_CLASS_FACULTY
 	var coursesMenu = document.getElementById('menu_enrollments').childNodes[3].childNodes;
 	for (i = 1; i < coursesMenu.length; i += 2) {
-		if (coursesMenu[i] instanceof HTMLLIElement && coursesMenu[i].getAttribute('data-id') === facultyCourseId) {
+		if (coursesMenu[i] instanceof HTMLLIElement && coursesMenu[i].getAttribute('data-id') === '97') {
 			userClass = USER_CLASS_FACULTY;
 			coursesMenu[i].parentNode.removeChild(coursesMenu[i]);
 			return;
+		}
+	}
+}
+
+// courses that (if they exist in Courses) are replicated in the Resources menu
+coursesToHide = [
+	'97', // Facultuy Resources
+	'497', // All School
+	'489' // Canvas Training
+];
+
+// remove courses from the Courses menu that have been replicated in custom menus
+function hideCourses(courses) {
+	var i;
+	var coursesMenu = document.getElementById('menu_enrollments').childNodes[3].childNodes;
+	for (i = 1; i < coursesMenu.length; i += 2) {
+		if (coursesMenu[i] instanceof HTMLLIElement && courses.indexOf(coursesMenu[i].getAttribute('data-id')) > -1) {
+			coursesMenu[i].parentNode.removeChild(coursesMenu[i]);
+			i = 0; // start at the beginning again... eventually we'll hide them all and escape!
 		}
 	}
 }
@@ -270,4 +342,5 @@ function appendMenu(m) {
 setUserClass();
 if (userClass != USER_CLASS_NO_MENU) {
 	appendMenu(customMenu);
+	hideCourses(coursesToHide);
 }
