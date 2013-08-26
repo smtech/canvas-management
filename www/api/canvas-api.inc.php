@@ -137,26 +137,33 @@ function callCanvasApi($verb, $url, $data = array(), $apiInstance = null) {
 			/* who knows what goes on in the server's mind... try again */
 			$serverRetryCount++;
 			$retry = true;
-			debug_log('Retrying after Canvas API server error. ' . preg_replace('%(.{0,' . TRIM_EXCEPTION_MESSAGE_LENGTH . '}.+)%', '\\1...', $e->getMessage()));
+			debug_log('Retrying after Canvas API server error. ' . preg_replace('%(.{0,' . TRIM_EXCEPTION_MESSAGE_LENGTH . '}.+)%', '[\\1...]', $e->getMessage()));
 		} catch (Pest_ClientError $e) {
 			/* I just watched the Canvas API throw an unauthorized error when, in fact,
 			   I was authorized. Everything gets retried a few times before I give up */
 			$clientRetryCount++;
 			$retry = true;
-			debug_log('Retrying after Canvas API client error. ' . preg_replace('%(.{0,' . TRIM_EXCEPTION_MESSAGE_LENGTH . '}.+)%', '\\1...', $e->getMessage())); 
+			debug_log('Retrying after Canvas API client error. ' . preg_replace('%(.{0,' . TRIM_EXCEPTION_MESSAGE_LENGTH . '}.+)%', '[\\1...]', $e->getMessage())); 
 		} catch (Exception $e) {
-			displayError(
-				array(
-					'Error' => $e->getMessage(),
-					'Verb' => $verb,
-					'URL' => $url,
-					'Data' => $data
-				),
-				true,
-				'API Error',
-				'Something went awry in the API'
-			);
-			exit;
+			// treat an empty reply as a server error (which, BTW, it dang well is)
+			if ($e->getMessage() == 'Empty reply from server') {
+				$serverRetryCount++;
+				$retry = true;
+				debug_log('Retrying after empty reply from server. ' . preg_replace('%(.{0,' . TRIM_EXCEPTION_MESSAGE_LENGTH . '}.+)%', '[\\1...]', $e->getMessage()));
+			} else {
+				displayError(
+					array(
+						'Error' => $e->getMessage(),
+						'Verb' => $verb,
+						'URL' => $url,
+						'Data' => $data
+					),
+					true,
+					'API Error',
+					'Something went awry in the API'
+				);
+				exit;
+			}
 		}
 	} while ($retry == true && $clientRetryCount < API_CLIENT_ERROR_RETRIES && $serverRetryCount < API_SERVER_ERROR_RETRIES);
 	
