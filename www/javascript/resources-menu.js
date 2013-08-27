@@ -237,32 +237,12 @@ var customMenu = {
 };
 
 // if the Faculty Resources item is in the Courses menu, this person is faculty and should get faculty-specific resources
-var facultyCourseId = '97'; // 97 on live server, 956 on test (for now)
+var facultyCourseId = '97';
+
 var testers = [
 	'Seth Battis',
 	'Brian Lester',
-	'Carlos Collazo',
-	'Ken Griffin',
-	'Brian Fedy',
-	'Michael Wirtz',
-	'Heather Laudani',
-	'David Vachris',
-	'Lynette Sumpter',
-	'Nat Waters',
-	'Sarah Eslick',
-	'Stacey Lee',
-	'John Camp',
-	'Stephen Hebert',
-	// adding new faculty so they never don't have the Resources Menu
-	'Brian Burbank',
-	'Shirley Huettig',
-	'Caitlin Jones',
-	'Eric Monheim',
-	'Elizabeth Ramirez',
-	'Elana Snow',
-	'James Wallace',
-	'Channing Weymouth',
-	'Christopher Young'
+	'Carlos Collazo'
 ];
 
 function setUserClass() {
@@ -271,8 +251,8 @@ function setUserClass() {
 	// check user name to identify testers
 	var userName = document.getElementsByClassName('user_long_name')[0].innerText;
 	// if not an individually allowed user, don't process them!
-	if (testers.indexOf(userName) === -1) {
-		return;
+	if (testers.indexOf(userName) !== -1) {
+		// do something special for testers
 	}
 	
 	userClass = USER_CLASS_STUDENT;
@@ -289,8 +269,8 @@ function setUserClass() {
 }
 
 // courses that (if they exist in Courses) are replicated in the Resources menu
-coursesToHide = [
-	'97', // Facultuy Resources
+var coursesToHide = [
+	'97', // Faculty Resources
 	'497', // All School
 	'489' // Canvas Training
 ];
@@ -343,10 +323,13 @@ function appendMenu(m) {
 	navigationMenu.appendChild(menu);
 }
 
-// add the custom menu to the menubar
-// if you wanted to add more menus, define another menu structure like customMenu and call appendMenu() with it as a parameter (menus would be added in the order that the appendMenu() calls occur)
-setUserClass();
-if (userClass != USER_CLASS_NO_MENU) {
-	appendMenu(customMenu);
-	hideCourses(coursesToHide);
+function resourcesMenu() {
+	// add the custom menu to the menubar
+	// if you wanted to add more menus, define another menu structure like customMenu and call appendMenu() with it as a parameter (menus would be added in the order that the appendMenu() calls occur)
+	setUserClass();
+	if (userClass != USER_CLASS_NO_MENU) {
+		appendMenu(customMenu);
+		hideCourses(coursesToHide);
+	}
 }
+
