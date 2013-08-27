@@ -23,12 +23,18 @@ var customMenu = {
 				{
 					title: 'General',
 					style: colorStripe,
+					userClass: [USER_CLASS_FACULTY],
 					items: [
 						{
 							title: 'Faculty Resources',
 							subtitle: 'Calendars, Forms, Policies, Guides',
-							url: '/courses/97',
-							userClass: [USER_CLASS_FACULTY]
+							url: '/courses/97'
+						},
+						{
+							title: 'Curricuplan',
+							subtitle: 'Curriculum mapping',
+							target: '_blank',
+							url: 'http://hosting.curricuplan.com'
 						}
 					]
 				},
@@ -71,7 +77,7 @@ var customMenu = {
 						},
 						{
 							title: 'Writing Manual',
-							subtitle: 'All the news you <i>need</i> to print',
+							subtitle: 'All the steps you need to write',
 							target: '_blank',
 							url: 'https://drive.google.com/a/stmarksschool.org/folderview?id=0ByGbqFAT3Vy1aXdRY2hoNlY4WjA&usp=sharing'
 						}
@@ -211,14 +217,14 @@ var customMenu = {
 						},
 						{
 							title: 'Tech Support Documents',
-							subtitle: 'Connection Directions',
+							subtitle: 'Directions for connections, on Lion Hub',
 							target: '_blank',
 							url: 'http://www.stmarksschool.org/academics/technology/Tech-Docs/index.aspx',
 							userClass: [USER_CLASS_FACULTY]
 						},
 						{
 							title: 'Human Resource Documents',
-							subtitle: 'Family & Medical Leave Act',
+							subtitle: 'Family & Medical Leave Act, on Lion Hub',
 							target: '_blank',
 							url: 'https://lionhub.stmarksschool.org/pages/human-resource-documents',
 							userClass: [USER_CLASS_FACULTY]
