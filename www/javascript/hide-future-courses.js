@@ -21,5 +21,3 @@ function hideFutureCourses() {
 		}
 	}
 }
-
-hideFutureCourses();
