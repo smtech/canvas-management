@@ -245,7 +245,7 @@ var testers = [
 	'Carlos Collazo'
 ];
 
-function setUserClass() {
+function stmarks_setUserClass() {
 	var i;
 	
 	// check user name to identify testers
@@ -276,7 +276,7 @@ var coursesToHide = [
 ];
 
 // remove courses from the Courses menu that have been replicated in custom menus
-function hideCourses(courses) {
+function stmarks_hideCourses(courses) {
 	var i;
 	var coursesMenu = document.getElementById('menu_enrollments').childNodes[3].childNodes;
 	for (i = 1; i < coursesMenu.length; i += 2) {
@@ -288,7 +288,7 @@ function hideCourses(courses) {
 }
 
 // parse the array/object structure above into the HTML that represents a dropdown menu and add it to the right of the existing menubar
-function appendMenu(m) {
+function stmarks_appendMenu(m) {
 	var i, j, k;
 
 	var navigationMenu = document.getElementById("menu");
@@ -323,13 +323,13 @@ function appendMenu(m) {
 	navigationMenu.appendChild(menu);
 }
 
-function resourcesMenu() {
+function stmarks_resourcesMenu() {
 	// add the custom menu to the menubar
 	// if you wanted to add more menus, define another menu structure like customMenu and call appendMenu() with it as a parameter (menus would be added in the order that the appendMenu() calls occur)
-	setUserClass();
+	stmarks_setUserClass();
 	if (userClass != USER_CLASS_NO_MENU) {
-		appendMenu(customMenu);
-		hideCourses(coursesToHide);
+		stmarks_appendMenu(customMenu);
+		stmarks_hideCourses(coursesToHide);
 	}
 }
 
