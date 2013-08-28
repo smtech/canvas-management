@@ -85,7 +85,7 @@ A global JavaScript add-on to insert an additional menu into the main navigation
 
 
 
-### [dev-discussion-permalinks](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts)
+### [dev-scripts](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts)
 
 Individual scripts to do specific things, but that also shouldn't [just](https://github.com/smtech/canvas/commit/88b77a269063a342808443256f2f173ddf5881b5) [be](https://github.com/smtech/canvas/commit/a22552daa520f73cfb75b3f0ae93d1b8a08438af) [committed](https://github.com/smtech/canvas/commit/b51f50b579a7dcb54f6934ae9dd0a3523415ad5a) to the master fork without testing.
 
