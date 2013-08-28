@@ -2,7 +2,7 @@
    for the entries to actually be, y'know... _there_. */
 var delay = 1000; // 1 second = 1000 milliseconds
 
-function addPermalinks() {
+function stmarks_addPermalinks() {
 	/* make sure that we are actually messing with a discussion page... */
 	if (document.getElementById('discussion_container')) {
 		/* run through all of the <li> elements looking for entry IDs */
@@ -20,4 +20,6 @@ function addPermalinks() {
 	}
 }
 
-window.setTimeout(addPermalinks, delay);	
+function stmarks_discussionPermalinks() {
+	window.setTimeout(addPermalinks, delay);
+} 
