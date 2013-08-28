@@ -38,7 +38,7 @@ var customMenu = {
 						}
 					]
 				},
-				{
+				/*{
 					// title, target, url are all properties of columns
 					title: 'The Center',
 					items: [
@@ -64,7 +64,7 @@ var customMenu = {
 							url: '/courses/492',
 							userClass: [USER_CLASS_FACULTY]}
 					]
-				},
+				},*/
 				{
 					title: 'Research &amp; Writing',
 					style: colorStripe,
@@ -82,12 +82,12 @@ var customMenu = {
 							url: 'https://drive.google.com/a/stmarksschool.org/folderview?id=0ByGbqFAT3Vy1aXdRY2hoNlY4WjA&usp=sharing'
 						}
 					]
-				}
-			]
+				},
+			/*]
 		},
 		{
 			// style: 'optional CSS goes here',
-			sections: [
+			sections: [*/
 				{
 					title: 'Communication &amp; Storage',
 					//style: 'optional CSS goes here',
@@ -221,14 +221,14 @@ var customMenu = {
 							target: '_blank',
 							url: 'http://www.stmarksschool.org/academics/technology/Tech-Docs/index.aspx',
 							userClass: [USER_CLASS_FACULTY]
-						},
+						}/*,
 						{
 							title: 'Human Resource Documents',
 							subtitle: 'Family & Medical Leave Act, on Lion Hub',
 							target: '_blank',
 							url: 'https://lionhub.stmarksschool.org/pages/human-resource-documents',
 							userClass: [USER_CLASS_FACULTY]
-						}
+						}*/
 					]
 				}
 			]
