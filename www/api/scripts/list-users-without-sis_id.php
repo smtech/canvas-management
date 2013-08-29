@@ -17,14 +17,16 @@ $users = callCanvasApiPaginated(
 );
 $page = 1;
 
+echo TOOL_NAME . PHP_EOL;
+echo "name\tlogin_id\t\id" . PHP_EOL;
+
 do {
 	$pageProgress = 'processing page ' . getCanvasApiCurrentPageNumber() . ' of ' . getCanvasApiLastPageNumber() . '...';
-	echo $pageProgress . PHP_EOL;
 	debugFlag($pageProgress);
 	
 	foreach ($users as $user) {
 		if (!isset($user['sis_user_id'])) {
-			echo "    Missing SIS ID for {$user['name']} ({$user['login_id']} / ID={$user['id']})" . PHP_EOL;
+			echo "{$user['name']}\t{$user['login_id']}\t{$user['id']}" . PHP_EOL;
 		}
 	}
 	flush();

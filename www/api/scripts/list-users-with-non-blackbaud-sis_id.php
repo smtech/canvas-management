@@ -17,14 +17,16 @@ $users = callCanvasApiPaginated(
 );
 $page = 1;
 
+echo TOOL_NAME . PHP_EOL;
+echo "name\tlogin_id\tid\tsis_user_id" .PHP_EOL;
+
 do {
 	$pageProgress = 'processing page ' . getCanvasApiCurrentPageNumber() . ' of ' . getCanvasApiLastPageNumber() . '...';
-	echo $pageProgress . PHP_EOL;
 	debugFlag($pageProgress);
 	
 	foreach ($users as $user) {
 		if (isset($user['sis_user_id']) && !preg_match('%^(WGLSQLA)?[0-9\-]+$%', $user['sis_user_id'])) {
-			echo "    SIS ID '{$user['sis_user_id']}' is not a Blackbaud Import ID for {$user['name']} ({$user['login_id']} / ID={$user['id']})" . PHP_EOL;
+			echo "{$user['name']}\t{$user['login_id']}\t{$user['id']}\t{$user['sis_user_id']}" . PHP_EOL;
 		}
 	}
 	flush();
