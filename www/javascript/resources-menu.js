@@ -5,8 +5,20 @@ var USER_CLASS_STUDENT = 'student';
 var USER_CLASS_FACULTY = 'faculty';
 var USER_CLASS_NO_MENU = 'no-menu';
 
+var USER_DEPARTMENT_ART = '/accounts/76';
+var USER_DEPARTMENT_CLASSICS = '/accounts/77';
+var USER_DEPARTMENT_ENGLISH = '/accounts/78';
+var USER_DEPARTMENT_HISTORY = '/accounts/79';
+var USER_DEPARTMENT_LIBRARY = '/accounts/134';
+var USER_DEPARTMENT_MATHEMATICS = '/accounts/82';
+var USER_DEPARTMENT_MODERN_LANGUAGE = '/accounts/83';
+var USER_DEPARTMENT_PSYCHOLOGY = '/accounts/84';
+var USER_DEPARTMENT_RELIGION = '/accounts/85';
+var USER_DEPARTMENT_SCIENCE = '/accounts/86';
+
 // default to hiding the menu
 var userClass = USER_CLASS_NO_MENU;
+var userDepartments = [];
 
 // define your menu here
 var colorStripe = ''; //'background: #fffffe; border-bottom: #9FA7AF solid 1px; border-right: #9FA7AF solid 1px; border-top: #ffffff solid 1px; border-left: #ffffff solid 1px;';
@@ -35,6 +47,13 @@ var customMenu = {
 							subtitle: 'Curriculum mapping',
 							target: '_blank',
 							url: 'http://hosting.curricuplan.com'
+						},
+						{
+							title: 'History Dept.',
+							subtitle: 'Shared files',
+							target: '_blank',
+							url: 'https://drive.google.com/a/stmarksschool.org/?tab=mo#folders/0Bxkl1PbtN3mKa1B0Ym5nSXoxU2M',
+							userDepartments: [USER_DEPARTMENT_HISTORY]
 						}
 					]
 				},
@@ -248,24 +267,62 @@ var testers = [
 function stmarks_setUserClass() {
 	var i;
 	
+	/*
 	// check user name to identify testers
 	var userName = document.getElementsByClassName('user_long_name')[0].innerText;
 	// if not an individually allowed user, don't process them!
 	if (testers.indexOf(userName) !== -1) {
 		// do something special for testers
 	}
+	*/
 	
 	userClass = USER_CLASS_STUDENT;
 	
+	// check for membership in specific departments
+	//assumes no account-level groups for parentNode.children[1]
+	var accountsMenu = document.getElementById('menu_enrollments').parentNode.children[1].children[1].children;
+	// skip the "View all accounts" link: length - 1
+	for (i = 0; i < accountsMenu.length - 1; i++) {
+		switch (accountsMenu[i].children[0].getAttribute('href')) {
+			case USER_DEPARTMENT_HISTORY:
+				userDepartments.push(USER_DEPARTMENT_HISTORY);
+				break;
+		}
+	}
+
+	
 	// check for Faculty Resources course to identify USER_CLASS_FACULTY
-	var coursesMenu = document.getElementById('menu_enrollments').childNodes[3].childNodes;
-	for (i = 1; i < coursesMenu.length; i += 2) {
-		if (coursesMenu[i] instanceof HTMLLIElement && coursesMenu[i].getAttribute('data-id') === '97') {
+	var coursesMenu = document.getElementById('menu_enrollments').children[1].children;
+	// skip the "View all courses" link: length - 1
+	for (i = 0; i < coursesMenu.length - 1; i++) {
+		if (coursesMenu[i].getAttribute('data-id') === '97') {
 			userClass = USER_CLASS_FACULTY;
-			coursesMenu[i].parentNode.removeChild(coursesMenu[i]);
 			return;
 		}
 	}
+}
+
+function stmarks_userClassVisible(menuObject) {
+	return !menuObject.userClass || menuObject.userClass.indexOf(userClass) > -1;
+}
+
+function stmarks_userDepartmentsVisible(menuObject) {
+	var i;
+	
+	// if no departmental permissions are set, it's fine
+	if (!menuObject.userDepartments) {
+		return true;
+	}
+	
+	// if one of the user's departments matches the departmental permissions, it's fine
+	for (i = 0; i < userDepartments.length; i++) {
+		if (menuObject.userDepartments.indexOf(userDepartments[i]) > -1) {
+			return true;
+		}
+	}
+	
+	// not visible
+	return false;
 }
 
 // courses that (if they exist in Courses) are replicated in the Resources menu
@@ -299,16 +356,24 @@ function stmarks_appendMenu(m) {
 	html += '<div class="menu-item-drop"><table cellspacing="0"><tr>';
 
 	for(i = 0; i < m.columns.length; i++) {
-		if (!m.columns[i].userClass || m.columns[i].userClass.indexOf(userClass) > -1)
-		{
+		if (
+			stmarks_userClassVisible(m.columns[i]) &&
+			stmarks_userDepartmentsVisible(m.columns[i])
+		) {
 			html += '<td class="menu-item-drop-column"' + (m.columns[i].style !== undefined ? ' style="' + m.columns[i].style + '"': '') + '>';
 			for (j = 0; j < m.columns[i].sections.length; j++) {
-				if (!m.columns[i].sections[j].userClass || m.columns[i].sections[j].userClass.indexOf(userClass) > -1) {
+				if (
+					stmarks_userClassVisible(m.columns[i].sections[j]) &&
+					stmarks_userDepartmentsVisible(m.columns[i].sections[j])
+				) {
 					html += (m.columns[i].sections[j].title !== undefined ? '<span class="menu-item-heading"' + (m.columns[i].sections[j].style !== undefined ? ' style="' + m.columns[i].sections[j].style + '"' : '') + '>' + m.columns[i].sections[j].title + '</span>' : '');
 					html += '<ul class="menu-item-drop-column-list"' + (m.columns[i].sections[j].style !== undefined ? ' style="' + m.columns[i].sections[j].style + '"' : '') + '>';
 		
 					for (k = 0; k < m.columns[i].sections[j].items.length; k++) {
-						if (!m.columns[i].sections[j].items[k].userClass || m.columns[i].sections[j].items[k].userClass.indexOf(userClass) > -1) {
+						if (
+							stmarks_userClassVisible(m.columns[i].sections[j].items[k]) &&
+							stmarks_userDepartmentsVisible(m.columns[i].sections[j].items[k])
+						) {
 							html += '<li' + (m.columns[i].sections[j].items[k].style !== undefined ? ' style="' + m.columns[i].sections[j].items[k].style + '"' : '') + '><a' + (m.columns[i].sections[j].items[k].target !== undefined ? ' target="' + m.columns[i].sections[j].items[k].target + '"' : '') + (m.columns[i].sections[j].items[k].url !== undefined ? ' href="' + m.columns[i].sections[j].items[k].url + '"' : '') + '><span class="name ellipsis">' + m.columns[i].sections[j].items[k].title + '</span>' + (m.columns[i].sections[j].items[k].subtitle !== undefined ? '<span class="subtitle">' + m.columns[i].sections[j].items[k].subtitle + '</span>' : '') + '</a></li>';
 						}
 					}
