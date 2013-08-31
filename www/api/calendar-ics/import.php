@@ -37,11 +37,32 @@ function getCanvasContext($canvasUrl) {
 	// TODO: it would probably be better to look up users by email address than URL
 	/* get the context (user, course or group) for the canvas URL */
 	$canvasContext = array();
-	if (preg_match('%(https?://)?(' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/(((course)|(accounts/\d+/((group)|(user))))s)/(\d+)).*%', $_REQUEST['canvas_url'], $matches)) {
+	if (preg_match('%(https?://)?(' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/((about/(\d+))|(courses/(\d+)(/groups/(\d+))?)|(accounts/\d+/groups/(\d+))))%', $_REQUEST['canvas_url'], $matches)) {
 		$canvasContext['canonical_url'] = "https://{$matches[2]}"; // https://stmarksschool.instructure.com/courses/953
-		$canvasContext['context'] = (strlen($matches[7]) ? $matches[7] : $matches[5]); // course
-		$canvasContext['context_url'] = $matches[3]; // courses
-		$canvasContext['id'] = $matches[10]; // 953
+		
+		// course or account groups
+		if (issest($matches[9]) || isset($matches[11])) {
+			$canvasContext['context'] = 'group'; // course
+			$canvasContext['id'] = ($matches[9] > $matches[11] ? $matches[9] : $matches[11]); // 953
+			$canvasContext['verification_url'] = "groups/{$canvasContext['id']}"; // courses
+			
+		// courses
+		} elseif (isset($matches[7])) {
+			$canvasContext['context'] = 'course'; // course
+			$canvasContext['id'] = $matches[7]; // 953
+			$canvasContext['verification_url'] = "courses/{$canvasContext['id']}"; // courses
+		
+		// users
+		} elseif (isset($matches[5])) {
+			$canvasContext['context'] = 'user'; // course
+			$canvasContext['id'] = $matches[5]; // 953
+			$canvasContext['verification_url'] = "users/{$canvasContext['id']}/profile"; // courses
+		
+		// we're somewhere where we don't know where we are
+		} else {
+			return false;
+		}
+		
 		displayError($canvasContext, false, 'Canvas Context');
 		return $canvasContext;
 	}
@@ -81,7 +102,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 	
 	if ($canvasContext = getCanvasContext($_REQUEST['canvas_url'])) {
 		/* look up the canvas object -- mostly to make sure that it exists! */
-		if ($canvasObject = callCanvasApi(CANVAS_API_GET, "/{$canvasContext['context_url']}/{$canvasContext['id']}")) {
+		if ($canvasObject = callCanvasApi(CANVAS_API_GET, $canvasContext['verification_url'])) {
 		
 			/* calculate the unique pairing ID of this ICS feed and canvas object */
 			$pairingHash = getPairingHash($_REQUEST['cal'], $canvasContext['canonical_url']);
