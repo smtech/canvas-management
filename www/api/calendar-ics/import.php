@@ -2,19 +2,12 @@
 
 /***********************************************************************
  *                                                                     *
- * Requirments & includes                                              *
+ * Requirements & includes                                              *
  *                                                                     *
  ***********************************************************************/
  
 /* REQUIRES crontab
    http://en.wikipedia.org/wiki/Cron */
-
-/* REQUIRES MySQL access
-   Configuration for access happens in the authentication file */
-
-/* REQUIRES HTTP Authentication
-   The sync process will assume a user with the same name and password
-   as the MySQL user */
 
 require_once('.ignore.calendar-ics-authentication.inc.php');
 require_once('config.inc.php');
@@ -23,35 +16,93 @@ require_once('../page-generator.inc.php');
 require_once('../canvas-api.inc.php');
 require_once('../mysql.inc.php');
 
-define('VALUE_OVERWRITE_CANVAS_CALENDAR', 'overwrite');
+define('TOOL_NAME_ABBREVIATION', 'ICS Import');
 
-define('SYNC_WARNING', '<em>Warning:</em> if you have set this synchronization to occur automatically, <em>do not</em> make any changes to your calendar in Canvas. Any changes you make in Canvas may be overwritten, deleted or even corrupt the synchronization process!');
+define('VALUE_OVERWRITE_CANVAS_CALENDAR', 'overwrite');
+define('VALUE_ENABLE_TAG_FILTER', 'enable_filter');
+	
+//TODO: make this warning more accurate and (perhaps) less scary
+define('WARNING_SYNC', '<em>Warning:</em> if you have set this synchronization to occur automatically, <em>do not</em> make any changes to your calendar in Canvas. Any changes you make in Canvas may be overwritten, deleted or even corrupt the synchronization process!');
+
+define('WARNING_TAG_FILTER', '<em>Note:</em> included tags will take precedence over excluded tags (so, if an event is tagged with both an included tag and an excluded tag, it will be included).');
 
 require_once('common.inc.php');
 
+/**
+ * compute the calendar context for the canvas object based on its URL
+ **/
 function getCanvasContext($canvasUrl) {
 	// TODO: accept calendar2?contexts links too (they would be an intuitively obvious link to use, after all)
+	// FIXME: users aren't working
+	// TODO: it would probably be better to look up users by email address than URL
 	/* get the context (user, course or group) for the canvas URL */
 	$canvasContext = array();
-	if (preg_match('%(https?://)?(' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/(((course)|(accounts/\d+/((group)|(user))))s)/(\d+)).*%', $_REQUEST['canvas_url'], $matches)) {
-		$canvasContext['canonical_url'] = "https://{$matches[2]}";
-		$canvasContext['context'] = (strlen($matches[7]) ? $matches[7] : $matches[5]);
-		$canvasContext['context_url'] = $matches[3];
-		$canvasContext['id'] = $matches[10];
+	if (preg_match('%(https?://)?(' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/((about/(\d+))|(courses/(\d+)(/groups/(\d+))?)|(accounts/\d+/groups/(\d+))))%', $_REQUEST['canvas_url'], $matches)) {
+		$canvasContext['canonical_url'] = "https://{$matches[2]}"; // https://stmarksschool.instructure.com/courses/953
+		
+		// course or account groups
+		if (issest($matches[9]) || isset($matches[11])) {
+			$canvasContext['context'] = 'group'; // course
+			$canvasContext['id'] = ($matches[9] > $matches[11] ? $matches[9] : $matches[11]); // 953
+			$canvasContext['verification_url'] = "groups/{$canvasContext['id']}"; // courses
+			
+		// courses
+		} elseif (isset($matches[7])) {
+			$canvasContext['context'] = 'course'; // course
+			$canvasContext['id'] = $matches[7]; // 953
+			$canvasContext['verification_url'] = "courses/{$canvasContext['id']}"; // courses
+		
+		// users
+		} elseif (isset($matches[5])) {
+			$canvasContext['context'] = 'user'; // course
+			$canvasContext['id'] = $matches[5]; // 953
+			$canvasContext['verification_url'] = "users/{$canvasContext['id']}/profile"; // courses
+		
+		// we're somewhere where we don't know where we are
+		} else {
+			return false;
+		}
+		
+		displayError($canvasContext, false, 'Canvas Context');
 		return $canvasContext;
 	}
 	return false;
 }
 
+/**
+ * Filter and clean event data before posting to Canvas
+ *
+ * This must happen AFTER the event hash has been calculated!
+ **/
+function filterEvent($event) {
+	// TODO: implement filtering by [tags] -- return false if this event should not be included
+
+	/* strip off [bracket style] tags at the end of the event title */
+	$event['event_text'] = preg_replace('%^(.*) (\[[^\]]+\])+$%', '\\1', $event['event_text']);
+	
+	/* strip HTML tags from the event title */
+	$event['event_text'] = strip_tags($event['event_text']);
+
+	/* replace newlines with <br /> to maintain formatting */
+	$event['description'] = str_replace( PHP_EOL , '<br />' . PHP_EOL, $event['description']);
+	
+	return $event;
+}
+
+// TODO: it would be nice to be able to cleanly remove a synched calendar
+// TODO: it would be nice to be able unschedule a scheduled sync without removing the calendar
+// TODO: how about something to extirpate non-synced data (could be done right now by brute force -- once overwrite is implemented -- by marking all of the cached events as invalid and then importing the calendar and overwriting, but that's a little icky)
+// TODO: right now, if a user changes a synced event in Canvas, it will never get "corrected" back to the ICS feed... we could cache the Canvas events as well as the ICS feed and do a periodic (much less frequent, given the speed of looking everything up in the API) check and re-sync modified events too
+
 /* do we have the vital information (an ICS feed and a URL to a canvas
    object)? */
 if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 
-	// FIXME: need to do OAuth here, so that users are forced to authenticate to verify that they have permission to update these calendars!
+	// TODO: need to do OAuth here, so that users are forced to authenticate to verify that they have permission to update these calendars!
 	
 	if ($canvasContext = getCanvasContext($_REQUEST['canvas_url'])) {
 		/* look up the canvas object -- mostly to make sure that it exists! */
-		if ($canvasObject = callCanvasApi(CANVAS_API_GET, "/{$canvasContext['context_url']}/{$canvasContext['id']}")) {
+		if ($canvasObject = callCanvasApi(CANVAS_API_GET, $canvasContext['verification_url'])) {
 		
 			/* calculate the unique pairing ID of this ICS feed and canvas object */
 			$pairingHash = getPairingHash($_REQUEST['cal'], $canvasContext['canonical_url']);
@@ -69,7 +120,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 			require_once(BASE . 'functions/date_functions.php');
 			require_once(BASE . 'functions/init.inc.php');
 			require_once(BASE . 'functions/ical_parser.php');
-			displayError($master_array, false, 'phpicalendar $master_array', null, DEBUGGING_GENERAL);
+			displayError($master_array, false, null, null, DEBUGGING_GENERAL);
 		
 			/* log this pairing in the database cache, if it doesn't already exist */
 			$calendarCacheResponse = mysqlQuery("
@@ -127,7 +178,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 							foreach ($event as $key => $value) {
 								$event[$key] = urldecode($value);
 							}
-							
+														
 							/* does this event already exist in Canvas? */
 							$eventHash = getEventHash($date, $time, $uid, $event);
 							$eventCacheResponse = mysqlQuery("
@@ -138,10 +189,11 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 										`event_hash` = '$eventHash'
 							");
 							
+			
 							/* if we already have the event cached in its current form, just update
 							   the timestamp */
 							$eventCache = $eventCacheResponse->fetch_assoc();
-							if (DEBUGGING & DEBUGGING_MYSQL) displayError($eventCache, false, 'Event Cache');
+							if (DEBUGGING & DEBUGGING_MYSQL) displayError($eventCache);
 							if ($eventCache) {
 								mysqlQuery("
 									UPDATE `events`
@@ -151,8 +203,8 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 											`id` = '{$eventCache['id']}'
 								");
 								
-							/* otherwise, cache the new version of the event */
-							} else {
+							/* otherwise, filter this new event into the database */
+							} elseif ($event = filterEvent($event)) {
 								/* multi-day event instance start times need to be changed to _this_ date */
 								$start = new DateTime("@{$event['start_unixtime']}");
 								$start->setTimeZone(new DateTimeZone(LOCAL_TIMEZONE));
@@ -161,28 +213,19 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 								$end = new DateTime("@{$event['end_unixtime']}");
 								$end->setTimeZone(new DateTimeZone(LOCAL_TIMEZONE));
 								$end->setDate(substr($date, 0, 4), substr($date, 4, 2), substr($date, 6, 2));
-			
+
 								$calendarEvent = callCanvasApi(
 									CANVAS_API_POST,
 									"/calendar_events",
 									array(
 										'calendar_event[context_code]' => "{$canvasContext['context']}_{$canvasObject['id']}",
-										'calendar_event[title]' => preg_replace( // strip HTML -- Canvas does not accept it
-											'%<[^>]*>%',
-											'',
-											$event['event_text']
-										),
-										'calendar_event[description]' => str_replace( // replace newlines with <br /> to maintain formatting
-											"\n",
-											"<br />\n",
-											$event['description']
-										),
+										'calendar_event[title]' => $event['event_text'],
+										'calendar_event[description]' => $event['description'],
 										'calendar_event[start_at]' => $start->format(CANVAS_TIMESTAMP_FORMAT),
 										'calendar_event[end_at]' => $end->format(CANVAS_TIMESTAMP_FORMAT),
-										'calendar_event[location_name]' => urldecode($event['location'])
+										'calendar_event[location_name]' => $event['location']
 									)
 								);
-								// FIXME: ics_data and canvas_data don't seem to be being entered!
 								$icalEventJson = json_encode($event);
 								$calendarEventJson = json_encode($calendarEvent);
 								mysqlQuery("
@@ -214,13 +257,34 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 						`synced` != '" . getSyncTimestamp() . "'
 			");
 			while ($deletedEventCache = $deletedEventsResponse->fetch_assoc()) {
-				$deletedEvent = callCanvasApi(
-					CANVAS_API_DELETE,
-					"/calendar_events/{$deletedEventCache['calendar_event[id]']}",
-					array(
-						'cancel_reason' => getSyncTimestamp()
-					)
-				);
+				try {
+					$deletedEvent = callCanvasApi(
+						CANVAS_API_DELETE,
+						"/calendar_events/{$deletedEventCache['calendar_event[id]']}",
+						array(
+							'cancel_reason' => getSyncTimestamp()
+						),
+						CANVAS_API_EXCEPTION_CLENT
+					);
+				} catch (Pest_Unauthorized $e) {
+					/* if the event has been deleted in Canvas, we'll get an error when
+					   we try to delete it a second time. We still need to delete it from
+					   our cache database, however */
+					debugFlag("cache out-of-sync: calendar_event[{$deletedEventCache['calendar_event[id]']}] no longer exists");
+				} catch (Pest_ClientError $e) {
+					displayError(
+						array(
+							'Status' => $PEST->lastStatus(),
+							'Error' => $PEST->lastBody(),
+							'Verb' => $verb,
+							'URL' => $url,
+							'Data' => $data
+						),
+						true,
+						'API Client Error'
+					);
+					exit;
+				}
 				mysqlQuery("
 					DELETE FROM `events`
 						WHERE
@@ -342,7 +406,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 			if ($_REQUEST['overwrite'] == VALUE_OVERWRITE_CANVAS_CALENDAR) {
 			}
 			
-			// FIXME: deal with messaging based on context
+			// TODO: deal with messaging based on context
 		
 			debugFlag('FINISH');
 			exit;
@@ -369,7 +433,7 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 	}	
 } else {
 	/* display form to collect target and source URLs */
-	// FIXME: add javascript to force selection of overwrite if a recurring sync is selected
+	// TODO: add javascript to force selection of overwrite if a recurring sync is selected
 	displayPage('
 <style><!--
 	.calendarUrl {
@@ -393,22 +457,31 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 		padding: 20px;
 	}
 	
-	#crontab {
+	.code {
 		font-family: Inconsolata, Monaco, "Courier New", Courier, monospace;
-		width: 10em;
+		width: 20em;
 	}
 	
-	#crontab-section {
-		margin-top: 10px;
+	#crontab-section, #tag-filter-section {
 		visibility: hidden;
+		margin-top: 0px;
 	}
 --></style>
 <script type="text/javascript"><!--' . "
-function checkCrontabVisibility() {
-	if (document.getElementById('schedule').value == '" . SCHEDULE_CUSTOM . "') {
-		document.getElementById('crontab-section').style.visibility = 'visible';
+
+var crontabSection = '<label for=\"crontab\">Custom Sync Schedule <span class=\"comment\"><em>Warning:</em> Not for the faint of heart! Enter a valid crontab time specification. For more information, <a target=\"_blank\" href=\"http://www.linuxweblog.com/crotab-tutorial\">refer to this tutorial.</a></span></label><input id=\"crontab\" name=\"crontab\" type=\"text\" class=\"code\" value=\"0 0 * * *\" />';
+
+var tagFilterSection = '<label for=\"include_tags\">Tags to Include <span class=\"comment\">A list of tags to include in the import (e.g. <code>[PAR][FAC][Avocados][Pears]</code>). " . WARNING_TAG_FILTER . "</span></label><input id=\"include_tags\ name=\"include_tags\" class=\"code\" type=\"text\" /><label for=\"exclude_tags\">Tags to Exclude <span class=\"comment\">A list of tags to exclude from the import (e.g. <code>[PAR][FAC][Avocados][Pears]</code>). " . WARNING_TAG_FILTER . "</span></label><input id=\"exclude_tags\ name=\"exclude_tags\" class=\"code\" type=\"text\" />';
+
+function toggleVisibility(target, visibleTrigger, innerHTML) {
+	var targetElement = document.getElementById(target);
+	if (visibleTrigger) {
+		targetElement.style.visibility = 'visible';
+		targetElement.innerHTML = innerHTML;
+		toggleVisibilityCache[target] = null;
 	} else {
-		document.getElementById('crontab-section').style.visibility = 'hidden';
+		targetElement.style.visibility = 'hidden';
+		targetElement.innerHTML = '';
 	}
 }
 " . '//--></script>
@@ -429,25 +502,36 @@ function checkCrontabVisibility() {
 		</tr>
 		<tr>
 			<td colspan="3">
-				<label for="overwrite"><input id="overwrite" name="overwrite" type="checkbox" value="' . VALUE_OVERWRITE_CANVAS_CALENDAR . '" disabled /> Replace existing calendar information <span class="comment">Checking this box will <em>delete</em> all of your current Canvas calendar information for this user/group/course.</span></label>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<label for="schedule">Schedule automatic updates from this feed to this course <span class="comment">' . SYNC_WARNING . '</span></label>
-				<select id="schedule" name="sync" onChange="checkCrontabVisibility();">
-					<option value="' . SCHEDULE_ONCE . '">One-time import only</option>
-					<optgroup label="Recurring">
-						<option value="' . SCHEDULE_WEEKLY . '">Weekly (Saturday at midnight)</option>
-						<option value="' . SCHEDULE_DAILY . '">Daily (at midnight)</option>
-						<option value="' . SCHEDULE_HOURLY . '">Hourly (at the top of the hour)</option>
-						<option value="' . SCHEDULE_CUSTOM . '">Custom (define your own schedule)</option>
-					</optgroup>
-				</select>
-				<div id="crontab-section">
-					<label for="crontab">Custom Sync Schedule <span class="comment"><em>Warning:</em> Not for the faint of heart! Enter a valid crontab time specification. For more information, <a target="_blank" href="http://www.linuxweblog.com/crotab-tutorial">refer to this tutorial.</a></span>
-					<input id="crontab" name="crontab" type="text" value="0 0 * * *" />
-				</div>
+				<dl>
+					<dt>
+						<label for="overwrite"><input id="overwrite" name="overwrite" type="checkbox" value="' . VALUE_OVERWRITE_CANVAS_CALENDAR . '" unchecked disabled /> Replace existing calendar information <span class="comment">Checking this box will <em>delete</em> all of your current Canvas calendar information for this user/group/course.</span></label>
+					</dt>
+					<dt>
+						<label for="enable_tag_filter"><input id="enable_tag_filter" name="enable_tag_filter" type="checkbox" value="' . VALUE_ENABLE_TAG_FILTER . '" onChange="toggleVisibility(\'tag-filter-section\', this.checked, tagFilterSection);" disabled />Filter by tags <span class="comment">Filter calendar events by text tags included in the event title (e.g. "All Day Workshop [Faculty][Administration]").</span></label>
+					</dt>
+					<dd>
+						<div id="tag-filter-section" onLoad="toggleVisibility(this.id, document.getElementById(\'enable_tag_filter\').checked, tagFilterSection);">
+						TAG FILTER INFO
+						</div>
+					</dd>
+				<dl>
+					<dt>
+						<label for="schedule">Schedule automatic updates from this feed to this course <span class="comment">' . WARNING_SYNC . '</span></label>
+						<select id="schedule" name="sync" onChange="toggleVisibility(\'crontab-section\', this.value == \'' . SCHEDULE_CUSTOM . '\', crontabSection);">
+							<option value="' . SCHEDULE_ONCE . '">One-time import only</option>
+							<optgroup label="Recurring">
+								<option value="' . SCHEDULE_WEEKLY . '">Weekly (Saturday at midnight)</option>
+								<option value="' . SCHEDULE_DAILY . '">Daily (at midnight)</option>
+								<option value="' . SCHEDULE_HOURLY . '">Hourly (at the top of the hour)</option>
+								<option value="' . SCHEDULE_CUSTOM . '">Custom (define your own schedule)</option>
+							</optgroup>
+						</select>
+					</dt>
+					<dd>
+						<div id="crontab-section" onLoad="toggleVisibility(this.id, document.getElementById(\'schedule\').value == \'' . SCHEDULE_CUSTOM . '\', crontabSection);">
+						</div>
+					</dd>
+				</dl>
 			</td>
 		</tr>
 	</table>
