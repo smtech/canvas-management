@@ -41,7 +41,7 @@ function getCanvasContext($canvasUrl) {
 		$canvasContext['canonical_url'] = "https://{$matches[2]}"; // https://stmarksschool.instructure.com/courses/953
 		
 		// course or account groups
-		if (issest($matches[9]) || isset($matches[11])) {
+		if (isset($matches[9]) || isset($matches[11])) {
 			$canvasContext['context'] = 'group'; // course
 			$canvasContext['id'] = ($matches[9] > $matches[11] ? $matches[9] : $matches[11]); // 953
 			$canvasContext['verification_url'] = "groups/{$canvasContext['id']}"; // courses
@@ -62,8 +62,6 @@ function getCanvasContext($canvasUrl) {
 		} else {
 			return false;
 		}
-		
-		displayError($canvasContext, false, 'Canvas Context');
 		return $canvasContext;
 	}
 	return false;

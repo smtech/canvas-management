@@ -27,14 +27,19 @@ while($schedule = $schedulesResponse->fetch_assoc()) {
 				`id` = '{$schedule['calendar']}'
 	");
 	if ($calendar = $calendarResponse->fetch_assoc()) {
-		$import->get(
-			'import', // assumes ../.htaccess with RewriteCond
-			array(
-				'cal' => $calendar['ics_url'],
-				'canvas_url' => $calendar['canvas_url'],
-				'schedule' => $schedule['id']
-			)
-		);
+		try {
+			$import->get(
+				'import', // assumes ../.htaccess with RewriteCond
+				array(
+					'cal' => $calendar['ics_url'],
+					'canvas_url' => $calendar['canvas_url'],
+					'schedule' => $schedule['id']
+				)
+			);
+		} catch (Exception $e) {
+			debugFlag($e->getMessage());
+			exit;
+		}
 	}
 }
 
