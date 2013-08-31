@@ -38,10 +38,11 @@ function getCanvasContext($canvasUrl) {
 	/* get the context (user, course or group) for the canvas URL */
 	$canvasContext = array();
 	if (preg_match('%(https?://)?(' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . '/(((course)|(accounts/\d+/((group)|(user))))s)/(\d+)).*%', $_REQUEST['canvas_url'], $matches)) {
-		$canvasContext['canonical_url'] = "https://{$matches[2]}";
-		$canvasContext['context'] = (strlen($matches[7]) ? $matches[7] : $matches[5]);
-		$canvasContext['context_url'] = $matches[3];
-		$canvasContext['id'] = $matches[10];
+		$canvasContext['canonical_url'] = "https://{$matches[2]}"; // https://stmarksschool.instructure.com/courses/953
+		$canvasContext['context'] = (strlen($matches[7]) ? $matches[7] : $matches[5]); // course
+		$canvasContext['context_url'] = $matches[3]; // courses
+		$canvasContext['id'] = $matches[10]; // 953
+		displayError($canvasContext, false, 'Canvas Context');
 		return $canvasContext;
 	}
 	return false;
