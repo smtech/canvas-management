@@ -20,13 +20,18 @@ var USER_DEPARTMENT_SCIENCE = '/accounts/86';
 var userClass = USER_CLASS_NO_MENU;
 var userDepartments = [];
 
-// define your menu here
+/* define your menu here
+
+   Some design thoughts:
+   		* More than about a dozen items is too tall for older screens
+   		* More than one column is often too wide for older screens
+   		* Subtitles are nice... but hard to read and make entries taller
+*/
 var colorStripe = ''; //'background: #fffffe; border-bottom: #9FA7AF solid 1px; border-right: #9FA7AF solid 1px; border-top: #ffffff solid 1px; border-left: #ffffff solid 1px;';
-var customMenu = {
-	// menu title
-	// can also have a url property, so clicking the menu title sends you somewhere
-	// can also have a target property, so clicking the menu title opens in a specific frame/window/tab
-	title: 'Resources',
+var resources = {
+	title: 'Resources', // required
+	// url: optional,
+	// target: optional,
 	// an array of columns to display (don't go overboard here!)
 	columns: [
 		{
@@ -34,19 +39,13 @@ var customMenu = {
 			sections: [
 				{
 					title: 'General',
-					style: colorStripe,
+					// style: colorStripe,
 					userClass: [USER_CLASS_FACULTY],
 					items: [
 						{
 							title: 'Faculty Resources',
 							subtitle: 'Calendars, Forms, Policies, Guides',
 							url: '/courses/97'
-						},
-						{
-							title: 'Curricuplan',
-							subtitle: 'Curriculum mapping',
-							target: '_blank',
-							url: 'http://hosting.curricuplan.com'
 						},
 						{
 							title: 'History Dept.',
@@ -57,36 +56,59 @@ var customMenu = {
 						}
 					]
 				},
-				/*{
+				{
 					// title, target, url are all properties of columns
-					title: 'The Center',
+					title: 'The Center for Innovation<br />in Teaching and Learning',
 					items: [
 						// each item can have title, subtitle, target and url
 						{
-							title: 'Writing Lab',
-							subtitle: 'in The Center',
-							url: '/courses/495'
-						},
-						{
-							title: 'Mathematics Lab',
-							subtitle: 'in The Center',
-							url: '/courses/494'
-						},
-						{
-							title: 'Resources for Students',
-							subtitle: 'from The Center',
+							title: 'Information for Students',
+							subtitle: 'Student Enrichment &amp; Academic Support',
 							url: '/courses/491'
 						},
 						{
-							title: 'Resources for Faculty',
-							subtitle: 'from The Center',
-							url: '/courses/492',
-							userClass: [USER_CLASS_FACULTY]}
+							title: 'Information for Faculty',
+							subtitle: 'Profesional Development &amp; Academic Support',
+							url: '/courses/97/wiki/the-center-for-innovation-in-teaching-and-learning',
+							userClass: [USER_CLASS_FACULTY]
+						},
+						{
+							title: 'Writing Lab',
+							url: '/courses/491/wiki/writing-lab'
+						},
+						{
+							title: 'Mathematics Lab',
+							url: '/courses/491/wiki/mathematics-lab'
+						},
 					]
-				},*/
+				},
+				{
+					title: 'Academic&rsquo;s Office',
+					items: [
+						{
+							title: 'Curricuplan',
+							subtitle: 'Curriculum mapping',
+							target: '_blank',
+							url: 'http://hosting.curricuplan.com'
+						},
+						{
+							title: 'FAWeb',
+							subtitle: 'Window Grades &amp; Comments',
+							target: '_blank',
+							url: 'http://faweb.stmarksschool.org',
+							userClass: [USER_CLASS_FACULTY]
+						},
+						{
+							title: 'NetClassroom',
+							subtitle: 'Course Registration',
+							target: '_blank',
+							url: 'http://netclassroom.stmarksschool.org'
+						}
+					]
+				},
 				{
 					title: 'Research &amp; Writing',
-					style: colorStripe,
+					// style: colorStripe,
 					items: [
 						{
 							title: 'Library',
@@ -101,39 +123,45 @@ var customMenu = {
 							url: 'https://drive.google.com/a/stmarksschool.org/folderview?id=0ByGbqFAT3Vy1aXdRY2hoNlY4WjA&usp=sharing'
 						}
 					]
-				},
-			/*]
-		},
+				}
+			]
+		}
+	]
+};
+
+var lionHub = {
+	title: 'Lion Hub',
+	columns: [
 		{
 			// style: 'optional CSS goes here',
-			sections: [*/
+			sections: [
 				{
 					title: 'Communication &amp; Storage',
 					//style: 'optional CSS goes here',
 					items: [
 						{
-							title: 'Email',
-							subtitle: 'Google Apps for Education',
+							title: 'Gmail',
+							// subtitle: 'Google Apps for Education',
 							target: '_blank',
 							// style: 'optional CSS goes here',
 							url: 'http://mail.stmarksschool.org'
 						},
 						{
 							title: 'Google Drive',
-							subtitle: 'Google Apps for Education',
+							// subtitle: 'Google Apps for Education',
 							target: '_blank',
 							url: 'http://drive.google.com/a/stmarksschool.org/#my-drive'
 						},
 						{
 							title: 'Minerva Web Access',
-							subtitle: 'Home Directories and Shared Files',
+							// subtitle: 'Home Directories and Shared Files',
 							target: '_blank',
 							url: 'http://minerva.stmarksschool.org/',
 							userClass: [USER_CLASS_FACULTY]
 						},
 						{
 							title: 'Athena Web Access',
-							subtitle: 'Home Directories and Shared Files',
+							// subtitle: 'Home Directories and Shared Files',
 							target: '_blank',
 							url: 'http://athena.stmarksschoo.org/',
 							userClass: [USER_CLASS_STUDENT]
@@ -143,71 +171,53 @@ var customMenu = {
 				{
 					title: 'Service Desks',
 					userClass: [USER_CLASS_FACULTY],
-					style: colorStripe,
+					// style: colorStripe,
 					items: [
 						{
-							title: 'Help Desk',
-							subtitle: 'Technology Issues',
+							title: ' Technology Help Desk',
+							// subtitle: 'Technology Issues',
 							target: '_blank',
 							url: 'http://helpdesk.stmarksschool.org'
 						},
 						{
 							title: 'School Dude',
-							subtitle: 'Facilities Requests (School ID 615666807)',
+							// subtitle: 'Facilities Requests (School ID 615666807)',
 							target: '_blank',
 							url: 'http://www.myschoolbuilding.com/myschoolbuilding/msbdefault_email.asp?frompage=myrequest.asp'
 						},
 						{
 							title: 'Communications Request',
-							subtitle: 'Publications, Branded Items, Website Updates',
+							// subtitle: 'Publications, Branded Items, Website Updates',
 							target: '_blank',
 							url: 'http://www.stmarksschool.org/about-st-marks/communications-department/index.aspx'
 						}
 					]
-				}
-
-			]
-		},
-		{
-			sections: [
+				},
 				{
 					title: 'On Campus',
-					style: colorStripe,
+					// style: colorStripe,
 					items: [
 						{
-							title: 'All School',
-							subtitle: 'Information, Organizations, Calendar',
+							title: 'All School Information',
+							// subtitle: 'Information, Organizations, Calendar',
 							url: '/courses/497'
 						},
 						{
 							title: 'Weekend Activities Sign-ups',
-							subtitle: 'from the Dean of Students&rsquo; Office',
+							// subtitle: 'from the Dean of Students&rsquo; Office',
 							target: '_blank',
 							url: 'http://www2.stmarksschool.org',
 							userClass: [USER_CLASS_STUDENT]
 						},
 						{
-							title: 'FAWeb',
-							subtitle: 'Window Grades &amp; Comments',
-							target: '_blank',
-							url: 'http://faweb.stmarksschool.org',
-							userClass: [USER_CLASS_FACULTY]
-						},
-						{
-							title: 'NetClassroom',
-							subtitle: 'Course Registration',
-							target: '_blank',
-							url: 'http://netclassroom.stmarksschool.org'
-						},
-						{
 							title: 'FLIK Menu',
-							subtitle: 'Dining Services',
+							// subtitle: 'Dining Services',
 							target: '_blank',
 							url: 'http://www.myschooldining.com/SMS/?cmd=menus'
 						},
 						{
 							title: 'Athletics',
-							subtitle: 'Schedules, Scores and News',
+							// subtitle: 'Schedules, Scores and News',
 							target: '_blank',
 							url: 'http://www.stmarksschool.org/athletics/teamlisting.aspx'
 						}
@@ -218,25 +228,25 @@ var customMenu = {
 					items: [
 						{
 							title: 'Canvas Training',
-							subtitle: 'What you need to know',
+							// subtitle: 'What you need to know',
 							url: '/courses/489',
 							userClass: [USER_CLASS_FACULTY]
 						},
 						{
 							title: 'Lynda.com',
-							subtitle: 'Software Training &amp; Tutorials',
+							// subtitle: 'Software Training &amp; Tutorials',
 							target: '_blank',
 							url: 'http://iplogin.lynda.com'
 						},
 						{
 							title: 'SMS',
-							subtitle: 'Ye Olde Portal',
+							// subtitle: 'Ye Olde Portal',
 							target: '_blank',
 							url: 'http://sms.stmarksschool.org'
 						},
 						{
 							title: 'Tech Support Documents',
-							subtitle: 'Directions for connections, on Lion Hub',
+							// subtitle: 'Directions for connections, on Lion Hub',
 							target: '_blank',
 							url: 'http://www.stmarksschool.org/academics/technology/Tech-Docs/index.aspx',
 							userClass: [USER_CLASS_FACULTY]
@@ -279,23 +289,25 @@ function stmarks_setUserClass() {
 	userClass = USER_CLASS_STUDENT;
 	
 	// check for membership in specific departments
-	//assumes no account-level groups for parentNode.children[1]
-	var accountsMenu = document.getElementById('menu_enrollments').parentNode.children[1].children[1].children;
-	// skip the "View all accounts" link: length - 1
-	for (i = 0; i < accountsMenu.length - 1; i++) {
-		switch (accountsMenu[i].children[0].getAttribute('href')) {
-			case USER_DEPARTMENT_HISTORY:
-				userDepartments.push(USER_DEPARTMENT_HISTORY);
-				break;
+	var coursesMenu = document.getElementById('menu_enrollments').parentNode;
+	// check if the user is enrolled in more than courses
+	if (coursesMenu.children.length > 1) {
+		var accountsList = coursesMenu.children[coursesMenu.children.length - 1].children[1].children;
+		// skip the "View all accounts" link: length - 1
+		for (i = 0; i < accountsList.length - 1; i++) {
+			switch (accountsList[i].children[0].getAttribute('href')) {
+				case USER_DEPARTMENT_HISTORY:
+					userDepartments.push(USER_DEPARTMENT_HISTORY);
+					break;
+			}
 		}
 	}
-
 	
 	// check for Faculty Resources course to identify USER_CLASS_FACULTY
-	var coursesMenu = document.getElementById('menu_enrollments').children[1].children;
+	var coursesList = coursesMenu.children[0].children[1].children;
 	// skip the "View all courses" link: length - 1
-	for (i = 0; i < coursesMenu.length - 1; i++) {
-		if (coursesMenu[i].getAttribute('data-id') === '97') {
+	for (i = 0; i < coursesList.length - 1; i++) {
+		if (coursesList[i].getAttribute('data-id') === '97') {
 			userClass = USER_CLASS_FACULTY;
 			return;
 		}
@@ -390,10 +402,13 @@ function stmarks_appendMenu(m) {
 
 function stmarks_resourcesMenu() {
 	// add the custom menu to the menubar
-	// if you wanted to add more menus, define another menu structure like customMenu and call appendMenu() with it as a parameter (menus would be added in the order that the appendMenu() calls occur)
+	// if you wanted to add more menus, define another menu structure like resources and call appendMenu() with it as a parameter (menus would be added in the order that the appendMenu() calls occur)
 	stmarks_setUserClass();
 	if (userClass != USER_CLASS_NO_MENU) {
-		stmarks_appendMenu(customMenu);
+		stmarks_appendMenu(resources);
+		stmarks_appendMenu(lionHub);
+		
+		// hide courses last, since some userClass identification is based on course enrollments!
 		stmarks_hideCourses(coursesToHide);
 	}
 }
