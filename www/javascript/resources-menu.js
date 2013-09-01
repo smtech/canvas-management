@@ -1,20 +1,12 @@
-/*jslint browser: true, devel: true, eqeq: true, plusplus: true, sloppy: true, vars: true, white: true */
+/*jslint browser: true, devel: true, eqeq: true, plusplus: true, sloppy: true, todo: true, vars: true, white: true */
 
 // types of user
 var USER_CLASS_STUDENT = 'student';
 var USER_CLASS_FACULTY = 'faculty';
 var USER_CLASS_NO_MENU = 'no-menu';
 
-var USER_DEPARTMENT_ART = '/accounts/76';
-var USER_DEPARTMENT_CLASSICS = '/accounts/77';
-var USER_DEPARTMENT_ENGLISH = '/accounts/78';
 var USER_DEPARTMENT_HISTORY = '/accounts/79';
-var USER_DEPARTMENT_LIBRARY = '/accounts/134';
-var USER_DEPARTMENT_MATHEMATICS = '/accounts/82';
-var USER_DEPARTMENT_MODERN_LANGUAGE = '/accounts/83';
-var USER_DEPARTMENT_PSYCHOLOGY = '/accounts/84';
-var USER_DEPARTMENT_RELIGION = '/accounts/85';
-var USER_DEPARTMENT_SCIENCE = '/accounts/86';
+var USER_DEPARTMENT_ACADEMIC_TECHNOLOGY = 'academic-technology';
 
 // default to hiding the menu
 var userClass = USER_CLASS_NO_MENU;
@@ -44,8 +36,15 @@ var resources = {
 					items: [
 						{
 							title: 'Faculty Resources',
-							subtitle: 'Calendars, Forms, Policies, Guides',
+							// subtitle: 'Calendars, Forms, Policies, Guides',
 							url: '/courses/97'
+						},
+						{
+							title: 'Academic Technology',
+							subtitle: 'Shared files',
+							target: '_blank',
+							url: 'https://drive.google.com/a/stmarksschool.org/?tab=co#folders/0Bx1atGpuKjk9UHJ3MU5nRms5Zms',
+							userDepartments: [USER_DEPARTMENT_ACADEMIC_TECHNOLOGY]
 						},
 						{
 							title: 'History Dept.',
@@ -79,30 +78,6 @@ var resources = {
 						{
 							title: 'Mathematics Lab',
 							url: '/courses/491/wiki/mathematics-lab'
-						},
-					]
-				},
-				{
-					title: 'Academic&rsquo;s Office',
-					items: [
-						{
-							title: 'Curricuplan',
-							subtitle: 'Curriculum mapping',
-							target: '_blank',
-							url: 'http://hosting.curricuplan.com'
-						},
-						{
-							title: 'FAWeb',
-							subtitle: 'Window Grades &amp; Comments',
-							target: '_blank',
-							url: 'http://faweb.stmarksschool.org',
-							userClass: [USER_CLASS_FACULTY]
-						},
-						{
-							title: 'NetClassroom',
-							subtitle: 'Course Registration',
-							target: '_blank',
-							url: 'http://netclassroom.stmarksschool.org'
 						}
 					]
 				},
@@ -121,75 +96,6 @@ var resources = {
 							subtitle: 'All the steps you need to write',
 							target: '_blank',
 							url: 'https://drive.google.com/a/stmarksschool.org/folderview?id=0ByGbqFAT3Vy1aXdRY2hoNlY4WjA&usp=sharing'
-						}
-					]
-				}
-			]
-		}
-	]
-};
-
-var lionHub = {
-	title: 'Lion Hub',
-	columns: [
-		{
-			// style: 'optional CSS goes here',
-			sections: [
-				{
-					title: 'Communication &amp; Storage',
-					//style: 'optional CSS goes here',
-					items: [
-						{
-							title: 'Gmail',
-							// subtitle: 'Google Apps for Education',
-							target: '_blank',
-							// style: 'optional CSS goes here',
-							url: 'http://mail.stmarksschool.org'
-						},
-						{
-							title: 'Google Drive',
-							// subtitle: 'Google Apps for Education',
-							target: '_blank',
-							url: 'http://drive.google.com/a/stmarksschool.org/#my-drive'
-						},
-						{
-							title: 'Minerva Web Access',
-							// subtitle: 'Home Directories and Shared Files',
-							target: '_blank',
-							url: 'http://minerva.stmarksschool.org/',
-							userClass: [USER_CLASS_FACULTY]
-						},
-						{
-							title: 'Athena Web Access',
-							// subtitle: 'Home Directories and Shared Files',
-							target: '_blank',
-							url: 'http://athena.stmarksschoo.org/',
-							userClass: [USER_CLASS_STUDENT]
-						}
-					]
-				},
-				{
-					title: 'Service Desks',
-					userClass: [USER_CLASS_FACULTY],
-					// style: colorStripe,
-					items: [
-						{
-							title: ' Technology Help Desk',
-							// subtitle: 'Technology Issues',
-							target: '_blank',
-							url: 'http://helpdesk.stmarksschool.org'
-						},
-						{
-							title: 'School Dude',
-							// subtitle: 'Facilities Requests (School ID 615666807)',
-							target: '_blank',
-							url: 'http://www.myschoolbuilding.com/myschoolbuilding/msbdefault_email.asp?frompage=myrequest.asp'
-						},
-						{
-							title: 'Communications Request',
-							// subtitle: 'Publications, Branded Items, Website Updates',
-							target: '_blank',
-							url: 'http://www.stmarksschool.org/about-st-marks/communications-department/index.aspx'
 						}
 					]
 				},
@@ -222,9 +128,20 @@ var lionHub = {
 							url: 'http://www.stmarksschool.org/athletics/teamlisting.aspx'
 						}
 					]
-				},
+				}
+			]
+		}
+	]
+};
+
+var lionHub = {
+	title: 'Lion Hub',
+	columns: [
+		{
+			// style: 'optional CSS goes here',
+			sections: [
 				{
-					title: 'Information',
+					title: 'Training &amp; Support',
 					items: [
 						{
 							title: 'Canvas Training',
@@ -259,6 +176,88 @@ var lionHub = {
 							userClass: [USER_CLASS_FACULTY]
 						}*/
 					]
+				},
+				{
+					title: 'Communication &amp; Storage',
+					//style: 'optional CSS goes here',
+					items: [
+						{
+							title: 'Gmail',
+							// subtitle: 'Google Apps for Education',
+							target: '_blank',
+							// style: 'optional CSS goes here',
+							url: 'http://mail.stmarksschool.org'
+						},
+						{
+							title: 'Google Drive',
+							// subtitle: 'Google Apps for Education',
+							target: '_blank',
+							url: 'http://drive.google.com/a/stmarksschool.org/#my-drive'
+						},
+						{
+							title: 'Minerva Web Access',
+							// subtitle: 'Home Directories and Shared Files',
+							target: '_blank',
+							url: 'http://minerva.stmarksschool.org/',
+							userClass: [USER_CLASS_FACULTY]
+						},
+						{
+							title: 'Athena Web Access',
+							// subtitle: 'Home Directories and Shared Files',
+							target: '_blank',
+							url: 'http://athena.stmarksschoo.org/',
+							userClass: [USER_CLASS_STUDENT]
+						}
+					]
+				},
+				{
+					title: 'Academics Office',
+					items: [
+						{
+							title: 'Curricuplan',
+							subtitle: 'Curriculum mapping',
+							target: '_blank',
+							url: 'http://hosting.curricuplan.com'
+						},
+						{
+							title: 'FAWeb',
+							subtitle: 'Window Grades &amp; Comments',
+							target: '_blank',
+							url: 'http://faweb.stmarksschool.org',
+							userClass: [USER_CLASS_FACULTY]
+						},
+						{
+							title: 'NetClassroom',
+							subtitle: 'Course Registration',
+							target: '_blank',
+							url: 'http://netclassroom.stmarksschool.org'
+						}
+					]
+				},
+				{
+					title: 'Service Desks',
+					userClass: [USER_CLASS_FACULTY],
+					// style: colorStripe,
+					items: [
+						{
+							title: ' Technology Help Desk',
+							// subtitle: 'Technology Issues',
+							target: '_blank',
+							url: 'http://helpdesk.stmarksschool.org'
+						},
+						{
+							title: 'School Dude',
+							// subtitle: 'Facilities Requests (School ID 615666807)',
+							target: '_blank',
+							url: 'http://www.myschoolbuilding.com/myschoolbuilding/msbdefault_email.asp?frompage=myrequest.asp'
+						},
+						{
+							title: 'Communications Request',
+							// subtitle: 'Publications, Branded Items, Website Updates',
+							target: '_blank',
+							url: 'http://www.stmarksschool.org/about-st-marks/communications-department/index.aspx'
+						}
+					]
 				}
 			]
 		}
@@ -268,23 +267,20 @@ var lionHub = {
 // if the Faculty Resources item is in the Courses menu, this person is faculty and should get faculty-specific resources
 var facultyCourseId = '97';
 
-var testers = [
+var deptAcademicTechnology = [
 	'Seth Battis',
-	'Brian Lester',
-	'Carlos Collazo'
+	'Brian Lester'
 ];
 
 function stmarks_setUserClass() {
 	var i;
 	
-	/*
-	// check user name to identify testers
+	// check user name to Academic Technology
 	var userName = document.getElementsByClassName('user_long_name')[0].innerText;
 	// if not an individually allowed user, don't process them!
-	if (testers.indexOf(userName) !== -1) {
-		// do something special for testers
+	if (deptAcademicTechnology.indexOf(userName) !== -1) {
+		userDepartments.push(USER_DEPARTMENT_ACADEMIC_TECHNOLOGY);
 	}
-	*/
 	
 	userClass = USER_CLASS_STUDENT;
 	
@@ -295,6 +291,7 @@ function stmarks_setUserClass() {
 		var accountsList = coursesMenu.children[coursesMenu.children.length - 1].children[1].children;
 		// skip the "View all accounts" link: length - 1
 		for (i = 0; i < accountsList.length - 1; i++) {
+			// TODO: USER_DEPARTMENTS could be an array and this wouldn't even need to be a switch statement
 			switch (accountsList[i].children[0].getAttribute('href')) {
 				case USER_DEPARTMENT_HISTORY:
 					userDepartments.push(USER_DEPARTMENT_HISTORY);
