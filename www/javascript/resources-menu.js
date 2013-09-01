@@ -40,6 +40,10 @@ var resources = {
 							url: '/courses/97'
 						},
 						{
+							title: 'Global Citizenship',
+							url: '/courses/672',
+						},
+						{
 							title: 'Academic Technology',
 							subtitle: 'Shared files',
 							target: '_blank',
@@ -337,17 +341,19 @@ function stmarks_userDepartmentsVisible(menuObject) {
 // courses that (if they exist in Courses) are replicated in the Resources menu
 var coursesToHide = [
 	'97', // Faculty Resources
-	'497', // All School
-	'489' // Canvas Training
+	'497', // All School '12-'13
+	'1277', // All School '13-'14
+	'489', // Canvas Training
+	'672' // Global Citizenship
 ];
 
 // remove courses from the Courses menu that have been replicated in custom menus
 function stmarks_hideCourses(courses) {
 	var i;
-	var coursesMenu = document.getElementById('menu_enrollments').childNodes[3].childNodes;
-	for (i = 1; i < coursesMenu.length; i += 2) {
-		if (coursesMenu[i] instanceof HTMLLIElement && courses.indexOf(coursesMenu[i].getAttribute('data-id')) > -1) {
-			coursesMenu[i].parentNode.removeChild(coursesMenu[i]);
+	var coursesList = document.getElementById('menu_enrollments').children[1].children;
+	for (i = 1; i < coursesList.length; i += 1) {
+		if (courses.indexOf(coursesList[i].getAttribute('data-id')) > -1) {
+			coursesList[i].parentNode.removeChild(coursesList[i]);
 			i = 0; // start at the beginning again... eventually we'll hide them all and escape!
 		}
 	}
