@@ -1,0 +1,5 @@
+# lock phpicalendar so that no ne'er-do-well can mess around
+AuthType Basic
+AuthName "phpicalendar"
+AuthUserFile /var/www-data/canvas/calendar-ics/.htpasswd
+Require valid-user
