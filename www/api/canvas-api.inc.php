@@ -26,7 +26,6 @@ define('CANVAS_TIMESTAMP_FORMAT', 'Y-m-d\TH:iP');
 /* how long the exception excerpt should be in the log file */
 if (!defined('CANVAS_API_EXCEPTION_MAX_LENGTH')) {
 	define('CANVAS_API_EXCEPTION_MAX_LENGTH', 50);
-	debug_log('Using default CANVAS_API_EXCEPTION_MAX_LENGTH = ' . CANVAS_API_EXCEPTION_MAX_LENGTH, DEBUGGING_INFORMATION);
 }
 
 /* we're trying to obscure the workings of the actual API safely in this one
@@ -70,7 +69,7 @@ function callCanvasApiPageLink($page) {
 	global $CANVAS_API_PAGINATION, $CANVAS_API_PAGINATION_PEST;
 	if ($CANVAS_API_PAGINATION[$page]) {
 		$CANVAS_API_PAGINATION_PEST = new Pest($CANVAS_API_PAGINATION[$page]);
-		return callCanvasApiPaginated(CANVAS_API_GET, '', '', $CANVAS_API_PAGINATION_PEST);
+		return callCanvasApiPaginated(CANVAS_API_GET, '', '', false, $CANVAS_API_PAGINATION_PEST);
 	}
 	return false;
 }
@@ -134,7 +133,7 @@ function getCanvasApiCurrentPageNumber() {
  * Pass-through a Pest request with added Canvas authorization token
  **/
 $CANVAS_API_PEST = new Pest(CANVAS_API_URL);
-function callCanvasApi($verb, $url, $data = array(), $apiInstance = null) {
+function callCanvasApi($verb, $url, $data = array(), $throwingExceptions = false, $apiInstance = null) {
 	if (!$apiInstance) {
 		$apiInstance = $GLOBALS['CANVAS_API_PEST'];
 	}
@@ -153,7 +152,7 @@ function callCanvasApi($verb, $url, $data = array(), $apiInstance = null) {
 				/* who knows what goes on in the server's mind... try again */
 				$serverRetryCount++;
 				$retry = true;
-				debug_log('Retrying after Canvas API server error. ' . preg_replace('%(.{0,' . CANVAS_API_EXCEPTION_MAX_LENGTH . '}.+)%', '\\1...', $e->getMessage()));
+				debug_log('Retrying after Canvas API server error. ' . substr($e->getMessage(), 0, CANVAS_API_EXCEPTION_MAX_LENGTH));
 			}
 		} catch (Pest_ClientError $e) {
 			if ($throwingExceptions & CANVAS_API_EXCEPTION_CLIENT) {
@@ -163,14 +162,14 @@ function callCanvasApi($verb, $url, $data = array(), $apiInstance = null) {
 				   I was authorized. Everything gets retried a few times before I give up */
 				$clientRetryCount++;
 				$retry = true;
-				debug_log('Retrying after Canvas API client error. ' . preg_replace('%(.{0,' . CANVAS_API_EXCEPTION_MAX_LENGTH . '}.+)%', '\\1...', $e->getMessage())); 
+				debug_log('Retrying after Canvas API client error. ' . substr($e->getMessage(), 0, CANVAS_API_EXCEPTION_MAX_LENGTH)); 
 			}
 		} catch (Exception $e) {
 			// treat an empty reply as a server error (which, BTW, it dang well is)
 			if ($e->getMessage() == 'Empty reply from server') {
 				$serverRetryCount++;
 				$retry = true;
-				debug_log('Retrying after empty reply from server. ' . preg_replace('%(.{0,' . TRIM_EXCEPTION_MESSAGE_LENGTH . '}.+)%', '[\\1...]', $e->getMessage()));
+				debug_log('Retrying after empty reply from server. ' . substr($e->getMessage(), 0, CANVAS_API_EXCEPTION_MAX_LENGTH));
 			} else {
 				displayError(
 					array(
@@ -240,11 +239,11 @@ function callCanvasApi($verb, $url, $data = array(), $apiInstance = null) {
 	return $responseArray;
 }
 
-function callCanvasApiPaginated($verb, $url, $data = array(), $apiInstance = null) {
+function callCanvasApiPaginated($verb, $url, $data = array(), $throwingExceptions = false, $apiInstance = null) {
 	if (!$apiInstance) {
 		$apiInstance = $GLOBALS['CANVAS_API_PEST'];
 	}
-	$response = callCanvasApi($verb, $url, $data, $apiInstance);
+	$response = callCanvasApi($verb, $url, $data, $throwingExceptions, $apiInstance);
 	processCanvasPaginationLinks($apiInstance);
 	return $response;
 }
