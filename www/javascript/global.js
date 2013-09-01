@@ -27,6 +27,13 @@ function stmarks_globalJavascript() {
 			stmarks_resourcesMenu();
 		}
 	);	
+	
+	$.getScript(
+		pathToScripts + 'hide-page-lists-if-pages-hidden.js',
+		function() {
+			stmarks_hidePageListsIfPagesHidden();
+		}
+	);
 }
 
 stmarks_globalJavascript();
