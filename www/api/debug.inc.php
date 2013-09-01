@@ -28,6 +28,8 @@ function debug_log($message) {
  * Render a console-friendly version of the toolname
  **/
 function getToolNameForConsole() {
+	$toolNameForConsole = (defined('TOOL_NAME_ABBREVIATION') ? TOOL_NAME_ABBREVIATION :TOOL_NAME);
+
 	return str_replace(
 		array(
 			'&larr;',
@@ -49,7 +51,7 @@ function getToolNameForConsole() {
 			"'",
 			"'"
 		),
-		TOOL_NAME);
+		$toolNameForConsole);
 }
 
 /**
