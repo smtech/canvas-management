@@ -7,6 +7,7 @@ body {
 
 label, input[type=file] {
 	display: block;
+	margin-top: 10px;
 }
 
 label .comment {
@@ -64,6 +65,11 @@ em  {
 	text-transform: uppercase;
 	font-weight: bold;
 }
+
+code, .code {
+	font-family: Inconsolata, Monaco, "Courier New", Courier, monospace;
+}
+
 
 #header, #footer {
 	padding: 10px;

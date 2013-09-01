@@ -9,4 +9,4 @@
 	</head>
 	<body onload="frameBustingRedirect('<?= $_REQUEST["url"] ?>');">
 	</body>
-</html>a
+</html>
