@@ -248,7 +248,8 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 											'calendar_event[description]' => $event['description'],
 											'calendar_event[start_at]' => $start->format(CANVAS_TIMESTAMP_FORMAT),
 											'calendar_event[end_at]' => $end->format(CANVAS_TIMESTAMP_FORMAT),
-											'calendar_event[location_name]' => $event['location']
+											'calendar_event[location_name]' => $event['location'],
+											'as_user_id' => ($canvasContext['context'] == 'user' ? $canvasObject['id'] : '') // TODO: this feels skeevy -- like the empty string will break
 										)
 									);
 									$icalEventJson = json_encode($event);
@@ -288,7 +289,8 @@ if (isset($_REQUEST['cal']) && isset($_REQUEST['canvas_url'])) {
 						CANVAS_API_DELETE,
 						"/calendar_events/{$deletedEventCache['calendar_event[id]']}",
 						array(
-							'cancel_reason' => getSyncTimestamp()
+							'cancel_reason' => getSyncTimestamp(),
+							'as_user_id' => ($canvasContext['context'] == 'user' ? $canvasObject['id'] : '') // TODO: this feels skeevy -- like the empty string will break
 						),
 						CANVAS_API_EXCEPTION_CLIENT
 					);

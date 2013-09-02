@@ -9,6 +9,7 @@ require_once('../Pest.php');
 
 require_once('common.inc.php');
 
+// FIXME: should filter so that the syncs for the server we're running against (INDEX_WEB_PATH) are called (or is that already happening?)
 $schedulesResponse = mysqlQuery("
 	SELECT *
 		FROM `schedules`
