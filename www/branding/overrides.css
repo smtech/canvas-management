@@ -77,3 +77,10 @@ body.modal #modal-box.login-box a { color: #ffffff !important; }
 #fl_container {
 	background-image: url("mobile-login.png?1");
 }
+
+.group_course_497 {
+	color: #ffffff !important;
+	background-color: #003359 !important;
+	border-color: #003359 !important;
+	font-weight: bold !important;
+}
