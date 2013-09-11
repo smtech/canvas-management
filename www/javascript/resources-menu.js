@@ -6,6 +6,7 @@ var USER_CLASS_FACULTY = 'faculty';
 var USER_CLASS_NO_MENU = 'no-menu';
 
 var USER_DEPARTMENT_HISTORY = '/accounts/79';
+var USER_DEPARTMENT_MODERN_LANGUAGE = '/accounts/83';
 var USER_DEPARTMENT_ACADEMIC_TECHNOLOGY = 'academic-technology';
 
 // default to hiding the menu
@@ -56,6 +57,11 @@ var resources = {
 							target: '_blank',
 							url: 'https://drive.google.com/a/stmarksschool.org/?tab=mo#folders/0Bxkl1PbtN3mKa1B0Ym5nSXoxU2M',
 							userDepartments: [USER_DEPARTMENT_HISTORY]
+						},
+						{
+							title: 'Modern Language Dept.',
+							url: '/courses/1294',
+							userDepartments: [USER_DEPARTMENT_MODERN_LANGUAGE]
 						}
 					]
 				},
@@ -221,7 +227,8 @@ var lionHub = {
 							title: 'Curricuplan',
 							subtitle: 'Curriculum mapping',
 							target: '_blank',
-							url: 'http://hosting.curricuplan.com'
+							url: 'http://hosting.curricuplan.com',
+							userClass: [USER_CLASS_FACULTY]
 						},
 						{
 							title: 'FAWeb',
@@ -300,6 +307,9 @@ function stmarks_setUserClass() {
 				case USER_DEPARTMENT_HISTORY:
 					userDepartments.push(USER_DEPARTMENT_HISTORY);
 					break;
+				case USER_DEPARTMENT_MODERN_LANGUAGE:
+					userDepartments.push(USER_DEPARTMENT_MODERN_LANGUAGE);
+					break;
 			}
 		}
 	}
@@ -344,7 +354,8 @@ var coursesToHide = [
 	'497', // All School '12-'13
 	'1277', // All School '13-'14
 	'489', // Canvas Training
-	'672' // Global Citizenship
+	'672', // Global Citizenship
+	'1294' // Modern Language Department
 ];
 
 // remove courses from the Courses menu that have been replicated in custom menus
