@@ -1355,7 +1355,7 @@ function uploadCanvasFile($fileName, $localPath, &$fileInfo, $course) {
 			)
 		);
 		
-		$statusCheck = new PestCanvas($uploadProcess['status_url']);
+		$statusCheck = new Pest($uploadProcess['status_url']);
 		
 		$delay = (int) $fileSize / 174762.667; // calculated based on Jason Peacock's "5-6min to upload 50mb"
 		
