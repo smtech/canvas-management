@@ -89,7 +89,7 @@ A global JavaScript add-on to expose the permalinks to individual topic entries 
 
 Allow teachers to open a scrollable faculty journal page from their People listing for a course. Inserts a menu and next/prev buttons into the resulting faculty journal page to let teachers scroll through each student in their course, from within the faculty journal.
 
-No Known Issues
+[Known Issues](http://github.com/smtech/canvas/issues?milestone=11)
 
 
 

@@ -1,6 +1,7 @@
 <?php
 
-require_once('../.ignore.read-only-authentication.inc.php');
+//require_once('../.ignore.read-only-authentication.inc.php');
+require_once('../.ignore.stmarksschool-test-authentication.inc.php');
 require_once('../canvas-api.inc.php');
 
 // TODO: it would be nice to cache generated pages, to save on API call time
@@ -38,7 +39,7 @@ foreach($sections as $section) {
 
 		function updateFacultyJournal() {
 			var studentId = document.getElementById('menu').value;
-			top.location.href = 'https://stmarksschool.instructure.com/users/' + studentId + '/user_notes?course_id=<?= $_REQUEST['course_id'] ?>';
+			top.location.href = 'https://stmarksschool.test.instructure.com/users/' + studentId + '/user_notes?course_id=<?= $_REQUEST['course_id'] ?>';
 		}
 		
 		function nextStudent() {
