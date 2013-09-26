@@ -16,6 +16,15 @@ function stmarks_globalJavascript() {
 	// http://stackoverflow.com/a/950146
 
 	$.getScript(
+		pathToScripts + 'resources-menu.js',
+		function() {
+			stmarks_resourcesMenu();
+		}
+	);	
+	
+	/*---- after this line, everything can use userClass and userDepartments ----*/
+	
+	$.getScript(
 		pathToScripts + 'faculty-journal.js',
 		function() {
 			stmarks_facultyJournal();
@@ -28,16 +37,7 @@ function stmarks_globalJavascript() {
 			stmarks_hideFutureCourses();
 		}
 	);
-	
-	/*---- anything that uses the course list to ID the user has to come before resources-menu.js ----*/
-	
-	$.getScript(
-		pathToScripts + 'resources-menu.js',
-		function() {
-			stmarks_resourcesMenu();
-		}
-	);	
-	
+		
 	$.getScript(
 		pathToScripts + 'hide-page-lists-if-pages-hidden.js',
 		function() {
