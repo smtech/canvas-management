@@ -85,6 +85,14 @@ A global JavaScript add-on to expose the permalinks to individual topic entries 
 
 
 
+### [dev-faculty-journal](http://github.com/smtech/canvas/tree/dev-faculty-journal/www/javascript/faculty-journal.js)
+
+Allow teachers to open a scrollable faculty journal page from their People listing for a course. Inserts a menu and next/prev buttons into the resulting faculty journal page to let teachers scroll through each student in their course, from within the faculty journal.
+
+[Known Issues](http://github.com/smtech/canvas/issues?milestone=11)
+
+
+
 ### [dev-resources-menu](http://github.com/smtech/canvas/tree/dev-resources-menu/www/javascript/resources-menu.js)
 
 A global JavaScript add-on to insert an additional menu into the main navigation toolbar across the top of the screen. The contents of the menu can be customized in the javascript file.
