@@ -1,35 +1,68 @@
 <?php
 
-//require_once('../.ignore.read-only-authentication.inc.php');
-require_once('../.ignore.stmarksschool-test-authentication.inc.php');
+require_once('.ignore.faculty-journal-authentication.inc.php');
+require_once('config.inc.php');
 require_once('../canvas-api.inc.php');
+require_once('../mysql.inc.php');
 
 // TODO: it would be nice to cache generated pages, to save on API call time
 
-$sections = callCanvasApi(
-	CANVAS_API_GET,
-	"/courses/{$_REQUEST['course_id']}/sections"
-);
-
 $menu = array();
 
-foreach($sections as $section) {
-	$enrollments = callCanvasApiPaginated(
+$acceptableCache = date('Y-m-d H:i:s',time() - CACHE_DURATION);
+$menuCacheResponse = mysqlQuery("
+	SELECT * FROM `menus`
+		WHERE
+			`course_id` = '{$_REQUEST['course_id']}' AND
+			`cached` > '$acceptableCache'
+");
+$menuCache = $menuCacheResponse->fetch_assoc();
+
+if ($menuCache) {
+	$menu = unserialize($menuCache['menu']);
+} else {
+	mysqlQuery("
+		DELETE FROM `menus`
+			WHERE
+				`course_id` = '{$_REQUEST['course_id']}'
+	");
+
+	$sections = callCanvasApi(
 		CANVAS_API_GET,
-		"/sections/{$section['id']}/enrollments"
+		"/courses/{$_REQUEST['course_id']}/sections"
 	);
 	
-	if ($enrollments) {
-		$menu[$section['name']] = array();
-		do {
-			foreach ($enrollments as $enrollment) {
-				if ($enrollment['role'] == 'StudentEnrollment') {
-					$menu[$section['name']][$enrollment['user']['id']] = $enrollment['user']['sortable_name'];
+	
+	foreach($sections as $section) {
+		$enrollments = callCanvasApiPaginated(
+			CANVAS_API_GET,
+			"/sections/{$section['id']}/enrollments"
+		);
+		
+		if ($enrollments) {
+			$menu[$section['name']] = array();
+			do {
+				foreach ($enrollments as $enrollment) {
+					if ($enrollment['role'] == 'StudentEnrollment') {
+						$menu[$section['name']][$enrollment['user']['id']] = $enrollment['user']['sortable_name'];
+					}
 				}
-			}
-		} while ($enrollments = callCanvasApiNextPage());
+			} while ($enrollments = callCanvasApiNextPage());
+		}
 	}
+	mysqlQuery("
+		INSERT INTO `menus`
+		(
+			`course_id`,
+			`menu`
+		)
+		VALUES (
+			'{$_REQUEST['course_id']}',
+			'" . serialize($menu) . "'
+		)
+	");
 }
+
 
 ?>
 <html>
@@ -39,7 +72,7 @@ foreach($sections as $section) {
 
 		function updateFacultyJournal() {
 			var studentId = document.getElementById('menu').value;
-			top.location.href = 'https://stmarksschool.test.instructure.com/users/' + studentId + '/user_notes?course_id=<?= $_REQUEST['course_id'] ?>';
+			top.location.href = 'https://<?= parse_url(CANVAS_API_URL, PHP_URL_HOST) ?>/users/' + studentId + '/user_notes?course_id=<?= $_REQUEST['course_id'] ?>';
 		}
 		
 		function nextStudent() {
@@ -73,11 +106,9 @@ foreach($sections as $section) {
 	#menu-box {
 		position: absolute;
 		top: 50%;
-		left: 50%;
 		height: 30px;
+		width: 90%;
 		margin-top: -15px;
-		width: 200px;
-		margin-left: -100px;
 		text-align: center;
 	}
 	</style>
