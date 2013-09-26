@@ -12,14 +12,24 @@ function stmarks_globalJavascript() {
 		}
 	}
 	
-	// Works, so long as Canvas includs JQuery ahead of us...
+	// Works, so long as Canvas includes JQuery ahead of us...
 	// http://stackoverflow.com/a/950146
+
+	$.getScript(
+		pathToScripts + 'faculty-journal.js',
+		function() {
+			stmarks_facultyJournal();
+		}
+	);
+
 	$.getScript(
 		pathToScripts + 'hide-future-courses.js',
 		function() {
 			stmarks_hideFutureCourses();
 		}
 	);
+	
+	/*---- anything that uses the course list to ID the user has to come before resources-menu.js ----*/
 	
 	$.getScript(
 		pathToScripts + 'resources-menu.js',
