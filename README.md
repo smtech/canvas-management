@@ -98,7 +98,7 @@ Individual scripts to do specific things, but that also shouldn't [just](https:/
 
   - [list-users-with-non-blackbaud-sis_id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/list-users-with-non-blackbaud-sis_id.php) generates a TSV list of all users in the instance whose SIS IDs do not match the general observed pattern of Blackbaud Import IDs (and are, therefore, most likely hand-generated and/or erroneous -- or both!).
 
-  - [list-users-without-sis_id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/list-users-wwithout-sis_id.php) generates a TSV list of all users who do not have SIS IDs (and therefore don't show up in Canvas SIS export reports).
+  - [list-users-without-sis_id](http://github.com/smtech/canvas/blob/dev-scripts/www/api/scripts/list-users-without-sis_id.php) generates a TSV list of all users who do not have SIS IDs (and therefore don't show up in Canvas SIS export reports).
 
 	
 
