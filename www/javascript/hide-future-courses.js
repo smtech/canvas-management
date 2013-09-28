@@ -2,18 +2,27 @@
 
 function stmarks_hideFutureCourses() {
 	var i;
-	var coursesMenu = document.getElementById('menu_enrollments').childNodes[3].childNodes;
-	
-	// TODO: isFaculty is useful enough to warrant a separate file, no?
 	var isFaculty = false;
-	for (i = 1; i < coursesMenu.length; i += 2) {
-		if (coursesMenu[i] instanceof HTMLLIElement && coursesMenu[i].getAttribute('data-id') === '97') {
+	
+	// check for Faculty Resources course to identify USER_CLASS_FACULTY
+	var coursesList = document.getElementById('menu_enrollments').children[1].children;
+	// skip the "View all courses" link: length - 1
+	for (i = 0; i < coursesList.length - 1; i++) {
+		if (coursesList[i].getAttribute('data-id') === '97') {
 			isFaculty = true;
 		}
 	}
 	
+
+	// remove past courses from future list for faculty
 	if (isFaculty) {
-		return;
+		var futureEnrollments = document.getElementsByClassName('future_enrollments')[0];
+		var futurePastEnrollments = futureEnrollments.querySelectorAll('.completed');
+		for (i = futurePastEnrollments.length - 1; i >= 0; i--) {
+			futurePastEnrollments[i].parentNode.removeChild(futurePastEnrollments[i]);
+		}
+		
+	// hide all future classes from students
 	} else {
 		var futureEnrollments = document.getElementsByClassName('future_enrollments')[0];
 		futureEnrollments.parentNode.removeChild(futureEnrollments);
