@@ -9,6 +9,7 @@ require_once('../Pest.php');
 
 require_once('common.inc.php');
 
+// FIXME: should filter so that the syncs for the server we're running against (INDEX_WEB_PATH) are called (or is that already happening?)
 $schedulesResponse = mysqlQuery("
 	SELECT *
 		FROM `schedules`
@@ -27,14 +28,19 @@ while($schedule = $schedulesResponse->fetch_assoc()) {
 				`id` = '{$schedule['calendar']}'
 	");
 	if ($calendar = $calendarResponse->fetch_assoc()) {
-		$import->get(
-			'import', // assumes ../.htaccess with RewriteCond
-			array(
-				'cal' => $calendar['ics_url'],
-				'canvas_url' => $calendar['canvas_url'],
-				'schedule' => $schedule['id']
-			)
-		);
+		try {
+			$import->get(
+				'import', // assumes ../.htaccess with RewriteCond
+				array(
+					'cal' => $calendar['ics_url'],
+					'canvas_url' => $calendar['canvas_url'],
+					'schedule' => $schedule['id']
+				)
+			);
+		} catch (Exception $e) {
+			debugFlag($e->getMessage());
+			exit;
+		}
 	}
 }
 

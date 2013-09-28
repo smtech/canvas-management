@@ -9,8 +9,7 @@ require_once('../canvas-api.inc.php');
 
 if (isset($_REQUEST['course_url'])) {
 	$courseId = preg_replace('|.*/courses/(\d+)/?.*|', '$1', parse_url($_REQUEST['course_url'], PHP_URL_PATH));
-	$json = callCanvasApi('get', "/courses/$courseId");
-	$course = json_decode($json, true);
+	$course = callCanvasApi('get', "/courses/$courseId");
 	if ($course) {
 		$webcalFeed = str_replace('https://', 'webcal://', $course['calendar']['ics']);
 		displayPage('
