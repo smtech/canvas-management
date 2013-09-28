@@ -1,3 +1,10 @@
+<?php
+
+require_once('.ignore.faculty-journal-authentication.inc.php');
+require_once('config.inc.php');
+require_once('../canvas-api.inc.php');
+
+?>
 <html>
 <head>
 	<meta http-equiv="Pragma" content="no-cache" />
@@ -31,7 +38,7 @@
 		}
 		
 		$.getScript(
-			'http://area51.stmarksschool.org/project/canvas/dev/api/faculty-journal/student-loader.php?course_id=<?= $_REQUEST['course_id'] ?>&student_id=<?= $_REQUEST['student_id'] ?>',
+			'http://<?= $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) ?>//student-loader.php?course_id=<?= $_REQUEST['course_id'] ?>&user_id=<?= $_REQUEST['user_id'] ?>',
 			function() {
 				loadStudents();
 			}
