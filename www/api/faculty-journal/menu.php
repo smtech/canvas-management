@@ -1,72 +1,7 @@
-<?php
-
-require_once('.ignore.faculty-journal-authentication.inc.php');
-require_once('config.inc.php');
-require_once('../canvas-api.inc.php');
-require_once('../mysql.inc.php');
-
-// TODO: it would be nice to cache generated pages, to save on API call time
-
-$menu = array();
-
-$acceptableCache = date('Y-m-d H:i:s',time() - CACHE_DURATION);
-$menuCacheResponse = mysqlQuery("
-	SELECT * FROM `menus`
-		WHERE
-			`course_id` = '{$_REQUEST['course_id']}' AND
-			`cached` > '$acceptableCache'
-");
-$menuCache = $menuCacheResponse->fetch_assoc();
-
-if ($menuCache) {
-	$menu = unserialize($menuCache['menu']);
-} else {
-	mysqlQuery("
-		DELETE FROM `menus`
-			WHERE
-				`course_id` = '{$_REQUEST['course_id']}'
-	");
-
-	$sections = callCanvasApi(
-		CANVAS_API_GET,
-		"/courses/{$_REQUEST['course_id']}/sections"
-	);
-	
-	
-	foreach($sections as $section) {
-		$enrollments = callCanvasApiPaginated(
-			CANVAS_API_GET,
-			"/sections/{$section['id']}/enrollments"
-		);
-		
-		if ($enrollments) {
-			$menu[$section['name']] = array();
-			do {
-				foreach ($enrollments as $enrollment) {
-					if ($enrollment['role'] == 'StudentEnrollment') {
-						$menu[$section['name']][$enrollment['user']['id']] = $enrollment['user']['sortable_name'];
-					}
-				}
-			} while ($enrollments = callCanvasApiNextPage());
-		}
-	}
-	mysqlQuery("
-		INSERT INTO `menus`
-		(
-			`course_id`,
-			`menu`
-		)
-		VALUES (
-			'{$_REQUEST['course_id']}',
-			'" . serialize($menu) . "'
-		)
-	");
-}
-
-
-?>
 <html>
 <head>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script type="text/javascript">
 		/*jslint browser: true, devel: true, eqeq: true, plusplus: true, sloppy: true, vars: true, white: true */
 
@@ -94,6 +29,14 @@ if ($menuCache) {
 			} while (document.getElementById('menu').value == '');
 			updateFacultyJournal();
 		}
+		
+		$.getScript(
+			'http://area51.stmarksschool.org/project/canvas/dev/api/faculty-journal/student-loader.php?course_id=<?= $_REQUEST['course_id'] ?>&student_id=<?= $_REQUEST['student_id'] ?>',
+			function() {
+				loadStudents();
+			}
+		);
+
 	</script>
 	<style>
 	a {
@@ -101,6 +44,14 @@ if ($menuCache) {
 	}
 	a:link, a:visited {
 		color: black;
+	}
+	
+	table {
+		margin: auto;
+	}
+	
+	tr {
+		vertical-align: middle;
 	}
 	
 	#menu-box {
@@ -111,24 +62,33 @@ if ($menuCache) {
 		margin-top: -15px;
 		text-align: center;
 	}
+	
+	#menu-placeholder {
+		display: inline;
+		width: auto;
+	}
 	</style>
 </head>
 <body>
-	<div id="menu-box">
-		<a href="javascript:previousStudent();">&#9664;</a></li>
-		<select id="menu" onChange="updateFacultyJournal()">
-			<option disabled value="">Choose a student</option>
-			<?php
-				foreach ($menu as $section => $students) {
-					echo '<optgroup label="' . $section . '">';
-					foreach ($students as $id => $name) {
-						echo '<option value="' . $id . '"' . ($id == $_REQUEST['user_id'] ? ' selected' : '') . '>' . $name . '</option>';
-					}
-				}
-			?>
-		</select>
-		<a href="javascript:nextStudent();">&#9654;</a>
-	</div>
-</ul>
+<div id="menu-box">
+	<table>
+		<tr>
+			<td><a href="javascript:previousStudent();">&#9664;</a></li></td>
+			<td id="menu-placeholder">
+				<table>
+					<tr>
+						<td>
+							<select disabled>
+								<option>Loading students...</option>
+							</select>
+						</td>
+						<td><img src="ajax-loader.gif" height="16" width="16" /></td>
+					</tr>
+				</table>
+			</td>
+			<td><a href="javascript:nextStudent();">&#9654;</a></td>
+		</tr>
+	</table>
+</div>
 </body>
 </html>
