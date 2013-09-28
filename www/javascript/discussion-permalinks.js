@@ -1,8 +1,10 @@
 /* Canvas loads discussion entries using AJAX, so we have to wait a moment
    for the entries to actually be, y'know... _there_. */
+// TODO: add tests for content availability, as in https://github.com/smtech/canvas/commit/38955ef47b33478d0549712689844734dc66001d
 var delay = 1000; // 1 second = 1000 milliseconds
 
 function stmarks_addPermalinks() {
+	// TODO: check URL before trying to do anything, as in https://github.com/smtech/canvas/blob/master/www/javascript/faculty-journal.js
 	/* make sure that we are actually messing with a discussion page... */
 	if (document.getElementById('discussion_container')) {
 		/* run through all of the <li> elements looking for entry IDs */
