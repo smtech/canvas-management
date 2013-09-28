@@ -12,15 +12,9 @@ function stmarks_globalJavascript() {
 		}
 	}
 	
-	// Works, so long as Canvas includs JQuery ahead of us...
+	// Works, so long as Canvas includes JQuery ahead of us...
 	// http://stackoverflow.com/a/950146
-	$.getScript(
-		pathToScripts + 'hide-future-courses.js',
-		function() {
-			stmarks_hideFutureCourses();
-		}
-	);
-	
+
 	$.getScript(
 		pathToScripts + 'resources-menu.js',
 		function() {
@@ -28,6 +22,22 @@ function stmarks_globalJavascript() {
 		}
 	);	
 	
+	/*---- after this line, everything can use userClass and userDepartments ----*/
+	
+	$.getScript(
+		pathToScripts + 'faculty-journal.js',
+		function() {
+			stmarks_facultyJournal();
+		}
+	);
+
+	$.getScript(
+		pathToScripts + 'hide-future-courses.js',
+		function() {
+			stmarks_hideFutureCourses();
+		}
+	);
+		
 	$.getScript(
 		pathToScripts + 'hide-page-lists-if-pages-hidden.js',
 		function() {
