@@ -88,9 +88,10 @@ Working on a more robust, mature library for interacting with the Canvas API. Mo
 ### [dev-javascript](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript)
 
 Miscellaneous one-off JavaScript add-ons:
-	- [discussion-permalinks](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript/discussion-permalinks.js) reveals the permalinks to individual replies in Canvas discussions and announcements.
-	- [hide-future-courses](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript/hide-future-courses.js) hides all future enrollments for which the user's role is student (so students' can peer ahead to see their schedule before the semester starts, a concern of the registrar's) _and_ removes unpublished courses that occurred in the past from all teacher's "future" enrollments (a logica error, per [this ticket](https://help.instructure.com/requests/173156)).
-	- [hide-page-lists-if-pages-hidden](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript/hide-page-lists-if-pages-hidden.js) removes the lists of recently modified and all pages from the right sidebar if the Pages link is not available in the left sidebar (so user's without permission to browse Pages cannot browse pages, per [this feature request](https://help.instructure.com/entries/21511835-Hide-All-Pages-List-when-Pages-is-Removed-from-Navigation))
+
+  - [discussion-permalinks](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript/discussion-permalinks.js) reveals the permalinks to individual replies in Canvas discussions and announcements.
+  - [hide-future-courses](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript/hide-future-courses.js) hides all future enrollments for which the user's role is student (so students' can peer ahead to see their schedule before the semester starts, a concern of the registrar's) _and_ removes unpublished courses that occurred in the past from all teacher's "future" enrollments (a logica error, per [this ticket](https://help.instructure.com/requests/173156)).
+  - [hide-page-lists-if-pages-hidden](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript/hide-page-lists-if-pages-hidden.js) removes the lists of recently modified and all pages from the right sidebar if the Pages link is not available in the left sidebar (so user's without permission to browse Pages cannot browse pages, per [this feature request](https://help.instructure.com/entries/21511835-Hide-All-Pages-List-when-Pages-is-Removed-from-Navigation))
 
 [Known Issues](http://github.com/smtech/canvas/issues?milestone=3)
 
@@ -116,11 +117,11 @@ For whatever reason, Canvas defaults to its own grading scheme, rather than a cu
 
 Individual scripts to do specific things, but that also shouldn't [just](https://github.com/smtech/canvas/commit/88b77a269063a342808443256f2f173ddf5881b5) [be](https://github.com/smtech/canvas/commit/a22552daa520f73cfb75b3f0ae93d1b8a08438af) [committed](https://github.com/smtech/canvas/commit/b51f50b579a7dcb54f6934ae9dd0a3523415ad5a) to the master fork without testing.
 
-	- [courses-in-term-with-id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/courses-in-term-with-id.php) generates a tab-separated-values list of all of the courses in a particular term (GET parameter enrollment_term_id) with both their Canvas ID and their SIS ID.
-	- [generate-course-and-section-sis_id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/generate-course-and-section-sis_id.php) generates unique (MD5 hash-based) SIS IDs for all courses and sections in the Canvas instance that do not already have SIS IDs. Quite useful for doing SIS export reports from Canvas that include _everything_.
-	- [list-users-enrolled-in-term](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/list-users-enrolled-in-term.php) generates a TSV list of all users enrolled in courses/sections in a particular term (GET parameter term_id).
-	- [list-users-with-non-blackbaud-sis_id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/list-users-with-non-blackbaud-sis_id.php) generates a TSV list of all users in the instance whose SIS IDs do not match the general observed pattern of Blackbaud Import IDs (and are, therefore, most likely hand-generated and/or erroneous -- or both!).
-	- [list-users-with-without-sis_id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/list-users-with-without-sis_id.php) generates a TSV list of all users who do not have SIS IDs (and therefore don't show up in Canvas SIS export reports).
+  - [courses-in-term-with-id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/courses-in-term-with-id.php) generates a tab-separated-values list of all of the courses in a particular term (GET parameter enrollment_term_id) with both their Canvas ID and their SIS ID.
+  - [generate-course-and-section-sis_id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/generate-course-and-section-sis_id.php) generates unique (MD5 hash-based) SIS IDs for all courses and sections in the Canvas instance that do not already have SIS IDs. Quite useful for doing SIS export reports from Canvas that include _everything_.
+  - [list-users-enrolled-in-term](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/list-users-enrolled-in-term.php) generates a TSV list of all users enrolled in courses/sections in a particular term (GET parameter term_id).
+  - [list-users-with-non-blackbaud-sis_id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/list-users-with-non-blackbaud-sis_id.php) generates a TSV list of all users in the instance whose SIS IDs do not match the general observed pattern of Blackbaud Import IDs (and are, therefore, most likely hand-generated and/or erroneous -- or both!).
+  - [list-users-with-without-sis_id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/list-users-with-without-sis_id.php) generates a TSV list of all users who do not have SIS IDs (and therefore don't show up in Canvas SIS export reports).
 	
 
 [Known Issues](http://github.com/smtech/canvas/issues?milestone=8)
