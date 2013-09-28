@@ -44,6 +44,14 @@ function stmarks_globalJavascript() {
 			stmarks_hidePageListsIfPagesHidden();
 		}
 	);
+
+	$.getScript(
+		pathToScripts + 'discussion-permalinks.js',
+		function() {
+			stmarks_discussionPermalinks();
+		}
+	);
+		
 }
 
 stmarks_globalJavascript();
