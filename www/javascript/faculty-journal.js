@@ -2,7 +2,6 @@
 
 var courseUsersUrl = /.*\/courses\/(\d+)\/users/;
 var facultyJournalUrl = /.*\/users\/(\d+)\/user_notes\?course_id=(\d+)/;
-var delay = 250;
 
 function stmarks_addFacultyJournalButton() {
 	var rightSideToolbar = document.getElementById('right-side').children[0];
@@ -14,6 +13,7 @@ function stmarks_addFacultyJournalButton() {
 		facultyJournalLink.innerText = 'Faculty Journal';
 		facultyJournalLink.className = 'btn button-sidebar-wide';
 		rightSideToolbar.appendChild(facultyJournalLink);
+		
 	// if the right-side toolbar isn't ready yet, try again soon
 	} else {
 		window.setTimeout(stmarks_addFacultyJournalButton, 25);
@@ -44,10 +44,7 @@ function stmarks_facultyJournal() {
 	if (facultyJournalUrl.test(document.location.href)) {
 		stmarks_addFacultyJournalMenu();
 	// if we don't know the user's class yet, try again soon!
-	} else if (userClass === undefined) {
-		window.setTimeout(stmarks_facultyJournal, 25);
-	// if we're looking at the list of students, link to the faculty journal page
-	} else if (userClass == USER_CLASS_FACULTY && courseUsersUrl.test(document.location.href)) {
+	} else if (document.getElementById('addUsers') && courseUsersUrl.test(document.location.href)) {
 		stmarks_addFacultyJournalButton();
 	}
 }
