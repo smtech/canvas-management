@@ -18,7 +18,7 @@ $users = callCanvasApiPaginated(
 $page = 1;
 
 echo TOOL_NAME . PHP_EOL;
-echo "name\tlogin_id\t\id" . PHP_EOL;
+echo "name\tlogin_id\tid" . PHP_EOL;
 
 do {
 	$pageProgress = 'processing page ' . getCanvasApiCurrentPageNumber() . ' of ' . getCanvasApiLastPageNumber() . '...';
