@@ -2,6 +2,7 @@
 
 var courseUsersUrl = /.*\/courses\/(\d+)\/users/;
 var facultyJournalUrl = /.*\/users\/(\d+)\/user_notes\?course_id=(\d+)/;
+var delay = 250;
 
 function stmarks_addFacultyJournalButton() {
 	var rightSideToolbar = document.getElementById('right-side').children[0];
@@ -10,10 +11,9 @@ function stmarks_addFacultyJournalButton() {
 		var userId = document.getElementsByClassName('StudentEnrollment')[0].id.substr(5);
 		var facultyJournalLink = document.createElement('a');
 		facultyJournalLink.href = '/users/' + userId + '/user_notes?course_id=' + courseId;
-		facultyJournalLink.innerHTML = 'Faculty Journal';
 		facultyJournalLink.className = 'btn button-sidebar-wide';
+		facultyJournalLink.innerHTML = 'Faculty Journal';
 		rightSideToolbar.appendChild(facultyJournalLink);
-		
 	// if the right-side toolbar isn't ready yet, try again soon
 	} else {
 		window.setTimeout(stmarks_addFacultyJournalButton, 25);
@@ -43,7 +43,7 @@ function stmarks_facultyJournal() {
 	// if we're looking at a faculty journal page, insert the list of students
 	if (facultyJournalUrl.test(document.location.href)) {
 		stmarks_addFacultyJournalMenu();
-	// if we don't know the user's class yet, try again soon!
+	// if we're looking at the list of students, link to the faculty journal page
 	} else if (document.getElementById('addUsers') && courseUsersUrl.test(document.location.href)) {
 		stmarks_addFacultyJournalButton();
 	}
