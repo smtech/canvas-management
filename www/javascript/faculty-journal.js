@@ -10,7 +10,7 @@ function stmarks_addFacultyJournalButton() {
 		var userId = document.getElementsByClassName('StudentEnrollment')[0].id.substr(5);
 		var facultyJournalLink = document.createElement('a');
 		facultyJournalLink.href = '/users/' + userId + '/user_notes?course_id=' + courseId;
-		facultyJournalLink.innerText = 'Faculty Journal';
+		facultyJournalLink.innerHTML = 'Faculty Journal';
 		facultyJournalLink.className = 'btn button-sidebar-wide';
 		rightSideToolbar.appendChild(facultyJournalLink);
 		
