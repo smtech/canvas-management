@@ -102,4 +102,6 @@ Individual scripts to do specific things, but that also shouldn't [just](https:/
 
   - [list-users-without-sis_id](http://github.com/smtech/canvas/blob/dev-scripts/www/api/scripts/list-users-without-sis_id.php) generates a TSV list of all users who do not have SIS IDs (and therefore don't show up in Canvas SIS export reports).
 
+  - [students-as-teachers-audit](http://github.com/smtech/canvas/blob/dev-scripts/www/api/scripts/students-as-teachers-audit.php) generates a TSV list of all users who are not enrolled in our Faculty Resources course (and therefore identifiable as a faculty member) but who _are_ enrolled as teachers elsewhere (giving them potentially inappropriate access to the faculty journal for other students).
+
 [Known Issues](http://github.com/smtech/canvas/issues?milestone=8)
