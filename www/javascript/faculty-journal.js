@@ -29,7 +29,7 @@ function stmarks_addFacultyJournalMenu() {
 		courseMenu.width = '100%';
 		courseMenu.height = '30';
 		courseMenu.frameBorder = '0';
-		courseMenu.src = 'http://area51.stmarksschool.org/project/canvas/stable/api/faculty-journal/menu.php?course_id=' + courseId + '&user_id=' + userId;
+		courseMenu.src = 'https://stmarksschool-area51-secure.azurewebsites.net//api/faculty-journal/menu.php?course_id=' + courseId + '&user_id=' + userId;
 		contentDiv.insertBefore(courseMenu, contentDiv.firstChild);
 	// if the content area isn't ready yet, try again soon
 	} else {
