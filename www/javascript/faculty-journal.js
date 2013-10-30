@@ -11,8 +11,8 @@ function stmarks_addFacultyJournalButton() {
 		var userId = document.getElementsByClassName('StudentEnrollment')[0].id.substr(5);
 		var facultyJournalLink = document.createElement('a');
 		facultyJournalLink.href = '/users/' + userId + '/user_notes?course_id=' + courseId;
-		facultyJournalLink.innerText = 'Faculty Journal';
 		facultyJournalLink.className = 'btn button-sidebar-wide';
+		facultyJournalLink.innerHTML = 'Faculty Journal';
 		rightSideToolbar.appendChild(facultyJournalLink);
 	// if the right-side toolbar isn't ready yet, try again soon
 	} else {
@@ -29,7 +29,7 @@ function stmarks_addFacultyJournalMenu() {
 		courseMenu.width = '100%';
 		courseMenu.height = '30';
 		courseMenu.frameBorder = '0';
-		courseMenu.src = 'http://area51.stmarksschool.org/project/canvas/stable/api/faculty-journal/menu.php?course_id=' + courseId + '&user_id=' + userId;
+		courseMenu.src = 'https://stmarksschool-area51-secure.azurewebsites.net//api/faculty-journal/menu.php?course_id=' + courseId + '&user_id=' + userId;
 		contentDiv.insertBefore(courseMenu, contentDiv.firstChild);
 	// if the content area isn't ready yet, try again soon
 	} else {
@@ -43,11 +43,8 @@ function stmarks_facultyJournal() {
 	// if we're looking at a faculty journal page, insert the list of students
 	if (facultyJournalUrl.test(document.location.href)) {
 		stmarks_addFacultyJournalMenu();
-	// if we don't know the user's class yet, try again soon!
-	} else if (userClass === undefined) {
-		window.setTimeout(stmarks_facultyJournal, 25);
 	// if we're looking at the list of students, link to the faculty journal page
-	} else if (userClass == USER_CLASS_FACULTY && courseUsersUrl.test(document.location.href)) {
+	} else if (document.getElementById('addUsers') && courseUsersUrl.test(document.location.href)) {
 		stmarks_addFacultyJournalButton();
 	}
 }
