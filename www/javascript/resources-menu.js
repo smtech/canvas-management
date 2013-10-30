@@ -116,7 +116,7 @@ var resources = {
 						{
 							title: 'All School Information',
 							// subtitle: 'Information, Organizations, Calendar',
-							url: '/courses/497'
+							url: '/courses/1277'
 						},
 						{
 							title: 'Weekend Activities Sign-ups',

@@ -45,7 +45,7 @@
 				do {
 					foreach ($enrollments as $enrollment) {
 						if ($enrollment['role'] == 'StudentEnrollment') {
-							$menu[$section['name']][$enrollment['user']['id']] = $enrollment['user']['sortable_name'];
+							$menu[$section['name']][$enrollment['user']['id']] = addslashes($enrollment['user']['sortable_name']);
 						}
 					}
 				} while ($enrollments = callCanvasApiNextPage());
@@ -59,7 +59,7 @@
 			)
 			VALUES (
 				'{$_REQUEST['course_id']}',
-				'" . serialize($menu) . "'
+				'" . addslashes(serialize($menu)) . "'
 			)
 		");
 	}
