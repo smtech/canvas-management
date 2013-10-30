@@ -68,7 +68,7 @@ Miscellaneous one-off JavaScript add-ons:
 
   - [discussion-permalinks](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript/discussion-permalinks.js) reveals the permalinks to individual replies in Canvas discussions and announcements.
 
-  - [hide-future-courses](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript/hide-future-courses.js) hides all future enrollments for which the user's role is student (so students' can peer ahead to see their schedule before the semester starts, a concern of the registrar's) _and_ removes unpublished courses that occurred in the past from all teacher's "future" enrollments (a logica error, per [this ticket](https://help.instructure.com/requests/173156)).
+  - [hide-future-courses](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript/hide-future-courses.js) removes unpublished courses that occurred in the past from "future" enrollments (a logical error, per [this ticket](https://help.instructure.com/requests/173156)).
 
   - [hide-page-lists-if-pages-hidden](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript/hide-page-lists-if-pages-hidden.js) removes the lists of recently modified and all pages from the right sidebar if the Pages link is not available in the left sidebar (so user's without permission to browse Pages cannot browse pages, per [this feature request](https://help.instructure.com/entries/21511835-Hide-All-Pages-List-when-Pages-is-Removed-from-Navigation))
 

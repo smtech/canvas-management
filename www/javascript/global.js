@@ -25,13 +25,6 @@ function stmarks_globalJavascript() {
 	/*---- after this line, everything can use userClass and userDepartments ----*/
 	
 	$.getScript(
-		pathToScripts + 'faculty-journal.js',
-		function() {
-			stmarks_facultyJournal();
-		}
-	);
-
-	$.getScript(
 		pathToScripts + 'hide-future-courses.js',
 		function() {
 			stmarks_hideFutureCourses();
@@ -44,6 +37,14 @@ function stmarks_globalJavascript() {
 			stmarks_hidePageListsIfPagesHidden();
 		}
 	);
+
+	$.getScript(
+		pathToScripts + 'discussion-permalinks.js',
+		function() {
+			stmarks_discussionPermalinks();
+		}
+	);
+		
 }
 
 stmarks_globalJavascript();

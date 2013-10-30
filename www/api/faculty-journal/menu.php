@@ -36,9 +36,9 @@ require_once('../canvas-api.inc.php');
 			} while (document.getElementById('menu').value == '');
 			updateFacultyJournal();
 		}
-		
+				
 		$.getScript(
-			'http://<?= $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) ?>//student-loader.php?course_id=<?= $_REQUEST['course_id'] ?>&user_id=<?= $_REQUEST['user_id'] ?>',
+			'https://<?= $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) ?>/student-loader.php?course_id=<?= $_REQUEST['course_id'] ?>&user_id=<?= $_REQUEST['user_id'] ?>',
 			function() {
 				loadStudents();
 			}
