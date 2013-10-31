@@ -62,6 +62,10 @@ A tool to generate a JSON export of a course or group's discussions. Particularl
 
 Working on a more robust, mature library for interacting with the Canvas API. More work on this means less work on every subsequent script.
 
+### [dev-embedded-documentation](http://github.com/smtech/canvas/tree/dev-grading-scheme/www/javascript/embedded-documentation.js)
+
+Wouldn't it be nice if there were reminders _in Canvas_ with links to appropriate documentation for certain features? Let's add them in where they belong.
+
 ### [dev-javascript](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript)
 
 Miscellaneous one-off JavaScript add-ons:
