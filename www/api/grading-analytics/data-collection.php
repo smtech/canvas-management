@@ -59,89 +59,92 @@ function collectStatistics($term) {
 			do {
 				$statistic['student_count'] += count($students);
 			} while ($students = $lookupApi->nextPage());
-		
-			$assignments = $assignmentsApi->get(
-				"/courses/{$course['id']}/assignments"
-			);
-			do {
-				$gradedSubmissionsCount = 0;
-				$turnAroundTimeTally = 0;
-				
-				foreach ($assignments as $assignment) {
+			
+			// ignore classes with no students
+			if ($statistic['student_count'] != 0) {
+				$assignments = $assignmentsApi->get(
+					"/courses/{$course['id']}/assignments"
+				);
+				do {
+					$gradedSubmissionsCount = 0;
+					$turnAroundTimeTally = 0;
 					
-					$dueDate = new DateTime($assignment['due_at']);
-					if ($timestamp - $dueDate->getTimestamp() > 0) {
+					foreach ($assignments as $assignment) {
 						
-						// ignore ungraded assignments
-						if ($assignment['grading_type'] != 'not_graded')
-						{
-							$statistic['assignment_count']++;
-							$hasBeenGraded = false;
+						$dueDate = new DateTime($assignment['due_at']);
+						if ($timestamp - $dueDate->getTimestamp() > 0) {
 							
-							// ignore (but tally) zero point assignments
-							if ($assignment['points_possible'] == '0') {
-								$statistic['zero_point_assignment_count']++;
-							} else {
-								$submissions = $lookupApi->get(
-									"/courses/{$course['id']}/assignments/{$assignment['id']}/submissions"
-								);
-								do {
-									foreach ($submissions as $submission) {
-										if ($submission['workflow_state'] == 'graded') {
-											if ($hasBeenGraded == false) {
-												$hasBeenGraded = true;
-												$statistic['graded_assignment_count']++;
-											}
-											$gradedSubmissionsCount++;
-											$turnAroundTimeTally += strtotime($submission['graded_at']) - strtotime($assignment['due_at']);
-										}
-									}
-								} while ($submissions = $lookupApi->nextPage());
+							// ignore ungraded assignments
+							if ($assignment['grading_type'] != 'not_graded')
+							{
+								$statistic['assignment_count']++;
+								$hasBeenGraded = false;
 								
-								if (!$hasBeenGraded) {
-									if (array_key_exists('oldest_ungraded_assignment_due_date', $statistic)) {
-										if (strtotime($assignment['due_at']) < strtotime($statistic['oldest_ungraded_assignment_due_date'])) {
+								// ignore (but tally) zero point assignments
+								if ($assignment['points_possible'] == '0') {
+									$statistic['zero_point_assignment_count']++;
+								} else {
+									$submissions = $lookupApi->get(
+										"/courses/{$course['id']}/assignments/{$assignment['id']}/submissions"
+									);
+									do {
+										foreach ($submissions as $submission) {
+											if ($submission['workflow_state'] == 'graded') {
+												if ($hasBeenGraded == false) {
+													$hasBeenGraded = true;
+													$statistic['graded_assignment_count']++;
+												}
+												$gradedSubmissionsCount++;
+												$turnAroundTimeTally += strtotime($submission['graded_at']) - strtotime($assignment['due_at']);
+											}
+										}
+									} while ($submissions = $lookupApi->nextPage());
+									
+									if (!$hasBeenGraded) {
+										if (array_key_exists('oldest_ungraded_assignment_due_date', $statistic)) {
+											if (strtotime($assignment['due_at']) < strtotime($statistic['oldest_ungraded_assignment_due_date'])) {
+												$statistic['oldest_ungraded_assignment_due_date'] = $assignment['due_at'];
+												$statistic['oldest_ungraded_assignment_url'] = $assignment['html_url'];
+											}
+										} else {
 											$statistic['oldest_ungraded_assignment_due_date'] = $assignment['due_at'];
 											$statistic['oldest_ungraded_assignment_url'] = $assignment['html_url'];
 										}
-									} else {
-										$statistic['oldest_ungraded_assignment_due_date'] = $assignment['due_at'];
-										$statistic['oldest_ungraded_assignment_url'] = $assignment['html_url'];
 									}
 								}
 							}
 						}
 					}
+				} while ($assignments = $assignmentsApi->nextPage());
+				
+				if ($statistic['assignment_count'] && $statistic['student_count']) {
+					$statistic['average_submissions_graded'] = $gradedSubmissionsCount / $statistic['assignment_count'] / $statistic['student_count'];
 				}
-			} while ($assignments = $assignmentsApi->nextPage());
-			
-			if ($statistic['assignment_count'] && $statistic['student_count']) {
-				$statistic['average_submissions_graded'] = $gradedSubmissionsCount / $statistic['assignment_count'] / $statistic['student_count'];
+				
+				if ($gradedSubmissionsCount) {
+					$statistic['average_grading_turn_around'] = $turnAroundTimeTally / $gradedSubmissionsCount / 60 / 60 / 24;
+				}
+				
+				$query = "INSERT INTO `course_statistics`";
+				$fields = array();
+				$values = array();
+				while (list($field, $value) = each($statistic)) {
+					$fields[] = $field;
+					$values[] = $value;
+				}
+				$query .= ' (`' . implode('`, `', $fields) . "`) VALUES ('" . implode("', '", $values) . "')";
+				$result = mysqlQuery($query);
+				/* displayError(
+					array(
+						'gradedSubmissionsCount' => $gradedSubmissionsCount,
+						'turnAroundTimeTally' => $turnAroundTimeTally,
+						'statistic' => $statistic,
+						'query' => $query,
+						'result' => $result
+					),
+					true
+				); */
 			}
-			
-			if ($gradedSubmissionsCount) {
-				$statistic['average_grading_turn_around'] = $turnAroundTimeTally / $gradedSubmissionsCount / 60 / 60 / 24;
-			}
-			
-			$query = "INSERT INTO `course_statistics`";
-			$fields = array();
-			$values = array();
-			while (list($field, $value) = each($statistic)) {
-				$fields[] = $field;
-				$values[] = $value;
-			}
-			$query .= ' (`' . implode('`, `', $fields) . "`) VALUES ('" . implode("', '", $values) . "')";
-			$result = mysqlQuery($query);
-			/* displayError(
-				array(
-					'gradedSubmissionsCount' => $gradedSubmissionsCount,
-					'turnAroundTimeTally' => $turnAroundTimeTally,
-					'statistic' => $statistic,
-					'query' => $query,
-					'result' => $result
-				),
-				true
-			); */
 		}
 	} while ($courses = $coursesApi->nextPage());
 }
