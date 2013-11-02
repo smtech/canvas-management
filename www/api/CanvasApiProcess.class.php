@@ -127,7 +127,7 @@ class CanvasApiProcess {
 					$response = $this->pest->$verb($path, $data, $this->buildCanvasAuthorizationHeader());
 				}
 			} catch (Pest_ServerError $e) {
-				if ($throwingExceptions & CANVAS_API_EXCEPTION_SERVER) {
+				if ($throwsExceptions & CANVAS_API_EXCEPTION_SERVER) {
 					throw $e;
 				} else {
 					/* who knows what goes on in the server's mind... try again */
@@ -136,7 +136,7 @@ class CanvasApiProcess {
 					debug_log('Retrying after Canvas API server error. ' . substr($e->getMessage(), 0, CANVAS_API_EXCEPTION_MAX_LENGTH));
 				}
 			} catch (Pest_ClientError $e) {
-				if ($throwingExceptions & CANVAS_API_EXCEPTION_CLIENT) {
+				if ($throwsExceptions & CANVAS_API_EXCEPTION_CLIENT) {
 					throw $e;
 				} else {
 					/* I just watched the Canvas API throw an unauthorized error when, in fact,
@@ -222,19 +222,19 @@ class CanvasApiProcess {
 	}
 	
 	public function delete($path, $data = array(), $throwsExceptions = false) {
-		$this->call(CANVAS_API_DELETE, $path, $data, $throwsExceptions);
+		return $this->call(CANVAS_API_DELETE, $path, $data, $throwsExceptions);
 	}
 
 	public function get($path, $data = array(), $throwsExceptions = false) {
-		$this->call(CANVAS_API_GET, $path, $data, $throwsExceptions);
+		return $this->call(CANVAS_API_GET, $path, $data, $throwsExceptions);
 	}
 
 	public function post($path, $data = array(), $throwsExceptions = false) {
-		$this->call(CANVAS_API_POST, $path, $data, $throwsExceptions);
+		return $this->call(CANVAS_API_POST, $path, $data, $throwsExceptions);
 	}
 
 	public function put($path, $data = array(), $throwsExceptions = false) {
-		$this->call(CANVAS_API_PUT, $path, $data, $throwsExceptions);
+		return $this->call(CANVAS_API_PUT, $path, $data, $throwsExceptions);
 	}
 	
 	private function pageLink($page) {
