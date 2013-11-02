@@ -22,14 +22,10 @@ function mysqlQuery($query) {
 		array(
 			'Query' => $query,
 			'Response' => (
-				get_class($response) == 'mysqli_result' ?
-					$response :
-					(
-						$response ?
-							'True' :
-							mysqlError()
-					)
-				)
+				$response ?
+					'True' :
+					mysqlError()
+			)
 		),
 		true,
 		'MySQL Query',
