@@ -72,40 +72,42 @@ function collectStatistics($term) {
 					$dueDate = new DateTime($assignment['due_at']);
 					if ($timestamp - $dueDate->getTimestamp() > 0) {
 						
+						// ignore ungraded assignments
 						if ($assignment['grading_type'] != 'not_graded')
 						{
 							$statistic['assignment_count']++;
 							$hasBeenGraded = false;
 							
+							// ignore (but tally) zero point assignments
 							if ($assignment['points_possible'] == '0') {
 								$statistic['zero_point_assignment_count']++;
-							}
-							
-							$submissions = $lookupApi->get(
-								"/courses/{$course['id']}/assignments/{$assignment['id']}/submissions"
-							);
-							do {
-								foreach ($submissions as $submission) {
-									if ($submission['workflow_state'] == 'graded') {
-										if ($hasBeenGraded == false) {
-											$hasBeenGraded = true;
-											$statistic['graded_assignment_count']++;
+							} else {
+								$submissions = $lookupApi->get(
+									"/courses/{$course['id']}/assignments/{$assignment['id']}/submissions"
+								);
+								do {
+									foreach ($submissions as $submission) {
+										if ($submission['workflow_state'] == 'graded') {
+											if ($hasBeenGraded == false) {
+												$hasBeenGraded = true;
+												$statistic['graded_assignment_count']++;
+											}
+											$gradedSubmissionsCount++;
+											$turnAroundTimeTally += strtotime($submission['graded_at']) - strtotime($assignment['due_at']);
 										}
-										$gradedSubmissionsCount++;
-										$turnAroundTimeTally += strtotime($submission['graded_at']) - strtotime($assignment['due_at']);
 									}
-								}
-							} while ($submissions = $lookupApi->nextPage());
-							
-							if (!$hasBeenGraded) {
-								if (array_key_exists('oldest_ungraded_assignment_due_date', $statistic)) {
-									if (strtotime($assignment['due_at']) < strtotime($statistic['oldest_ungraded_assignment_due_date'])) {
+								} while ($submissions = $lookupApi->nextPage());
+								
+								if (!$hasBeenGraded) {
+									if (array_key_exists('oldest_ungraded_assignment_due_date', $statistic)) {
+										if (strtotime($assignment['due_at']) < strtotime($statistic['oldest_ungraded_assignment_due_date'])) {
+											$statistic['oldest_ungraded_assignment_due_date'] = $assignment['due_at'];
+											$statistic['oldest_ungraded_assignment_url'] = $assignment['html_url'];
+										}
+									} else {
 										$statistic['oldest_ungraded_assignment_due_date'] = $assignment['due_at'];
 										$statistic['oldest_ungraded_assignment_url'] = $assignment['html_url'];
 									}
-								} else {
-									$statistic['oldest_ungraded_assignment_due_date'] = $assignment['due_at'];
-									$statistic['oldest_ungraded_assignment_url'] = $assignment['html_url'];
 								}
 							}
 						}
@@ -130,7 +132,7 @@ function collectStatistics($term) {
 			}
 			$query .= ' (`' . implode('`, `', $fields) . "`) VALUES ('" . implode("', '", $values) . "')";
 			$result = mysqlQuery($query);
-			displayError(
+			/* displayError(
 				array(
 					'gradedSubmissionsCount' => $gradedSubmissionsCount,
 					'turnAroundTimeTally' => $turnAroundTimeTally,
@@ -139,7 +141,7 @@ function collectStatistics($term) {
 					'result' => $result
 				),
 				true
-			);
+			); */
 		}
 	} while ($courses = $coursesApi->nextPage());
 }
