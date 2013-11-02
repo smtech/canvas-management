@@ -151,8 +151,21 @@ function collectStatistics($term) {
 
 debugFlag('START');
 
+// FIXME a more elegant solution would be to query for terms that are currently active and then loop across them
 collectStatistics(106);
 collectStatistics(107);
+
+/* check to see if this data collection has been scheduled. If it hasn't,
+   schedule it to run nightly. */
+/* thank you http://stackoverflow.com/a/4421284 ! */
+$crontab = DATA_COLLECTION_CRONTAB . ' ' . realpath('.') . '/data-collection.sh';
+$crontabs = shell_exec('crontab -l');
+if (strpos($crontabs, $crontab) === false) {
+	$filename = md5(time()) . '.txt';
+	file_put_contents("/tmp/$filename", $crontabs . $crontab . PHP_EOL);
+	shell_exec("crontab /tmp/$filename");
+	debugFlag("added new scheduled data-collection to crontab");
+}
 
 debugFlag('FINISH');
 
