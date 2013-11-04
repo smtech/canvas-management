@@ -6,7 +6,7 @@ require_once('../../mysql.inc.php');
 require_once('../../phpgraphlib.php');
 
 $stats = mysqlQuery("
-	SELECT `course[id]`, `average_grading_turn_around` FROM `course_statistics`
+	SELECT * FROM `course_statistics`
 	WHERE
 		`average_grading_turn_around` > 0
 	GROUP BY
@@ -17,9 +17,11 @@ $stats = mysqlQuery("
 
 $data = array();
 $total = 0;
+$divisor = 0;
 while ($row = $stats->fetch_assoc()) {
 	$data[$row['course[id]']] = $row['average_grading_turn_around'];
-	$total += $row['average_grading_turn_around'];
+	$total += $row['average_grading_turn_around'] * $row['student_count'] * $row['graded_assignment_count'];
+	$divisor += $row['student_count'] * $row['graded_assignment_count'];
 }
 asort($data);
 $highlight = $data;
@@ -30,14 +32,15 @@ while (list($key, $value) = each ($highlight)) {
 	}
 }
 
-$graph = new PHPGraphLib(1800, 800);
+$graph = new PHPGraphLib(2000, 750);
 $graph->addData($data);
 $graph->addData($highlight);
 $graph->setBarColor('gray', 'red');
 $graph->setBarOutline(false);
-$graph->setGoalLine($total / count($data), 'gray', 'dashed');
+$graph->setGoalLine($total / $divisor, 'gray', 'dashed');
 $graph->setGoalLine(7, 'lime', 'solid');
 $graph->setGoalLine(14, 'red', 'solid');
+$graph->setGrid(false);
 $graph->setXValues(false);
 $graph->createGraph();
 

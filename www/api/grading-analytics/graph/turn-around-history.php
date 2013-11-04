@@ -6,7 +6,7 @@ require_once('../../mysql.inc.php');
 require_once('../../phpgraphlib.php');
 
 $stats = mysqlQuery("
-	SELECT `timestamp`, `average_grading_turn_around` FROM `course_statistics`
+	SELECT * FROM `course_statistics`
 	WHERE
 		`course[id]` = '{$_REQUEST['course_id']}'
 	ORDER BY
@@ -19,17 +19,18 @@ while ($row = $stats->fetch_assoc()) {
 	$data[$date->format('M. j')] = $row['average_grading_turn_around'];
 }
 
-$graph = new PHPGraphLib(1000, 400);
+$graph = new PHPGraphLib(1000, 375);
 $graph->addData($data);
 $graph->setBars(false);
 $graph->setLine(true);
 $graph->setDataPoints(true);
 if (count($data) > 7) {
-	$graph->setXValueInterval(7);
+	$graph->setXValuesInterval(7);
 }
 $graph->setXValuesHorizontal(true);
 $graph->setGoalLine(7, 'lime', 'solid');
 $graph->setGoalLine(14, 'red', 'solid');
+$graph->setGrid(false);
 $graph->createGraph();
 
 ?>
