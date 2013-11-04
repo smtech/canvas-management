@@ -35,6 +35,11 @@ $turnAroundComparison = '
 	<img src="graph/turn-around-comparison.php?course_id=' . $_REQUEST['course_id'] . '"  width="100%" />
 ';
 
+$turnAroundTrend = '
+	<h3>Grading Turn-Around Trend</h3d>
+	<img src="graph/turn-around-trend.php?course_id=' . $_REQUEST['course_id'] . '" width="100%" />
+';
+
 if (isset($statistic['oldest_ungraded_assignment_url'])) {
 	preg_match('@.*\/assignments\/(\d+)@', $statistic['oldest_ungraded_assignment_url'], $matches);
 	$assignmentInfo = callCanvasApi(
@@ -51,6 +56,6 @@ if (isset($statistic['oldest_ungraded_assignment_url'])) {
 	';
 }
 
-displayPage($introduction . $turnAroundComparison . $oldestUngradedAssignment);
+displayPage($introduction . $turnAroundComparison . $turnAroundTrend . $oldestUngradedAssignment);
 
 ?>
