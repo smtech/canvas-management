@@ -5,12 +5,24 @@ define('TOOL_START_PAGE', 'https://' . parse_url(CANVAS_API_URL, PHP_URL_HOST) .
 
 require_once('config.inc.php');
 require_once('../canvas-api.inc.php');
+require_once('../mysql.inc.php');
 require_once('../page-generator.inc.php');
 
 $course = callCanvasApi(
 	CANVAS_API_GET,
 	"/courses/{$_REQUEST['course_id']}"
 );
+
+$statistics = mysqlQuery("
+	SELECT * FROM `course_statistics`
+		WHERE
+			`course[id]` = '{$_REQUEST['course_id']}'
+		GROUP BY
+			`course[id]`
+		ORDER BY
+			`timestamp` DESC
+");
+$statistic = $statistics->fetch_assoc();
 
 $introduction = '
 	<h3>' . $course['name'] . '</h3>
@@ -23,6 +35,22 @@ $turnAroundComparison = '
 	<img src="graph/turn-around-comparison.php?course_id=' . $_REQUEST['course_id'] . '"  width="100%" />
 ';
 
-displayPage($introduction . $turnAroundComparison);
+if (isset($statistic['oldest_ungraded_assignment_url'])) {
+	preg_match('@.*\/assignments\/(\d+)@', $statistic['oldest_ungraded_assignment_url'], $matches);
+	$assignmentInfo = callCanvasApi(
+		CANVAS_API_GET,
+		"/courses/{$_REQUEST['course_id']}/assignments/{$matches[1]}"
+	);
+	
+	$oldestDueDate = new DateTime($statistic['oldest_ungraded_assignment_due_date']);
+	$now = new DateTime();
+	$oldestUngradedAssignment = '
+		<h3>Oldest Ungraded Assignment</h3>
+		<p>The oldest assignment (whose due date is past) for which there is no grade (for which a grade is anticipated: i.e. not a zero-point assignment or an ungraded assignment).</p>
+		<p><a target="_blank" href="' . $statistic['oldest_ungraded_assignment_url'] . '">' . $assignmentInfo['name'] . '</a>, due ' . $oldestDueDate->format('l, F j, Y') . ' (' . $now->diff($oldestDueDate)->format('%a') . ' days old)</p>
+	';
+}
+
+displayPage($introduction . $turnAroundComparison . $oldestUngradedAssignment);
 
 ?>
