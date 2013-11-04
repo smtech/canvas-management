@@ -28,6 +28,7 @@ function collectStatistics($term) {
 			$statistic = array(
 				'timestamp' => date(DATE_ISO8601, $timestamp),
 				'course[id]' => $course['id'],
+				'course[account_id]' => $course['account_id'],
 				'gradebook_url' => 'https://' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . "/courses/{$course['id']}/gradebook2",
 				'assignment_count' => 0,
 				'graded_assignment_count' => 0,
