@@ -93,6 +93,8 @@ Individual scripts to do specific things, but that also shouldn't [just](https:/
   -- [clean-ap-bio](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/clean-ap-bio.php) is a quick script to move a list of files matching a particular naming pattern into a particular folder in a course. This wa the result of Kim Berndt's experience with the AP Bio coursepack that just dumped hundreds of individual files into her main Course Files folder, with the result that she couldn't actually link to any files (because the file list was too long to load).
 
   - [courses-in-term-with-id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/courses-in-term-with-id.php) generates a tab-separated-values list of all of the courses in a particular term (GET parameter enrollment_term_id) with both their Canvas ID and their SIS ID.
+  
+  - [courses-with-a-single-assignment-group](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/courses-with-a-single-assignment-group.php) lists all courses (in the current term(s) -- hard-coded!) with only a single assignment group. This is an early warning flag that folks are not prepared for the second window and will not be able to compute their second window grades.
 
   - [generate-course-and-section-sis_id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/generate-course-and-section-sis_id.php) generates unique (MD5 hash-based) SIS IDs for all courses and sections in the Canvas instance that do not already have SIS IDs. Quite useful for doing SIS export reports from Canvas that include _everything_.
 
