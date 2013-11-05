@@ -1,6 +1,7 @@
 <?php
 
 require_once('debug.inc.php');
+require_once('page-generator.inc.php');
 
 $MYSQL = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
 function mysqlQuery($query) {
@@ -22,14 +23,10 @@ function mysqlQuery($query) {
 		array(
 			'Query' => $query,
 			'Response' => (
-				get_class($response) == 'mysqli_result' ?
-					$response :
-					(
-						$response ?
-							'True' :
-							mysqlError()
-					)
-				)
+				$response ?
+					'True' :
+					mysqlError()
+			)
 		),
 		true,
 		'MySQL Query',

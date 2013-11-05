@@ -42,6 +42,9 @@ function displayPage($content) {
  * to get well-formatted error messages
  **/
 function displayError($object, $isList = false, $title = null, $message = null, $debugLevel = null) {
+	if (!defined('DEBUGGING')) {
+		define('DEBUGGING', DEBUGGING_DEFAULT);
+	}
 	if (!isset($debugLevel) || (isset($debugLevel) && (DEBUGGING & $debugLevel))) {
 		$content = '<div class="error">' . ($title ? "<h3>$title</h3>" : '') . ($message ? "<p>$message</p>" : '');
 		if ($isList) {
