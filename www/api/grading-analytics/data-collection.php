@@ -30,7 +30,9 @@ function collectStatistics($term) {
 				'course[id]' => $course['id'],
 				'course[account_id]' => $course['account_id'],
 				'gradebook_url' => 'https://' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . "/courses/{$course['id']}/gradebook2",
-				'assignment_count' => 0,
+				'assignments_due_count' => 0,
+				'dateless_assignment_count' => 0,
+				'gradeable_assignment_count' => 0,
 				'graded_assignment_count' => 0,
 				'zero_point_assignment_count' => 0
 			);
@@ -74,13 +76,15 @@ function collectStatistics($term) {
 						
 						foreach ($assignments as $assignment) {
 							
+							// check for due dates
 							$dueDate = new DateTime($assignment['due_at']);
 							if ($timestamp - $dueDate->getTimestamp() > 0) {
+								$statistic['assignments_due_count']++;
 								
 								// ignore ungraded assignments
 								if ($assignment['grading_type'] != 'not_graded')
 								{
-									$statistic['assignment_count']++;
+									$statistic['gradeable_assignment_count']++;
 									$hasBeenGraded = false;
 									
 									// ignore (but tally) zero point assignments
@@ -116,14 +120,18 @@ function collectStatistics($term) {
 										}
 									}
 								}
+							} else {
+								$statistic['dateless_assignment_count']++;
 							}
 						}
 					} while ($assignments = $assignmentsApi->nextPage());
 					
-					if ($statistic['assignment_count'] && $statistic['student_count']) {
-						$statistic['average_submissions_graded'] = $gradedSubmissionsCount / $statistic['assignment_count'] / $statistic['student_count'];
+					// calculate average submissions graded per assignment (if non-zero)
+					if ($statistic['gradeable_assignment_count'] && $statistic['student_count']) {
+						$statistic['average_submissions_graded'] = $gradedSubmissionsCount / $statistic['gradeable_assignment_count'] / $statistic['student_count'];
 					}
 					
+					// calculate average grading turn-around per submission
 					if ($gradedSubmissionsCount) {
 						$statistic['average_grading_turn_around'] = $turnAroundTimeTally / $gradedSubmissionsCount / 60 / 60 / 24;
 					}
