@@ -1,18 +1,27 @@
 <?php
 
 require_once('../config.inc.php');
+require_once('../common.inc.php');
 require_once('../.ignore.grading-analytics-authentication.inc.php');
 require_once('../../mysql.inc.php');
 require_once('../../phpgraphlib.php');
 
 $stats = mysqlQuery("
-	SELECT * FROM `course_statistics`
-	WHERE
-		`average_grading_turn_around` > 0
-	GROUP BY
+	SELECT * FROM (
+		SELECT * FROM `course_statistics`
+			WHERE
+				`average_grading_turn_around` > 0" .
+				(
+					isset($_REQUEST['department_id']) ? "
+					AND `course[account_id]` = '{$_REQUEST['department_id']}'
+					" :
+					''
+				) . "
+			ORDER BY
+				`timestamp` DESC
+	) AS `stats`
+		GROUP BY
 		`course[id]`
-	ORDER BY
-		`timestamp` DESC
 ");
 
 $data = array();
@@ -32,7 +41,7 @@ while (list($key, $value) = each ($highlight)) {
 	}
 }
 
-$graph = new PHPGraphLib(2000, 750);
+$graph = new PHPGraphLib(graphWidth(count($data)), graphHeight());
 $graph->addData($data);
 $graph->addData($highlight);
 $graph->setBarColor('gray', 'red');
