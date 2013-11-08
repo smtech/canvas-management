@@ -29,8 +29,8 @@ if (count($data) > 7) {
 	$graph->setXValuesInterval(7);
 }
 $graph->setXValuesHorizontal(true);
-$graph->setGoalLine(7, 'lime', 'solid');
-$graph->setGoalLine(14, 'red', 'solid');
+$graph->setGoalLine(7, GRAPH_1_WEEK_COLOR, GRAPH_1_WEEK_STYLE);
+$graph->setGoalLine(14, GRAPH_2_WEEK_COLOR, GRAPH_2_WEEK_STYLE);
 $graph->setGrid(false);
 $graph->createGraph();
 

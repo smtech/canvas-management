@@ -41,7 +41,7 @@ if ($stats = mysqlQuery($query)) {
 	$graph = new PHPGraphLib(graphWidth(count($data)), graphHeight());
 	$graph->addData($data);
 	$graph->addData($highlight);
-	$graph->setBarColor('gray', 'red');
+	$graph->setBarColor(GRAPH_DATA_COLOR, GRAPH_HIGHLIGHT_COLOR);
 	$graph->setBarOutline(false);
 	$graph->setGoalLine(averageTurnAround(
 		(
@@ -49,11 +49,11 @@ if ($stats = mysqlQuery($query)) {
 				$_REQUEST['department_id'] :
 				false
 		),
-		'gray',
-		'dashed'
+		GRAPH_AVERAGE_COLOR,
+		GRAPH_AVERAGE_STYLE
 	);
-	$graph->setGoalLine(7, 'lime', 'solid');
-	$graph->setGoalLine(14, 'red', 'solid');
+	$graph->setGoalLine(7, GRAPH_1_WEEK_COLOR, GRAPH_1_WEEK_STYLE);
+	$graph->setGoalLine(14, GRAPH_2_WEEK_COLOR, GRAPH_2_WEEK_STYLE);
 	$graph->setGrid(false);
 	$graph->setXValues(false);
 	$graph->createGraph();

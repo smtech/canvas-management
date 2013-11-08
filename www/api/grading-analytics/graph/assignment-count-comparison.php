@@ -39,7 +39,7 @@ if ($stats = mysqlQuery($query)) {
 	$graph = new PHPGraphLib(graphWidth(count($data)), graphHeight());
 	$graph->addData($data);
 	$graph->addData($highlight);
-	$graph->setBarColor('gray', 'red');
+	$graph->setBarColor(GRAPH_DATA_COLOR, GRAPH_HIGHLIGHT_COLOR);
 	$graph->setBarOutline(false);
 	$graph->setGoalLine(averageAssignmentCount(
 		(
@@ -47,8 +47,8 @@ if ($stats = mysqlQuery($query)) {
 				$_REQUEST['department_id'] :
 				false
 		),
-		'gray',
-		'dashed'
+		GRAPH_AVERAGE_COLOR,
+		GRAPH_AVERAGE_STYLE
 	);
 	$graph->setGrid(false);
 	$graph->setXValues(false);
