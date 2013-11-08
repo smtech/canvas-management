@@ -10,6 +10,9 @@ if (!defined('TOOL_START_PAGE')) {
 	define('TOOL_START_PAGE', $_SERVER['PHP_SELF']);
 	debug_log('Using default TOOL_START_PAGE = "' . TOOL_START_PAGE . '"');
 }
+if (!defined('TOOL_START_LINK')) {
+	define('TOOL_START_LINK', 'Start Over');
+}
 
 /**
  * Echo a page of HTML content to the browser, wrapped in some CSS niceities
@@ -26,7 +29,7 @@ function displayPage($content) {
 <body>' .
 buildPageSection('<h1>' . TOOL_NAME . '</h1>
 <h2>St. Mark&rsquo;s School</h2>', false, 'masthead') .
-buildPageSection('<a href="' . TOOL_START_PAGE . '">Start Over</a>', false, 'header') .
+buildPageSection('<a href="' . TOOL_START_PAGE . '">' . TOOL_START_LINK . '</a>', false, 'header') .
 '<div id="content-wrapper">' .
 	buildPageSection($content, false, 'content') .
 '</div>' .

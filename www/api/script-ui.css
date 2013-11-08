@@ -17,6 +17,10 @@ em  {
 	font-weight: bold;
 }
 
+li {
+	margin: 0.5em 0;
+}
+
 code, .code {
 	font-family: Inconsolata, Monaco, "Courier New", Courier, monospace;
 }
@@ -49,10 +53,20 @@ code, .code {
 	margin: 0.25em inherit 0;
 }
 
+.image-placement a {
+	text-decoration: none;
+	color: black;
+}
+
+.image-placement a p.caption:after {
+	content: " (Click to zoom in)"
+}
+
 .image-placement img {
 	margin: 0;
 	padding: 0;
 	border: 1px solid #ddd;
+	border-radius: 5px;
 }
 
 /* Forms formatting */
