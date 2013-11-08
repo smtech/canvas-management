@@ -24,10 +24,8 @@ $query = "
 
 if ($stats = mysqlQuery($query)) {
 	$data = array();
-	$total = 0;
 	while ($row = $stats->fetch_assoc()) {
 		$data[$row['course[id]']] = $row['assignments_due_count'] + $row['dateless_assignment_count'];
-		$total += $data[$row['course[id]']];
 	}
 	asort($data);
 	$highlight = $data;
@@ -43,7 +41,15 @@ if ($stats = mysqlQuery($query)) {
 	$graph->addData($highlight);
 	$graph->setBarColor('gray', 'red');
 	$graph->setBarOutline(false);
-	$graph->setGoalLine($total / count($data), 'gray', 'dashed');
+	$graph->setGoalLine(averageAssignmentCount(
+		(
+			isset($_REQUEST['department_id'])) ?
+				$_REQUEST['department_id'] :
+				false
+		),
+		'gray',
+		'dashed'
+	);
 	$graph->setGrid(false);
 	$graph->setXValues(false);
 	$graph->createGraph();
