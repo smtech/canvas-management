@@ -2,6 +2,7 @@
 
 require_once('.ignore.grading-analytics-authentication.inc.php');
 define('TOOL_START_PAGE', 'https://' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . "/courses/{$_REQUEST['course_id']}");
+define('TOOL_START_LINK', 'Return to Canvas');
 
 require_once('config.inc.php');
 require_once('common.inc.php');
@@ -70,8 +71,8 @@ $turnAroundComparison = buildPageSection('
 			href="graph/turn-around-comparison.php?course_id=' . $_REQUEST['course_id'] . '"
 		>
 			<img src="graph/turn-around-comparison.php?course_id=' . $_REQUEST['course_id'] . '"  style="width: 100%;" />
+			<p class="caption">&ldquo;' . $course['name'] . '&rdquo; compared to all active courses in the school.</p>
 		</a>
-		<p class="caption">&ldquo;' . $course['name'] . '&rdquo; compared to all active courses in the school.</p>
 	</div>
 	
 	<div class="image-placement" style="float: right; width: ' . GRAPH_INSET_WIDTH . ';">
@@ -82,8 +83,8 @@ $turnAroundComparison = buildPageSection('
 			href="graph/turn-around-comparison.php?course_id=' . $_REQUEST['course_id'] . '&department_id=' . $course['account_id'] . '"
 		>
 			<img src="graph/turn-around-comparison.php?course_id=' . $_REQUEST['course_id'] . '&department_id=' . $course['account_id'] . '"  style="width: 100%;" />
+			<p class="caption">&ldquo;' . $course['name'] . '&rdquo; compared to all active courses in the ' . $department['name'] . ' department.</p>
 		</a>
-		<p class="caption">&ldquo;' . $course['name'] . '&rdquo; compared to all active courses in the ' . $department['name'] . ' department.</p>
 	</div>	
 
 	<p class="caption">What is the average turn-around time (in days) in this course for an assignment, from due date to posted grade in Canvas? The expectation articulated in the faculty handbook is that daily assignments will be returned within a week (<span class="one-week-underline">' . GRAPH_1_WEEK_COLOR . ' ' . GRAPH_1_WEEK_STYLE . ' line</span>) and that major assignments will be returned within two weeks (<span class="two-week-underline">' . GRAPH_2_WEEK_COLOR . ' ' . GRAPH_2_WEEK_STYLE . ' line</span>). The expectation is that grades will be posted to Canvas at approximately the same time as they are returned to students.</p>
@@ -112,9 +113,19 @@ $turnAroundHistory = buildPageSection('
 			href="graph/turn-around-history.php?course_id=' . $_REQUEST['course_id'] . '"
 		>
 			<img src="graph/turn-around-history.php?course_id=' . $_REQUEST['course_id'] . '" width="100%" />
-		</a
-		<p class="caption">The average grading turn-around time in &ldquo;' . $course['name'] . '&rdquo; over time.</p>
-	</div>',
+			<p class="caption">The average grading turn-around time in &ldquo;' . $course['name'] . '&rdquo; over time.</p>
+		</a>
+	</div>
+	
+	<p class="caption">How is the average grading turn-around time changing in this course over time? Both the daily assignment expectation (<span class="one-week-underline">' . GRAPH_1_WEEK_COLOR . ' ' . GRAPH_1_WEEK_STYLE . ' line</span>) and the major assignment expectation (<span class="two-week-underline">' . GRAPH_2_WEEK_COLOR . ' ' . GRAPH_2_WEEK_STYLE . ' line</span>) are shown for reference.</p>
+	
+	<h4>What can be learned from this information?</h4>
+	
+	<ul>
+		<li>How is this average changing over time? Be aware that it will change more gradually as the year progresses and more assignments are incorporated into the average.</li>
+		
+		<li>How does the average relate to the expectations for faculty grading? Again, be aware that the average grading turn-around time is a measure not of the actual turn-in to student time, but of the time measured between the due date and when the grade is actually entered in Canvas.</li>
+	</ul>',
 	'Grading Turn-Around History',
 	'turn-around-history'
 );
@@ -128,8 +139,8 @@ $assignmentCount = buildPageSection('
 			href="graph/assignment-count-comparison.php?course_id=' . $_REQUEST['course_id'] . '"
 		>
 			<img src="graph/assignment-count-comparison.php?course_id=' . $_REQUEST['course_id'] . '" width="100%" />
+			<p class="caption">&ldquo;' . $course['name'] . '&rdquo; compared to all active courses in the school.</p>
 		</a>
-		<p class="caption">&ldquo;' . $course['name'] . '&rdquo; compared to all active courses in the school.</p>
 	</div>
 
 	<div class="image-placement" style="width: ' . GRAPH_INSET_WIDTH . '; float: right;">
@@ -140,13 +151,25 @@ $assignmentCount = buildPageSection('
 			href="graph/assignment-count-comparison.php?course_id=' . $_REQUEST['course_id'] . '&department_id=' . $course['account_id'] . '"
 		>
 			<img src="graph/assignment-count-comparison.php?course_id=' . $_REQUEST['course_id'] . '&department_id=' . $course['account_id'] . '" width="100%" />
+			<p class="caption">&ldquo;' . $course['name'] . '&rdquo; compared to all active courses in the ' . $department['name'] . ' department.</p>
 		</a>
-		<p class="caption">&ldquo;' . $course['name'] . '&rdquo; compared to all active courses in the ' . $department['name'] . ' department.</p>
 	</div>
 	
 	<p class="caption">How many assignments have been posted to Canvas for &ldquo;' . $course['name'] . '&rdquo;?</p>
 	
 	<p class="caption">The average number of assignments posted to Canvas (<span class="average-underline">' . GRAPH_AVERAGE_COLOR . ' ' . GRAPH_AVERAGE_STYLE .' line</span> above) across all courses is ' . round(averageAssignmentCount(), 1) . '. The average number of assignments posted to Canvas (<span class="average-underline">' . GRAPH_AVERAGE_COLOR . ' ' . GRAPH_AVERAGE_STYLE . ' line</span> at right) in the ' . $department['name'] . ' department is ' . round(averageAssignmentCount($department['id']), 1) . '. In &ldquo;' . $course['name'] . '&rdquo; (<span class="highlight-column">' . GRAPH_HIGHLIGHT_COLOR . ' column</span>), there are ' . ($statistic['assignments_due_count'] + $statistic['dateless_assignment_count']) . ' assignments posted to Canvas.</p>
+	
+	<h4>What can be learned from this information?</h4>
+	
+	<ul>
+		<li>How do the number of assignments posted to Canvas in this course compare to other courses?</li>
+		
+		<li>Is this number higher than most? This may reflect either a higher homework load (at least, measured by quantity of assignments), or it may reflect a greater granularity in posted assignments. That is, rather than combining all of one night&rsquo;s homework into a single assignment, homework may be posted as a number of individual assignments.</li>
+		
+		<li>Is this number lower than most? This may reflect a lighter homework load (at least, measured by quantity of assignments -- each individual assignment may take longer). This may also reflect incomplete Canvas updates in this course, with not all assignments posted to Canvas.</li>
+		
+		<li>How does the number of assignments posted compare to the number of class meetings?</li>
+	</ul>
 	
 	<br clear="all" />',
 	'Number of Assignments',
