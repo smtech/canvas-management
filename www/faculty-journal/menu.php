@@ -1,8 +1,9 @@
 <?php
 
-require_once('.ignore.faculty-journal-authentication.inc.php');
-require_once('config.inc.php');
-require_once('../canvas-api.inc.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(__DIR__ . '/.ignore.faculty-journal-authentication.inc.php');
+require_once(__DIR__ . '/config.inc.php');
+require_once(APP_PATH . '/include/canvas-api.inc.php');
 
 ?>
 <html>
