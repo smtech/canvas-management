@@ -1,10 +1,11 @@
 <?php
 
-require_once('.ignore.calendar-ics-authentication.inc.php');
-require_once('config.inc.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(__DIR__ . '/.ignore.calendar-ics-authentication.inc.php');
+require_once(__DIR__ . '/config.inc.php');
 
-require_once('../page-generator.inc.php');
-require_once('../canvas-api.inc.php');
+require_once(APP_PATH . '/include/page-generator.inc.php');
+require_once(APP_PATH . '/include/canvas-api.inc.php');
 
 
 if (isset($_REQUEST['course_url'])) {

@@ -9,12 +9,13 @@
 /* REQUIRES crontab
    http://en.wikipedia.org/wiki/Cron */
 
-require_once('.ignore.calendar-ics-authentication.inc.php');
-require_once('config.inc.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(__DIR__ . '/.ignore.calendar-ics-authentication.inc.php');
+require_once(__DIR__ . '/config.inc.php');
 
-require_once('../page-generator.inc.php');
-require_once('../canvas-api.inc.php');
-require_once('../mysql.inc.php');
+require_once(APP_PATH . '/include/page-generator.inc.php');
+require_once(APP_PATH . '/include/canvas-api.inc.php');
+require_once(APP_PATH . '/include/mysql.inc.php');
 
 define('TOOL_NAME_ABBREVIATION', 'ICS Import');
 
@@ -27,7 +28,7 @@ define('WARNING_SYNC', '<em>Warning:</em> The sync will not overwrite existing e
 
 define('WARNING_REGEXP_FILTER', '<em>Note:</em> The regular expression match is applied to the <em>title</em> of an event <em>only,</em> and the event must both match the include regular expression <em>and</em> not match the exclude regular expression to be included.');
 
-require_once('common.inc.php');
+require_once(__DIR__ . '/common.inc.php');
 
 /**
  * compute the calendar context for the canvas object based on its URL
