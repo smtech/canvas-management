@@ -44,6 +44,13 @@ function stmarks_globalJavascript() {
 			stmarks_discussionPermalinks();
 		}
 	);
+	
+	$.getScript(
+		pathToScripts + 'grading-analytics.js',
+		function() {
+			stmarks_gradingAnalytics();
+		}
+	);
 		
 }
 

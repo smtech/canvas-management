@@ -1,6 +1,7 @@
 <?php
 
-require_once('debug.inc.php');
+require_once(__DIR__ . '/../../config.inc.php');
+require_once(APP_PATH . '/include/debug.inc.php');
 
 if(!defined('API_CLIENT_ERROR_RETRIES')) {
 	define('API_CLIENT_ERROR_RETRIES', 5);
@@ -8,7 +9,7 @@ if(!defined('API_CLIENT_ERROR_RETRIES')) {
 }
 if(!defined('API_SERVER_ERROR_RETRIES')) {
 	define('API_SERVER_ERROR_RETRIES', API_CLIENT_ERROR_RETRIES * 5);
-	debug_log('Using default API_SERVER_ERROR_RETRIES = ' . API_SERVER_ERROR_RETRIES, DEBUGGING_INFORMATION);
+	debug_log('Using default API_SERVER_ERROR_RETRIES = ' . API_SERVER_ERROR_RETRIES);
 }
 if(!defined('DEBUGGING')) {
 	define('DEBUGGING', DEBUGGING_LOG);
@@ -37,10 +38,10 @@ define('CANVAS_API_EXCEPTION_SERVER', 2);
 // TODO: we could extend this to include more specificity about the Pest exceptions...
 
 /* we use Pest to interact with the RESTful API */
-require_once('Pest.php');
+require_once(APP_PATH . '/include/Pest.php');
 
 /* handles HTML page generation */
-require_once('page-generator.inc.php');
+require_once(APP_PATH . '/include/page-generator.inc.php');
 
 class CanvasApiProcess {
 	
@@ -127,7 +128,7 @@ class CanvasApiProcess {
 					$response = $this->pest->$verb($path, $data, $this->buildCanvasAuthorizationHeader());
 				}
 			} catch (Pest_ServerError $e) {
-				if ($throwingExceptions & CANVAS_API_EXCEPTION_SERVER) {
+				if ($throwsExceptions & CANVAS_API_EXCEPTION_SERVER) {
 					throw $e;
 				} else {
 					/* who knows what goes on in the server's mind... try again */
@@ -136,7 +137,7 @@ class CanvasApiProcess {
 					debug_log('Retrying after Canvas API server error. ' . substr($e->getMessage(), 0, CANVAS_API_EXCEPTION_MAX_LENGTH));
 				}
 			} catch (Pest_ClientError $e) {
-				if ($throwingExceptions & CANVAS_API_EXCEPTION_CLIENT) {
+				if ($throwsExceptions & CANVAS_API_EXCEPTION_CLIENT) {
 					throw $e;
 				} else {
 					/* I just watched the Canvas API throw an unauthorized error when, in fact,
@@ -222,19 +223,19 @@ class CanvasApiProcess {
 	}
 	
 	public function delete($path, $data = array(), $throwsExceptions = false) {
-		$this->call(CANVAS_API_DELETE, $path, $data, $throwsExceptions);
+		return $this->call(CANVAS_API_DELETE, $path, $data, $throwsExceptions);
 	}
 
 	public function get($path, $data = array(), $throwsExceptions = false) {
-		$this->call(CANVAS_API_GET, $path, $data, $throwsExceptions);
+		return $this->call(CANVAS_API_GET, $path, $data, $throwsExceptions);
 	}
 
 	public function post($path, $data = array(), $throwsExceptions = false) {
-		$this->call(CANVAS_API_POST, $path, $data, $throwsExceptions);
+		return $this->call(CANVAS_API_POST, $path, $data, $throwsExceptions);
 	}
 
 	public function put($path, $data = array(), $throwsExceptions = false) {
-		$this->call(CANVAS_API_PUT, $path, $data, $throwsExceptions);
+		return $this->call(CANVAS_API_PUT, $path, $data, $throwsExceptions);
 	}
 	
 	private function pageLink($page) {
