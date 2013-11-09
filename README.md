@@ -38,9 +38,9 @@ This would benefit from an OAuth setup, so that individual users could set up th
 
 [Known Issues](http://github.com/smtech/canvas/issues?milestone=6)
 
-### [dev-canvas-api](http://github.com/smtech/canvas/tree/dev-canvas-api/www/api/dev/canvas-api.inc.php)
+### [dev-support](http://github.com/smtech/canvas/tree/dev-support/www/includes) (Formerly [dev-canvas-api](http://github.com/smtech/canvas/tree/dev-canvas-api))
 
-Working on a more robust, mature library for interacting with the Canvas API. More work on this means less work on every subsequent script.
+This branch contains code for working with the Canvas API, generating HTML pages (with supporting JavaScript, CSS and images). Basically, all the code that everything else depends on.
 
 [Known Issues](https://github.com/smtech/canvas/issues?milestone=12)
 
