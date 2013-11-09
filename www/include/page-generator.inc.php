@@ -1,7 +1,6 @@
 <?php
 
 require_once(__DIR__ . '/../config.inc.php');
-require_once(APP_PATH . '/include/config.inc.php');
 require_once(APP_PATH . '/include/debug.inc.php');
 
 if (!defined('TOOL_NAME')) {
@@ -14,10 +13,6 @@ if (!defined('TOOL_START_PAGE')) {
 }
 if (!defined('TOOL_START_LINK')) {
 	define('TOOL_START_LINK', 'Start Over');
-}
-
-function rootPath() {
-	$scriptPath = $_SERVER['PATH_TRANSLATED'] 
 }
 
 /**
@@ -34,7 +29,7 @@ function displayPage($content) {
 </head>
 <body>' .
 buildPageSection('<h1>' . TOOL_NAME . '</h1>
-<h2>St. Mark&rsquo;s School</h2>', false, 'masthead') .
+<h2>' . SCHOOL_NAME . '</h2>', false, 'masthead') .
 buildPageSection('<a href="' . TOOL_START_PAGE . '">' . TOOL_START_LINK . '</a>', false, 'header') .
 '<div id="content-wrapper">' .
 	buildPageSection($content, false, 'content') .
