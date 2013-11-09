@@ -1,6 +1,8 @@
 <?php
 
-require_once('debug.inc.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(APP_PATH . '/include/config.inc.php');
+require_once(APP_PATH . '/include/debug.inc.php');
 
 if (!defined('TOOL_NAME')) {
 	define('TOOL_NAME', 'Canvas API Tool');
@@ -14,6 +16,10 @@ if (!defined('TOOL_START_LINK')) {
 	define('TOOL_START_LINK', 'Start Over');
 }
 
+function rootPath() {
+	$scriptPath = $_SERVER['PATH_TRANSLATED'] 
+}
+
 /**
  * Echo a page of HTML content to the browser, wrapped in some CSS niceities
  **/
@@ -21,10 +27,10 @@ function displayPage($content) {
 	echo '<html>
 <head>
 	<title>' . TOOL_NAME . '</title>
-	<script src="../jquery-1.10.2.min.js"></script>
-	<script src="../lightbox-2.6.min.js"></script>
-	<link href="../lightbox.css" rel="stylesheet" />
-	<link rel="stylesheet" href="../script-ui.css" />
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="' . APP_URL . '/javascript/lightbox-2.6.min.js"></script>
+	<link rel="stylesheet" href="' . APP_URL . '/css/lightbox.php" />
+	<link rel="stylesheet" href="' . APP_URL . '/css/script-ui.php" />
 </head>
 <body>' .
 buildPageSection('<h1>' . TOOL_NAME . '</h1>
@@ -33,7 +39,7 @@ buildPageSection('<a href="' . TOOL_START_PAGE . '">' . TOOL_START_LINK . '</a>'
 '<div id="content-wrapper">' .
 	buildPageSection($content, false, 'content') .
 '</div>' .
-buildPageSection('<a href="http://www.stmarksschool.org">St. Mark&rsquo;s School</a> &bull; <a href="http://area51.stmarksschool.org">Academic Technology</a> &bull; 25 Marlboro Road, Southborough, MA 01772', false, 'footer') . '
+buildPageSection('<a href="' . SCHOOL_URL .'">' . SCHOOL_NAME . '</a> &bull; <a href="' . SCHOOL_DEPT_URL . '">' . SCHOOL_DEPT . '</a> &bull; ' . SCHOOL_ADDRESS, false, 'footer') . '
 </body>
 </html>';
 	flush();
