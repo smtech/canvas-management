@@ -1,7 +1,8 @@
 <?php
 
-require_once('../.ignore.read-only-authentication.inc.php');
-require_once('../canvas-api.inc.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(APP_PATH . '/.ignore.read-only-authentication.inc.php');
+require_once(APP_PATH . '/include/canvas-api.inc.php');
 
 function listCoursesWithOnlyOneAssignmentGroup($term) {
 	$coursesApi = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);

@@ -5,9 +5,10 @@
 
 define ('TOOL_NAME', "List Users Enrolled in Term {$_REQUEST['term_id']}");
 
-require_once('../.ignore.read-only-authentication.inc.php');
-require_once('../debug.inc.php');
-require_once('../canvas-api.inc.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(APP_PATH . '/.ignore.read-only-authentication.inc.php');
+require_once(APP_PATH . '/include/debug.inc.php');
+require_once(APP_PATH . '/include/canvas-api.inc.php');
 
 debugFlag('START');
 
