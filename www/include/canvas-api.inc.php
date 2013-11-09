@@ -1,6 +1,7 @@
 <?php
 
-require_once('CanvasApiProcess.class.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(APP_PATH . '/include/class/CanvasApiProcess.class.php');
 
 $CANVAS_API = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
 
