@@ -124,7 +124,7 @@ function loadFileAsSimpleXmlWithLowercaseNodesAndAttributes($fileName) {
 	if (file_exists($fileName)) {
 		$xmlWoNkYcAsE = simplexml_load_file($fileName);
 		$xslt = new XSLTProcessor();
-		$xsl = simplexml_load_file('../lowercase-transform.xsl');
+		$xsl = simplexml_load_file('lowercase-transform.xsl');
 		$xslt->importStylesheet($xsl);
 		return (simplexml_load_string($xslt->transformToXML($xmlWoNkYcAsE)));
 	} else {
