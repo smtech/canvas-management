@@ -10,6 +10,9 @@ if (!defined('TOOL_START_PAGE')) {
 	define('TOOL_START_PAGE', $_SERVER['PHP_SELF']);
 	debug_log('Using default TOOL_START_PAGE = "' . TOOL_START_PAGE . '"');
 }
+if (!defined('TOOL_START_LINK')) {
+	define('TOOL_START_LINK', 'Start Over');
+}
 
 /**
  * Echo a page of HTML content to the browser, wrapped in some CSS niceities
@@ -18,23 +21,44 @@ function displayPage($content) {
 	echo '<html>
 <head>
 	<title>' . TOOL_NAME . '</title>
+	<script src="../jquery-1.10.2.min.js"></script>
+	<script src="../lightbox-2.6.min.js"></script>
+	<link href="../lightbox.css" rel="stylesheet" />
 	<link rel="stylesheet" href="../script-ui.css" />
 </head>
-<body>
-<h1>' . TOOL_NAME . '</h1>
-<h2>St. Mark&rsquo;s School</h2>
-<div id="header">
-	<a href="' . TOOL_START_PAGE . '">Start Over</a>
-</div>
-<div id="content">
-'. $content . '
-</div>
-<div id="footer">
-	<a href="http://www.stmarksschool.org">St. Mark&rsquo;s School</a> &bull; <a href="http://area51.stmarksschool.org">Academic Technology</a> &bull; 25 Marlboro Road, Southborough, MA 01772
-</div>
+<body>' .
+buildPageSection('<h1>' . TOOL_NAME . '</h1>
+<h2>St. Mark&rsquo;s School</h2>', false, 'masthead') .
+buildPageSection('<a href="' . TOOL_START_PAGE . '">' . TOOL_START_LINK . '</a>', false, 'header') .
+'<div id="content-wrapper">' .
+	buildPageSection($content, false, 'content') .
+'</div>' .
+buildPageSection('<a href="http://www.stmarksschool.org">St. Mark&rsquo;s School</a> &bull; <a href="http://area51.stmarksschool.org">Academic Technology</a> &bull; 25 Marlboro Road, Southborough, MA 01772', false, 'footer') . '
 </body>
 </html>';
 	flush();
+}
+
+$PAGE_SECTIONS = array();
+function buildPageSection($content, $label = false, $id = false, $overwrite = false) {
+	if ($id) {
+		if (array_key_exists($id, $GLOBALS['PAGE_SECTIONS']) && !$overwrite) {
+			$i = 0;
+			do {
+				$i++;
+			} while (array_key_exists("$id-$i", $GLOBALS['PAGE_SECTIONS']));
+			$id = "$id-$i";
+		}
+	} else {
+		$id = md5($content);
+	}
+	$GLOBALS['PAGE_SECTIONS'][$id] = "
+	<div id=\"$id\" class=\"page-section\">" .
+		($label ? "<h2>$label</h2>" : '') . "
+		$content
+	</div>
+	";
+	return $GLOBALS['PAGE_SECTIONS'][$id];
 }
 
 /**

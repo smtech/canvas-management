@@ -5,6 +5,71 @@ body {
 	padding: 0;
 }
 
+pre, code {
+	font-family: Inconsolata, 'Courier New', Monaco, Courier, monospace;
+	font-size: 10pt;
+}
+
+em  {
+	font-style: normal;
+	color: red;
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
+li {
+	margin: 0.5em 0;
+}
+
+code, .code {
+	font-family: Inconsolata, Monaco, "Courier New", Courier, monospace;
+}
+
+.caption {
+	font-style: italic;
+}
+
+.error {
+	background-color: #ffd8d8;
+	border-radius: 10px;
+	padding: 10px;
+	border: 2px solid red;
+}
+/* image placement boxes with captions and headers */
+.image-placement {
+	display: block;
+	border-radius: 10px;
+	padding: 5px 1em;;
+	background-color: #eee;
+	margin: 1em;
+}
+
+.image-placement h4 {
+	padding: 0;
+	margin: 0;
+}
+
+.image-placement p.caption {
+	margin: 0.25em inherit 0;
+}
+
+.image-placement a {
+	text-decoration: none;
+	color: black;
+}
+
+.image-placement a p.caption:after {
+	content: " (Click to zoom in)"
+}
+
+.image-placement img {
+	margin: 0;
+	padding: 0;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+}
+
+/* Forms formatting */
 label, input[type=file] {
 	display: block;
 	margin-top: 10px;
@@ -33,12 +98,50 @@ input[type=radio], input[type=checkbox] {
 	display: inline;
 }
 
-pre, code {
-	font-family: Inconsolata, 'Courier New', Monaco, Courier, monospace;
-	font-size: 10pt;
+/* content wrapper section */
+#content-wrapper {
+	text-align: center;
+	padding: 0 40px;
 }
 
-h1, h2 {
+#content h1, #content h2 {
+	font-family: Helvetica, Arial, sans-serif;
+	color: black;
+	background-color: white;
+	text-transform: none;
+	white-space: normal;
+	min-width: intrinsic;
+	padding: 20px 0;
+}
+
+#content {
+	margin: 0 auto;
+	max-width: 7in;
+	text-align: left;
+}
+
+.page-section h1 {
+	font-size: 20pt;
+	padding: 0 0 1em;
+}
+
+.page-section h2 {
+	font-size: 18pt;
+	padding: 0 0 0.5em;
+}
+
+.page-section h3 {
+	font-size: 14pt;
+	padding: 0 0 0.25em;
+}
+
+.page-section h4 {
+	font-size: 12pt;
+	padding: 0 0 0.1em;
+}
+
+/* Masthead at the top of the page */
+#masthead h1, #masthead h2 {
 	margin: 0;
 	padding: 0 20px;
 	background-color: #003359;
@@ -48,29 +151,18 @@ h1, h2 {
 	white-space: nowrap;
 }
 
-h1 {
+#masthead h1 {
 	padding-top: 10px;
 	font-size: 24pt;
 }
 
-h2 {
+#masthead h2 {
 	padding-bottom: 10px;
 	font-size: 12pt;
 	text-transform: uppercase;
 }
 
-em  {
-	font-style: normal;
-	color: red;
-	text-transform: uppercase;
-	font-weight: bold;
-}
-
-code, .code {
-	font-family: Inconsolata, Monaco, "Courier New", Courier, monospace;
-}
-
-
+/* header with "Start Over" and footer with server info */
 #header, #footer {
 	padding: 10px;
 	margin: 10px;
@@ -88,25 +180,4 @@ code, .code {
 	color: #003359;
 	text-decoration: none;
 	border-bottom: dotted #003359 1px;
-}
-
-#content {
-	margin: 40px;
-}
-
-#content h1, #content h2 {
-	font-family: Helvetica, Arial, sa
-	ns-serif;
-	color: black;
-	background-color: white;
-	text-transform: none;
-	white-space: normal;
-	min-width: intrinsic;
-}
-
-.error {
-	background-color: #ffd8d8;
-	border-radius: 10px;
-	padding: 10px;
-	border: 2px solid red;
 }

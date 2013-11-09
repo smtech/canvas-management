@@ -1,3 +1,6 @@
+// TODO: add tests for content availability, as in https://github.com/smtech/canvas/commit/38955ef47b33478d0549712689844734dc66001d
+// TODO: check URL before trying to do anything, as in https://github.com/smtech/canvas/blob/master/www/javascript/faculty-journal.js
+
 function stmarks_hidePageListsIfPagesHidden() {
 	var i;
 	
