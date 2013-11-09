@@ -1,6 +1,7 @@
 <?php
 
-require_once('debug.inc.php');
+require_once(__DIR__ . '/../../config.inc.php');
+require_once(APP_PATH . '/include/debug.inc.php');
 
 if(!defined('API_CLIENT_ERROR_RETRIES')) {
 	define('API_CLIENT_ERROR_RETRIES', 5);
@@ -8,7 +9,7 @@ if(!defined('API_CLIENT_ERROR_RETRIES')) {
 }
 if(!defined('API_SERVER_ERROR_RETRIES')) {
 	define('API_SERVER_ERROR_RETRIES', API_CLIENT_ERROR_RETRIES * 5);
-	debug_log('Using default API_SERVER_ERROR_RETRIES = ' . API_SERVER_ERROR_RETRIES, DEBUGGING_INFORMATION);
+	debug_log('Using default API_SERVER_ERROR_RETRIES = ' . API_SERVER_ERROR_RETRIES);
 }
 if(!defined('DEBUGGING')) {
 	define('DEBUGGING', DEBUGGING_LOG);
@@ -37,10 +38,10 @@ define('CANVAS_API_EXCEPTION_SERVER', 2);
 // TODO: we could extend this to include more specificity about the Pest exceptions...
 
 /* we use Pest to interact with the RESTful API */
-require_once('Pest.php');
+require_once(APP_PATH . '/include/Pest.php');
 
 /* handles HTML page generation */
-require_once('page-generator.inc.php');
+require_once(APP_PATH . '/include/page-generator.inc.php');
 
 class CanvasApiProcess {
 	

@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__ . '/../config.inc.php');
+
 define('DEBUGGING_NONE', 0);
 
 define('DEBUGGING_GENERAL', 1);
@@ -11,13 +13,15 @@ define('DEBUGGING_ALL', DEBUGGING_GENERAL |
 						DEBUGGING_LOG |
 						DEBUGGING_CANVAS_API |
 						DEBUGGING_MYSQL);
+						
+define('DEBUGGING_DEFAULT', DEBUGGING_GENERAL);
 
 /**
  * Helper function to conditionally fill the log file with notes!
  **/
 function debug_log($message) {
 	if (!defined('DEBUGGING')) {
-		define('DEBUGGING', DEBUGGING_LOG);
+		define('DEBUGGING', DEBUGGING_DEFAULT);
 	}
 	if (DEBUGGING & DEBUGGING_LOG) {
 		error_log($message);

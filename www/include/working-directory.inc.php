@@ -1,6 +1,7 @@
 <?php
 
-require_once('debug.inc.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(APP_PATH . '/include/debug.inc.php');
 
 if (!defined('WORKING_DIR')) {
 	define('WORKING_DIR', '/var/www-data/canvas/tmp/');

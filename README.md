@@ -38,9 +38,9 @@ This would benefit from an OAuth setup, so that individual users could set up th
 
 [Known Issues](http://github.com/smtech/canvas/issues?milestone=6)
 
-### [dev-canvas-api](http://github.com/smtech/canvas/tree/dev-canvas-api/www/api/dev/canvas-api.inc.php)
+### [dev-support](http://github.com/smtech/canvas/tree/dev-support/www/includes) (Formerly [dev-canvas-api](http://github.com/smtech/canvas/tree/dev-canvas-api))
 
-Working on a more robust, mature library for interacting with the Canvas API. More work on this means less work on every subsequent script.
+This branch contains code for working with the Canvas API, generating HTML pages (with supporting JavaScript, CSS and images). Basically, all the code that everything else depends on.
 
 [Known Issues](https://github.com/smtech/canvas/issues?milestone=12)
 
@@ -89,6 +89,10 @@ Miscellaneous one-off JavaScript add-ons (see [above](#dev-javascript) for merge
   - [discussion-permalinks](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript/discussion-permalinks.js) reveals the permalinks to individual replies in Canvas discussions and announcements.
 
 [Known Issues](http://github.com/smtech/canvas/issues?milestone=3)
+
+### [dev-grading-analytics](https://github.com/smtech/canvas/tree/dev-grading-analytics/www/api/grading-analytics)
+
+Generate some reporting on faculty grading practices.
 
 ### [dev-grading-scheme](http://github.com/smtech/canvas/tree/dev-grading-scheme/www/api/grading-scheme)
 
