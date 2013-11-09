@@ -1,3 +1,12 @@
+<?php
+
+require_once(__DIR__ . '/../config.inc.php');
+
+header('Content-type: text/css');
+header('X-Content-Type-Options: nosniff'); // because IE is not trusting
+
+?>
+
 body {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 10pt;
@@ -144,8 +153,8 @@ input[type=radio], input[type=checkbox] {
 #masthead h1, #masthead h2 {
 	margin: 0;
 	padding: 0 20px;
-	background-color: #003359;
-	color: white;
+	background-color: <?= SCHOOL_COLOR_DARK ?>;
+	color: <?= SCHOOL_COLOR_LIGHT ?>;
 	font-family: Garamond, 'Adobe Garamond', 'Garamond Pro', Palatino, 'Times New Roman', serif;
 	min-width: 600px;
 	white-space: nowrap;
@@ -167,7 +176,7 @@ input[type=radio], input[type=checkbox] {
 	padding: 10px;
 	margin: 10px;
 	background: #eaedef;
-	color: #003359;
+	color: <?= SCHOOL_COLOR_DARK ?>;
 	border-radius: 10px;
 }
 
@@ -177,7 +186,7 @@ input[type=radio], input[type=checkbox] {
 }
 
 #header a, #footer a {
-	color: #003359;
+	color: <?= SCHOOL_COLOR_DARK ?>;
 	text-decoration: none;
-	border-bottom: dotted #003359 1px;
+	border-bottom: dotted <?= SCHOOL_COLOR_DARK ?> 1px;
 }
