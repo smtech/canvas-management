@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__ . '/../config.inc.php');
+
 define('DEBUGGING_NONE', 0);
 
 define('DEBUGGING_GENERAL', 1);
