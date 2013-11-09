@@ -94,6 +94,8 @@ Miscellaneous one-off JavaScript add-ons (see [above](#dev-javascript) for merge
 
 Generate some reporting on faculty grading practices.
 
+[Known Issues](http://github.com/smtech/canvas/issues?milestone=13)
+
 ### [dev-grading-scheme](http://github.com/smtech/canvas/tree/dev-grading-scheme/www/api/grading-scheme)
 
 For whatever reason, Canvas defaults to its own grading scheme, rather than a custom grading scheme. Once courses have been created, this will run through the directory and update the course grading schemes to a specific custom grading scheme. This also includes a crontab-scheduled job to run through recent assignments and update them to a custom grading scheme if they are set to a Letter Grade and are using the default grading scheme.
