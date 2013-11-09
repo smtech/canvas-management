@@ -1,8 +1,9 @@
 <?php
 
-require_once(dirname(__FILE__) . '/.ignore.grading-analytics-authentication.inc.php');
-require_once(dirname(__FILE__) . '/config.inc.php');
-require_once(dirname(__FILE__) . '/../mysql.inc.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(__DIR__ . '/.ignore.grading-analytics-authentication.inc.php');
+require_once(__DIR__ . '/config.inc.php');
+require_once(APP_PATH . '/include/mysql.inc.php');
 
 $GRAPH_DATA_COUNT = 0;
 function graphWidth($dataCount = false) {
