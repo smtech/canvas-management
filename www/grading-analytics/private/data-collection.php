@@ -1,7 +1,7 @@
 <?php
+require_once(__DIR__ . '/../../config.inc.php');
 require_once(__DIR__ . '/../config.inc.php');
-require_once(__DIR__ . '/config.inc.php');
-require_once(__DIR__ . '/.ignore.grading-analytics-authentication.inc.php');
+require_once(__DIR__ . '/../.ignore.grading-analytics-authentication.inc.php');
 require_once(APP_PATH . '/include/canvas-api.inc.php');
 require_once(APP_PATH . '/include/mysql.inc.php');
 
