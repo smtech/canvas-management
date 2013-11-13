@@ -91,7 +91,7 @@ function filterEvent($event, $calendarCache) {
 	) {
 		// TODO: it would be even more elegant to allow regexp reformatting of titles...
 		/* strip off [bracket style] tags at the end of the event title */
-		$event['event_text'] = preg_replace('%^(.*) (\[[^\]]+\])+$%', '\\1', $event['event_text']);	
+		$event['event_text'] = preg_replace('%^([^\]]+)(\s*\[[^\]]+\]\s*)+$%', '\\1', $event['event_text']);	
 	
 		/* replace newlines with <br /> to maintain formatting */
 		$event['description'] = str_replace( PHP_EOL , '<br />' . PHP_EOL, $event['description']);
