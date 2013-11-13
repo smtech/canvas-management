@@ -1,5 +1,0 @@
-# lock phpicalendar so that no ne'er-do-well can mess around
-AuthType Basic
-AuthName "grading-analytics"
-AuthUserFile /var/www-data/canvas/grading-analytics/.htpasswd
-Require valid-user

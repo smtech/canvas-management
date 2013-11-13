@@ -41,13 +41,12 @@ function stmarks_waitForDOMByClassName(UrlPattern, className, callback) {
 		var DOMElements = document.getElementsByClassName(className);
 		if (DOMElements !== undefined) {
 			callback(DOMElements);
-			return;
 		} else {
 			window.setTimeout(
 				function() {
-					stmarks_waitForDOMByClassName(UrlPattern, className, callback),
-					STMARKS.waitForDOMDelay
+					stmarks_waitForDOMByClassName(UrlPattern, className, callback);
 				}, 
+				STMARKS.waitForDOMDelay
 			);
 		}
 		return true;
