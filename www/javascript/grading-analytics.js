@@ -15,17 +15,5 @@ function stmarks_addGradingAnalyticsButton(sidebarButtons) {
 }
 
 function stmarks_gradingAnalytics() {
-	var identity = document.getElementById('identity').children[0].children[0].href;
-	switch (identity) {
-		case 'https://stmarksschool.instructure.com/about/1': //sb
-		case 'https://stmarksschool.instructure.com/about/6': //bl
-		case 'https://stmarksschool.instructure.com/about/9': //cc
-		case 'https://stmarksschool.instructure.com/about/1010': //ls
-		case 'https://stmarksschool.instructure.com/about/21': //nw
-		case 'https://stmarksschool.instructure.com/about/379': //mw
-			stmarks_waitForDOMByClassName(/courses\/\d+/, 'btn button-sidebar button-sidebar-wide', stmarks_addGradingAnalyticsButton);
-			return true;
-		default:
-			return false;
-	}
+	stmarks_waitForDOMByClassName(/courses\/\d+/, 'btn button-sidebar button-sidebar-wide', stmarks_addGradingAnalyticsButton);
 }
