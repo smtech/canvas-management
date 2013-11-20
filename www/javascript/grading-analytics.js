@@ -1,11 +1,3 @@
-<?php
-
-require_once(__DIR__ . '/../config.inc.php');
-
-header('Content-type: text/javascript');
-
-?>
-
 function stmarks_addGradingAnalyticsButton(sidebarButtons) {
 	var analyticsUrl = /courses\/\d+\/analytics/;
 	var courseAnalyticsButton = null;
@@ -15,7 +7,7 @@ function stmarks_addGradingAnalyticsButton(sidebarButtons) {
 		var courseId = document.location.href.match(courseUrl)[1];
 		var gradingAnalyticsButton = document.createElement('a');
 		gradingAnalyticsButton.target = '_blank';
-		gradingAnalyticsButton.href = 'http://<?= APP_URL ?>/grading-analytics/course-summary.php?course_id=' + courseId;
+		gradingAnalyticsButton.href = 'http://area51.stmarksschool.org/project/canvas/stable/grading-analytics/course-summary.php?course_id=' + courseId;
 		gradingAnalyticsButton.className = 'btn button-sidebar button-sidebar-wide';
 		gradingAnalyticsButton.innerHTML = '<span class="analytics-button-icon">&nbsp;</span> View Grading Analytics';
 		courseAnalyticsButton.parentElement.appendChild(gradingAnalyticsButton);
