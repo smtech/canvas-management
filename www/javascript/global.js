@@ -98,7 +98,7 @@ function stmarks_globalJavascript() {
 	);
 	
 	$.getScript(
-		pathToScripts + 'grading-analytics.js',
+		pathToScripts + 'grading-analytics.php',
 		function() {
 			stmarks_gradingAnalytics();
 		}
