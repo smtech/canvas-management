@@ -241,7 +241,7 @@ if ($statistic['dateless_assignment_count'] > 0) {
 		
 		<h4>What could this mean?</h4>
 		
-		<p>This pretty much means what it sounds like it means: these assignments lack due dates. In terms of supporting student planning, this is not a terribly supportive practice.</p>';
+		<p>This pretty much means what it sounds like it means: these assignments lack due dates. In terms of supporting student planning, there may be questions to ask about communication and clarity.</p>';
 } else {
 	$numbers .= '<h3>All assignments have due dates</h3>';
 }
