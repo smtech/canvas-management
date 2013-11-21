@@ -112,6 +112,8 @@ Individual scripts to do specific things, but that also shouldn't [just](https:/
 
   - [generate-course-and-section-sis_id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/generate-course-and-section-sis_id.php) generates unique (MD5 hash-based) SIS IDs for all courses and sections in the Canvas instance that do not already have SIS IDs. Quite useful for doing SIS export reports from Canvas that include _everything_.
 
+  - [list-teachers-of-courses](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/list-teachers-of-courses.php) lists all of teachers of courses in a particular enrollment_term.
+
   - [list-users-enrolled-in-term](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/list-users-enrolled-in-term.php) generates a TSV list of all users enrolled in courses/sections in a particular term (GET parameter term_id).
 
   - [list-users-with-non-blackbaud-sis_id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/list-users-with-non-blackbaud-sis_id.php) generates a TSV list of all users in the instance whose SIS IDs do not match the general observed pattern of Blackbaud Import IDs (and are, therefore, most likely hand-generated and/or erroneous -- or both!).
