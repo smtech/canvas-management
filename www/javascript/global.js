@@ -77,6 +77,13 @@ function stmarks_globalJavascript() {
 	);	
 	
 	$.getScript(
+		pathToScripts + 'faculty-journal.js',
+		function() {
+			stmarks_facultyJournal();
+		}
+	);
+		
+	$.getScript(
 		pathToScripts + 'hide-future-courses.js',
 		function() {
 			stmarks_hideFutureCourses();
