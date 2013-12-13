@@ -16,7 +16,7 @@ function collectStatistics($term) {
 		'/accounts/132/courses',
 		array(
 			'with_enrollments' => 'true',
-			'enrollment_term_id' => $term // FIXME: this is only 2013-2014 Full year
+			'enrollment_term_id' => $term
 		)
 	);
 	
@@ -116,6 +116,7 @@ function collectStatistics($term) {
 											}
 										} while ($submissions = $lookupApi->nextPage());
 										
+										// FIXME: naming scheme is... inconsistent, should be something more like 'oldest_assignment[due_at]'
 										if (!$hasBeenGraded) {
 											if (array_key_exists('oldest_ungraded_assignment_due_date', $statistic)) {
 												if (strtotime($assignment['due_at']) < strtotime($statistic['oldest_ungraded_assignment_due_date'])) {
@@ -175,7 +176,8 @@ function collectStatistics($term) {
 
 debugFlag('START');
 
-// FIXME a more elegant solution would be to query for terms that are currently active and then loop across them
+// FIXME: this is only 2013-2014 Full year
+// FIXME: a more elegant solution would be to query for terms that are currently active and then loop across them
 collectStatistics(106);
 collectStatistics(107);
 
