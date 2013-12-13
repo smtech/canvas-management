@@ -28,6 +28,7 @@ function collectStatistics($term) {
 			$statistic = array(
 				'timestamp' => date(DATE_ISO8601, $timestamp),
 				'course[id]' => $course['id'],
+				'course[name]' => $course['name'],
 				'course[account_id]' => $course['account_id'],
 				'gradebook_url' => 'https://' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . "/courses/{$course['id']}/gradebook2",
 				'assignments_due_count' => 0,
@@ -38,6 +39,7 @@ function collectStatistics($term) {
 			);
 		
 			$teacherIds = array();
+			$teacherNames = array();
 			$teachers = $lookupApi->get(
 				"/courses/{$course['id']}/enrollments",
 				array(
@@ -46,10 +48,17 @@ function collectStatistics($term) {
 			);
 			do {
 				foreach ($teachers as $teacher) {
-					$teacherIds[] = $teacher['id'];
+					$teacherIds[] = $teacher['user']['id'];
+					$teacherNames[] = $teacher['user']['sortable_name'];
 				}
 			} while ($teachers = $lookupApi->nextPage());
-			$statistic['teacher_ids'] = serialize($teacherIds);
+			$statistic['teacher[id]s'] = serialize($teacherIds);
+			$statistic['teacher[sortable_name]s'] = serialize($teacherNames);
+			
+			$account = $lookupApi->get(
+				"/accounts/{$course['account_id']}"
+			);
+			$statistic['account[name]'] = $account['name'];
 			
 			// ignore classes with no teachers (how do they even exist? weird.)
 			if (count($teacherIds) != 0) {
@@ -112,10 +121,12 @@ function collectStatistics($term) {
 												if (strtotime($assignment['due_at']) < strtotime($statistic['oldest_ungraded_assignment_due_date'])) {
 													$statistic['oldest_ungraded_assignment_due_date'] = $assignment['due_at'];
 													$statistic['oldest_ungraded_assignment_url'] = $assignment['html_url'];
+													$statistic['oldest_ungraded_assignment_name'] = $assignment['name'];
 												}
 											} else {
 												$statistic['oldest_ungraded_assignment_due_date'] = $assignment['due_at'];
 												$statistic['oldest_ungraded_assignment_url'] = $assignment['html_url'];
+												$statistic['oldest_ungraded_assignment_name'] = $assignment['name'];
 											}
 										}
 									}
@@ -145,6 +156,7 @@ function collectStatistics($term) {
 					}
 					$query .= ' (`' . implode('`, `', $fields) . "`) VALUES ('" . implode("', '", $values) . "')";
 					$result = mysqlQuery($query);
+					if (!$result) print_r(mysqlError());
 					/* displayError(
 						array(
 							'gradedSubmissionsCount' => $gradedSubmissionsCount,
