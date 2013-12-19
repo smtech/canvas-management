@@ -1,3 +1,29 @@
+/***********************************************************************
+ *                                                                     *
+ * BUG FIXES FOR CANVAS INTERFACE                                      *
+ *                                                                     *
+ ***********************************************************************/
+ 
+/* module text indents are borked */
+.indent_1 {
+	margin-left: 1in;
+}
+
+.indent_2 {
+	margin-left: 2in;
+}
+
+.indent_3 {
+	margin-left: 3in;
+}
+
+
+/***********************************************************************
+ *                                                                     *
+ * GLOBAL MENU BAR                                                     *
+ *                                                                     *
+ ***********************************************************************/
+ 
 /* replace the aqua green background with something that matches your color scheme.*/
 #header {
   /*you can use .pngs with alpha transparency since you dont have to worry about IE6*/
@@ -42,7 +68,12 @@ you should move a (smaller) Cavas logo to the right side of the header'*/
 #identity .inbox a .unread-messages-count { background-color: #333; }
 
 
-/*login box*/
+/***********************************************************************
+ *                                                                     *
+ * WEB (NOT MOBILE) LOGIN                                              *
+ *                                                                     *
+ ***********************************************************************/
+ 
 #modal-box.login-box { background: url("login-bg.png?v1") no-repeat !important }
 
 /*this will move the extra canvas logo*/
@@ -72,12 +103,25 @@ border-color: #668F78;
 /*change the color of 'don't know your password'*/
 body.modal #modal-box.login-box a { color: #ffffff !important; }
 
-/*mobile login*/
+
+/***********************************************************************
+ *                                                                     *
+ * MOBILE (INCLUDING MOBILE SAFARI) LOGIN                              *
+ *                                                                     *
+ ***********************************************************************/
+ 
 
 #fl_container {
 	background-image: url("mobile-login.png?1");
 }
 
+
+/***********************************************************************
+ *                                                                     *
+ * CALENDAR COLOR-CODING                                               *
+ *                                                                     *
+ ***********************************************************************/
+ 
 /* calendar color-coding -- assignments second so they can be styled differently*/
 .group_course_497, .group_course_1277 {
 	color: #ffffff !important;
