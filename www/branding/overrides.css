@@ -5,16 +5,21 @@
  ***********************************************************************/
  
 /* module text indents are borked */
-.indent_1 {
-	margin-left: 1in;
+.context_module_item.indent_1 .item_name {
+	padding-left: 26px;
 }
 
-.indent_2 {
-	margin-left: 2in;
+.context_module_item.indent_2 .item_name {
+	padding-left: 52px;
 }
 
-.indent_3 {
-	margin-left: 3in;
+.context_module_item.indent_3 .item_name {
+	padding-left: 78px;
+}
+
+/* module text headers are indented at different levels than other items */
+.context_module_item .module_item_icons .type_icon {
+	padding-right: 0;
 }
 
 
