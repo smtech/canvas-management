@@ -1,11 +1,8 @@
 <?php
 
-require_once(__DIR__ . '/../config.inc.php');
-require_once(APP_PATH . '/.ignore.read-only-authentication.inc.php');
+require_once('config.inc.php');
+
 define('TOOL_NAME','List Teachers of Courses');
-require_once(APP_PATH . '/include/debug.inc.php');
-define('DEBUGGING', DEBUGGING_LOG);
-require_once(APP_PATH . '/include/canvas-api.inc.php');
 
 debugFlag('START');
 

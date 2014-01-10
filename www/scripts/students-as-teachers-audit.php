@@ -1,11 +1,8 @@
 <?php
 
-define ('TOOL_NAME', "Students as Teachers Audit");
+require_once('config.inc.php');
 
-require_once(__DIR__ . '/../config.inc.php');
-require_once(APP_PATH . '/.ignore.stmarksschool-test-authentication.inc.php');
-require_once(APP_PATH . '/include/debug.inc.php');
-require_once(APP_PATH . '/include/canvas-api.inc.php');
+define ('TOOL_NAME', "Students as Teachers Audit");
 
 debugFlag('START');
 

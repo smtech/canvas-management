@@ -3,12 +3,9 @@
 <pre>
 <?php
 
-define ('TOOL_NAME', "Courses in Term {$_REQUEST['enrollment_term_id']} with IDs");
+require_once('config.inc.php');
 
-require_once(__DIR__ . '/../config.inc.php');
-require_once(APP_PATH . '/.ignore.stmarksschool-test-authentication.inc.php');
-require_once(APP_PATH . '/include/debug.inc.php');
-require_once(APP_PATH . '/include/canvas-api.inc.php');
+define ('TOOL_NAME', "Courses in Term {$_REQUEST['enrollment_term_id']} with IDs");
 
 debugFlag('START');
 

@@ -2,14 +2,9 @@
 
 // TODO UI!
 
-define ('TOOL_NAME', 'Assignments due on a day');
+require_once('config.inc.php');
 
-require_once(__DIR__ . '/../config.inc.php');
-require_once(APP_PATH . '/.ignore.read-only-authentication.inc.php');
-require_once(APP_PATH . '/include/debug.inc.php');
-define('DEBUGGING', DEBUGGING_LOG);
-require_once(APP_PATH . '/include/canvas-api.inc.php');
-require_once(APP_PATH . '/include/page-generator.inc.php');
+define ('TOOL_NAME', 'Assignments due on a day');
 	
 $sisIdFilter = '/.*((orange)|(plum)).*/i';
 $dateFilter = '/2014-01-13T.*/';
