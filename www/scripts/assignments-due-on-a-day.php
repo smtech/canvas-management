@@ -43,6 +43,7 @@ do {
 			do {
 				foreach ($assignments as $assignment) {
 					if (preg_match($dateFilter, $assignment['due_at'])) {
+						// FIXME: need to strip out line breaks, tabs so as not to break the output
 						echo "{$course['id']}\t{$course['sis_course_id']}\t{$course['name']}\t{$assignment['name']}\t" . str_replace("\t", " ", str_replace("\n", " ", $assignment['description'])) . "\t{$enrollmentList}" . PHP_EOL;
 					}
 				}
