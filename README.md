@@ -104,6 +104,9 @@ For whatever reason, Canvas defaults to its own grading scheme, rather than a cu
 
 Individual scripts to do specific things, but that also shouldn't [just](https://github.com/smtech/canvas/commit/88b77a269063a342808443256f2f173ddf5881b5) [be](https://github.com/smtech/canvas/commit/a22552daa520f73cfb75b3f0ae93d1b8a08438af) [committed](https://github.com/smtech/canvas/commit/b51f50b579a7dcb54f6934ae9dd0a3523415ad5a) to the master fork without testing.
 
+  - [assignments-due-on-a-day](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/assignments-due-on-a-day.php) is a quick script for field trip planning: list all of the assignments due, optionally filtering by course code (color block) or due date.
+
+
   - [clean-ap-bio](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/clean-ap-bio.php) is a quick script to move a list of files matching a particular naming pattern into a particular folder in a course. This wa the result of Kim Berndt's experience with the AP Bio coursepack that just dumped hundreds of individual files into her main Course Files folder, with the result that she couldn't actually link to any files (because the file list was too long to load).
 
   - [courses-in-term-with-id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/courses-in-term-with-id.php) generates a tab-separated-values list of all of the courses in a particular term (GET parameter enrollment_term_id) with both their Canvas ID and their SIS ID.
