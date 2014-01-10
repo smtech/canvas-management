@@ -112,6 +112,11 @@ class CanvasApiProcess {
 	public function call($verb, $path, $data = array(), $throwsExceptions = false, $paginated = false) {
 		$response = null;
 	
+		/* Get as much information from the API at a time as possible (reducing API calls, etc. */
+		if (!isset($data['per_page'])) {
+			$data['per_page'] = '50';
+		}
+	
 		$clientRetryCount = 0;
 		$serverRetryCount = 0;
 		do {
