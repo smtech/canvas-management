@@ -1,8 +1,9 @@
 <?php
 
-require_once('config.inc.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(__DIR__ . '/config.inc.php');
 
-require_once('../page-generator.inc.php');
+require_once(APP_PATH . '/include/page-generator.inc.php');
 
 // TODO: might be nice to have an option to remove a previously synced ICS feed
 

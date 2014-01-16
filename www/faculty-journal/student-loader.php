@@ -1,8 +1,10 @@
 <?php
-	require_once('.ignore.faculty-journal-authentication.inc.php');
-	require_once('config.inc.php');
-	require_once('../canvas-api.inc.php');
-	require_once('../mysql.inc.php');
+
+	require_once(__DIR__ . '/../config.inc.php');
+	require_once(__DIR__ . '/.ignore.faculty-journal-authentication.inc.php');
+	require_once(__DIR__ . '/config.inc.php');
+	require_once(APP_PATH . '/include/canvas-api.inc.php');
+	require_once(APP_PATH . '/include/mysql.inc.php');
 	
 	// TODO: it would be nice to cache generated pages, to save on API call time
 
