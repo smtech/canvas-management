@@ -108,6 +108,11 @@ border-color: #668F78;
 /*change the color of 'don't know your password'*/
 body.modal #modal-box.login-box a { color: #ffffff !important; }
 
+/* hide the self-registration link */
+#register_link {
+	visibility: hidden !important;
+}
+
 
 /***********************************************************************
  *                                                                     *
