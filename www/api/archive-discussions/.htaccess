@@ -1,5 +1,0 @@
-# lock archive-discussions so that no ne'er-do-well can mess around
-AuthType Basic
-AuthName "archive-discussions"
-AuthUserFile /var/www-data/canvas/archive-discussions/.htpasswd
-Require valid-user

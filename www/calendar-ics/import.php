@@ -9,12 +9,13 @@
 /* REQUIRES crontab
    http://en.wikipedia.org/wiki/Cron */
 
-require_once('.ignore.calendar-ics-authentication.inc.php');
-require_once('config.inc.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(__DIR__ . '/.ignore.calendar-ics-authentication.inc.php');
+require_once(__DIR__ . '/config.inc.php');
 
-require_once('../page-generator.inc.php');
-require_once('../canvas-api.inc.php');
-require_once('../mysql.inc.php');
+require_once(APP_PATH . '/include/page-generator.inc.php');
+require_once(APP_PATH . '/include/canvas-api.inc.php');
+require_once(APP_PATH . '/include/mysql.inc.php');
 
 define('TOOL_NAME_ABBREVIATION', 'ICS Import');
 
@@ -27,7 +28,7 @@ define('WARNING_SYNC', '<em>Warning:</em> The sync will not overwrite existing e
 
 define('WARNING_REGEXP_FILTER', '<em>Note:</em> The regular expression match is applied to the <em>title</em> of an event <em>only,</em> and the event must both match the include regular expression <em>and</em> not match the exclude regular expression to be included.');
 
-require_once('common.inc.php');
+require_once(__DIR__ . '/common.inc.php');
 
 /**
  * compute the calendar context for the canvas object based on its URL
@@ -90,7 +91,7 @@ function filterEvent($event, $calendarCache) {
 	) {
 		// TODO: it would be even more elegant to allow regexp reformatting of titles...
 		/* strip off [bracket style] tags at the end of the event title */
-		$event['event_text'] = preg_replace('%^(.*) (\[[^\]]+\])+$%', '\\1', $event['event_text']);	
+		$event['event_text'] = preg_replace('%^([^\]]+)(\s*\[[^\]]+\]\s*)+$%', '\\1', $event['event_text']);	
 	
 		/* replace newlines with <br /> to maintain formatting */
 		$event['description'] = str_replace( PHP_EOL , '<br />' . PHP_EOL, $event['description']);

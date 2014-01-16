@@ -315,7 +315,7 @@ function stmarks_setUserClass() {
 	}
 	
 	// check for Faculty Resources course to identify USER_CLASS_FACULTY
-	var coursesList = coursesMenu.children[0].children[1].children;
+	var coursesList = coursesMenu.children[0].children[2].children;
 	// skip the "View all courses" link: length - 1
 	for (i = 0; i < coursesList.length - 1; i++) {
 		if (coursesList[i].getAttribute('data-id') === '97') {
@@ -361,7 +361,7 @@ var coursesToHide = [
 // remove courses from the Courses menu that have been replicated in custom menus
 function stmarks_hideCourses(courses) {
 	var i;
-	var coursesList = document.getElementById('menu_enrollments').children[1].children;
+	var coursesList = document.getElementById('menu_enrollments').children[2].children;
 	for (i = 1; i < coursesList.length; i += 1) {
 		if (courses.indexOf(coursesList[i].getAttribute('data-id')) > -1) {
 			coursesList[i].parentNode.removeChild(coursesList[i]);
