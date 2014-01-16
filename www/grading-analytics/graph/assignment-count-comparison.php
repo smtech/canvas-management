@@ -1,10 +1,11 @@
 <?php
 
-require_once('../config.inc.php');
-require_once('../common.inc.php');
-require_once('../.ignore.grading-analytics-authentication.inc.php');
-require_once('../../mysql.inc.php');
-require_once('../../phpgraphlib.php');
+require_once(__DIR__ . '/../../config.inc.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(__DIR__ . '/../common.inc.php');
+require_once(__DIR__ . '/../.ignore.grading-analytics-authentication.inc.php');
+require_once(APP_PATH . '/include/mysql.inc.php');
+require_once(APP_PATH . '/include/phpgraphlib.php');
 
 $query = "
 	SELECT * FROM (

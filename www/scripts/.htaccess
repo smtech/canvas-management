@@ -1,0 +1,6 @@
+# lock scripts so that no ne'er-do-well can mess around
+# http://httpd.apache.org/docs/2.2/programs/htpasswd.html for more info
+AuthType Basic
+AuthName "scripts"
+AuthUserFile /var/www-data/canvas/scripts/.htpasswd
+Require valid-user

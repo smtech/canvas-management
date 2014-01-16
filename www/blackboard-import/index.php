@@ -28,23 +28,26 @@
 /* REQUIRES the PHP 5 XSL extension
    http://www.php.net/manual/en/xsl.installation.php */
 
+require_once(__DIR__ . '/../config.inc.php');
+
 /* what Canvas API user are we going to connect as? */
-require_once('.ignore.blackboard-import-authentication.inc.php');
+require_once(__DIR__ . '/.ignore.blackboard-import-authentication.inc.php');
 
 /* configurable options */
-require_once('config.inc.php');
+require_once(__DIR__ . '/config.inc.php');
 
 /* handles HTML page generation */
-require_once('../page-generator.inc.php');
+require_once(APP_PATH . '/include/page-generator.inc.php');
 
 /* handles working directory functions */
-require_once('../working-directory.inc.php');
+require_once(APP_PATH . '/include/working-directory.inc.php');
 
 /* handles the core of the Canvas API interactions */
-require_once('../canvas-api.inc.php');
+require_once(APP_PATH . '/include/canvas-api.inc.php');
+// TODO y'know, it occurs to me that with the CanvasApiProcess object, some of the uploading and API calls could be done asynchronously and buy us _much_ greater speed on the overall migration. Hmm...
 
 /* we do directly work with Pest on some AWS API calls */
-require_once('../Pest.php');
+require_once(APP_PATH . '/include/Pest.php');
 
 
 /***********************************************************************
@@ -121,7 +124,7 @@ function loadFileAsSimpleXmlWithLowercaseNodesAndAttributes($fileName) {
 	if (file_exists($fileName)) {
 		$xmlWoNkYcAsE = simplexml_load_file($fileName);
 		$xslt = new XSLTProcessor();
-		$xsl = simplexml_load_file('../lowercase-transform.xsl');
+		$xsl = simplexml_load_file('lowercase-transform.xsl');
 		$xslt->importStylesheet($xsl);
 		return (simplexml_load_string($xslt->transformToXML($xmlWoNkYcAsE)));
 	} else {
