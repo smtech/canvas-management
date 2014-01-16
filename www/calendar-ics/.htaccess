@@ -1,0 +1,6 @@
+# lock calendar-ics so that no ne'er-do-well can mess around
+# http://httpd.apache.org/docs/2.2/programs/htpasswd.html for more info
+AuthType Basic
+AuthName "calendar-ics"
+AuthUserFile /var/www-data/canvas/calendar-ics/.htpasswd
+Require valid-user
