@@ -1,13 +1,14 @@
 <?php
 
-require_once('.ignore.calendar-ics-authentication.inc.php');
-require_once('config.inc.php');
+require_once(__DIR__ . '/../config.inc.php');
+require_once(__DIR__ . '/.ignore.calendar-ics-authentication.inc.php');
+require_once(__DIR__ . '/config.inc.php');
 
-require_once('../canvas-api.inc.php');
-require_once('../mysql.inc.php');
-require_once('../Pest.php');
+require_once(APP_PATH . '/include/canvas-api.inc.php');
+require_once(APP_PATH . '/include/mysql.inc.php');
+require_once(APP_PATH . '/include/Pest.php');
 
-require_once('common.inc.php');
+require_once(__DIR__ . '/common.inc.php');
 
 // FIXME: should filter so that the syncs for the server we're running against (INDEX_WEB_PATH) are called (or is that already happening?)
 $schedulesResponse = mysqlQuery("
