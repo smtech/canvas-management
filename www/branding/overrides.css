@@ -1,3 +1,34 @@
+/***********************************************************************
+ *                                                                     *
+ * BUG FIXES FOR CANVAS INTERFACE                                      *
+ *                                                                     *
+ ***********************************************************************/
+ 
+/* module text indents are borked */
+.context_module_item.indent_1 .item_name {
+	padding-left: 26px;
+}
+
+.context_module_item.indent_2 .item_name {
+	padding-left: 52px;
+}
+
+.context_module_item.indent_3 .item_name {
+	padding-left: 78px;
+}
+
+/* module text headers are indented at different levels than other items */
+.context_module_item .module_item_icons .type_icon {
+	padding-right: 0;
+}
+
+
+/***********************************************************************
+ *                                                                     *
+ * GLOBAL MENU BAR                                                     *
+ *                                                                     *
+ ***********************************************************************/
+ 
 /* replace the aqua green background with something that matches your color scheme.*/
 #header {
   /*you can use .pngs with alpha transparency since you dont have to worry about IE6*/
@@ -42,7 +73,12 @@ you should move a (smaller) Cavas logo to the right side of the header'*/
 #identity .inbox a .unread-messages-count { background-color: #333; }
 
 
-/*login box*/
+/***********************************************************************
+ *                                                                     *
+ * WEB (NOT MOBILE) LOGIN                                              *
+ *                                                                     *
+ ***********************************************************************/
+ 
 #modal-box.login-box { background: url("login-bg.png?v1") no-repeat !important }
 
 /*this will move the extra canvas logo*/
@@ -72,12 +108,30 @@ border-color: #668F78;
 /*change the color of 'don't know your password'*/
 body.modal #modal-box.login-box a { color: #ffffff !important; }
 
-/*mobile login*/
+/* hide the self-registration link */
+#register_link {
+	visibility: hidden !important;
+}
+
+
+/***********************************************************************
+ *                                                                     *
+ * MOBILE (INCLUDING MOBILE SAFARI) LOGIN                              *
+ *                                                                     *
+ ***********************************************************************/
+ 
 
 #fl_container {
 	background-image: url("mobile-login.png?1");
 }
 
+
+/***********************************************************************
+ *                                                                     *
+ * CALENDAR COLOR-CODING                                               *
+ *                                                                     *
+ ***********************************************************************/
+ 
 /* calendar color-coding -- assignments second so they can be styled differently*/
 .group_course_497, .group_course_1277 {
 	color: #ffffff !important;
