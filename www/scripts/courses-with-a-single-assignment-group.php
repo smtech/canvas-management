@@ -31,6 +31,4 @@ function listCoursesWithOnlyOneAssignmentGroup($term) {
 
 echo "id\tname\turl" . PHP_EOL;
 
-// FIXME bad, bad hard-coding of term IDs
-listCoursesWithOnlyOneAssignmentGroup(106);
-listCoursesWithOnlyOneAssignmentGroup(107);
+listCoursesWithOnlyOneAssignmentGroup($_REQUEST['enrollment_term_id']);

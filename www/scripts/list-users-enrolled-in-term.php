@@ -5,7 +5,7 @@
 
 require_once('config.inc.php');
 
-define ('TOOL_NAME', "List Users Enrolled in Term {$_REQUEST['term_id']}");
+define ('TOOL_NAME', "List Users Enrolled in Term {$_REQUEST['enrollment_term_id']}");
 
 debugFlag('START');
 
@@ -43,7 +43,7 @@ do {
 							debugFlag("Course {$course['id']} was previously deleted.");
 						}
 					}
-					if ($allCourses[$enrollment['course_id']] == $_REQUEST['term_id']) {
+					if ($allCourses[$enrollment['course_id']] == $_REQUEST['enrollment_term_id']) {
 						echo "{$user['id']}\t{$user['sis_user_id']}\t{$user['login_id']}\t{$user['name']}" . PHP_EOL;
 						$userPosted = true;
 						break;

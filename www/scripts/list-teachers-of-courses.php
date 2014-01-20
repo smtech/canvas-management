@@ -11,7 +11,7 @@ $teachersApi = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
 $courses = $coursesApi->get(
 	'/accounts/1/courses',
 	array(
-		'enrollment_term' => $_REQUEST['enrollment_term']
+		'enrollment_term' => $_REQUEST['enrollment_term_id']
 	)
 );
 echo "course[id]\tcourse[name]\tteacher[id]\tteacher[name]" . PHP_EOL;
