@@ -12,13 +12,13 @@ displayPage('
 		
 		<dt>Courses in Term with ID</dt>
 			<dd><form action="courses-in-term-with-id.php">
-				enrollment_term_id <input type="text" name="enrollent_term_id" />
+				enrollment_term_id <input type="text" name="enrollment_term_id" />
 				<input type="submit" value="List" />
 			</form></dd>
 			
 		<dt>Courses with a single assignment group</dt>
 			<dd><form action="courses-with-a-single-assignment-group.php">
-				enrollment_term_id <input type="text" name="enrollent_term_id" />
+				enrollment_term_id <input type="text" name="enrollment_term_id" />
 				<input type="submit" value="List" />
 			</form></dd>
 			
@@ -32,7 +32,7 @@ displayPage('
 			
 		<dt>List users enrolled in term</dt>
 			<dd><form action="list-users-enrolled-in-term.php">
-				enrollment_term_id <input type="text" name="enrollent_term_id" />
+				enrollment_term_id <input type="text" name="enrollment_term_id" />
 				<input type="submit" value="List" />
 			</form></dd>
 	
