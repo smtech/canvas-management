@@ -4,7 +4,7 @@ require_once('config.inc.php');
 require_once(APP_PATH . '/include/page-generator.inc.php');
 
 displayPage('
-	<p>Fall 2013 is term 106, Full Year 2013-2014 is 107, Spring 2014 is 108.</p>
+	<p>Full Year 2013-2014 is 106, Fall 2013 is term 107, Spring 2014 is 108.</p>
 
 	<dl>
 	
