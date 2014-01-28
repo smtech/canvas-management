@@ -22,7 +22,7 @@
 	padding-right: 0;
 }
 
-/* why can't we see all the enrollments and accounts at once? */
+/* why can't we see all the enrollments and accounts at once? 200px scrolling window, my fanny! */
 #courses_list .courses ul, .accounts ul {
 	max-height: none !important;
 }
@@ -30,6 +30,11 @@
 /* highlight active courses for ease of visualization */
 #courses_list .courses .active {
 	background-color: #ffffcc;
+}
+
+/* 200px tall assignment descriptions? Ha! */
+.description {
+	height: auto !important;
 }
 
 /***********************************************************************
