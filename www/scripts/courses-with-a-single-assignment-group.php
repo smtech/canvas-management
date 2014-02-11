@@ -1,10 +1,11 @@
 <?php
 
-require_once(__DIR__ . '/../config.inc.php');
-require_once(APP_PATH . '/.ignore.read-only-authentication.inc.php');
-require_once(APP_PATH . '/include/canvas-api.inc.php');
+define ('TOOL_NAME', "Courses with a Single Assignment Group in term $term");
+
+require_once('config.inc.php');
 
 function listCoursesWithOnlyOneAssignmentGroup($term) {
+	debugFlag('START');
 	$coursesApi = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
 	$courses = $coursesApi->get(
 		'/accounts/132/courses',
@@ -26,10 +27,9 @@ function listCoursesWithOnlyOneAssignmentGroup($term) {
 			}
 		}
 	} while ($courses = $coursesApi->nextPage());
+	debugFlag('FINISH');
 }
 
 echo "id\tname\turl" . PHP_EOL;
 
-// FIXME bad, bad hard-coding of term IDs
-listCoursesWithOnlyOneAssignmentGroup(106);
-listCoursesWithOnlyOneAssignmentGroup(107);
+listCoursesWithOnlyOneAssignmentGroup($_REQUEST['enrollment_term_id']);
