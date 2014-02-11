@@ -3,10 +3,9 @@
 <pre>
 <?php
 
+define ('TOOL_NAME', 'List Users with Non-Blackbaud Import ID SIS ID&rsquo;s');
 
 require_once('config.inc.php');
-
-define ('TOOL_NAME', 'List Users with Non-Blackbaud Import ID SIS ID&rsquo;s');
 
 debugFlag('START');
 

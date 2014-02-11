@@ -3,9 +3,9 @@
 <pre>
 <?php
 
-require_once('config.inc.php');
-
 define ('TOOL_NAME', 'Generate Missing Course &amp; Section SIS ID&rsquo;s');
+
+require_once('config.inc.php');
 
 debugFlag('START');
 

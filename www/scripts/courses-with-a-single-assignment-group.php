@@ -1,9 +1,10 @@
 <?php
 
+define ('TOOL_NAME', "Courses with a Single Assignment Group in term $term");
+
 require_once('config.inc.php');
 
 function listCoursesWithOnlyOneAssignmentGroup($term) {
-	define ('TOOL_NAME', "Courses with a Single Assignment Group in term $term");
 	debugFlag('START');
 	$coursesApi = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
 	$courses = $coursesApi->get(

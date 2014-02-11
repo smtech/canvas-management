@@ -1,5 +1,7 @@
 <?php
 
+define('TOOL_NAME', 'Scripts');
+
 require_once('config.inc.php');
 require_once(APP_PATH . '/include/page-generator.inc.php');
 
