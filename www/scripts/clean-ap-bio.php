@@ -2,10 +2,8 @@
 
 define ('TOOL_NAME', "Courses in Term {$_REQUEST['enrollment_term_id']} with IDs");
 
-require_once(__DIR__ . '/../config.inc.php');
+require_once('config.inc.php');
 require_once(__DIR__ . '../calendar-ics/.ignore.calendar-ics-authentication.inc.php'); // FIXME not kosher!
-require_once(APP_PATH . '/include/debug.inc.php');
-require_once(APP_PATH . '/include/canvas-api.inc.php');
 
 $files = callCanvasApiPaginated(
 	CANVAS_API_GET,
