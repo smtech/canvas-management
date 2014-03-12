@@ -3,22 +3,29 @@
 require_once('config.inc.php');
 require_once(APP_PATH . '/include/page-generator.inc.php');
 
-displayPage('
-	<p>Full Year 2013-2014 is 106, Fall 2013 is term 107, Spring 2014 is 108.</p>
+$termsApi = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
+$terms = $termsApi->get('/accounts/1/terms');
+$termOptions = array();
+do {
+	foreach($terms['enrollment_terms'] as $term) {
+		$termOptions[] = "<option value=\"{$term['id']}\">{$term['name']}</option>";
+	}
+} while($terms = $termsApi->nextPage());
 
+displayPage('
 	<dl>
 	
 		<dt><a href="assignments-due-on-a-day.php">Assignments due on a day</a></dt>
 		
 		<dt>Courses in Term with ID</dt>
 			<dd><form action="courses-in-term-with-id.php">
-				enrollment_term_id <input type="text" name="enrollment_term_id" />
+				enrollment_term_id <select name="enrollment_term_id" />' . implode($termOptions) . '</select>
 				<input type="submit" value="List" />
 			</form></dd>
 			
 		<dt>Courses with a single assignment group</dt>
 			<dd><form action="courses-with-a-single-assignment-group.php">
-				enrollment_term_id <input type="text" name="enrollment_term_id" />
+				enrollment_term_id <select name="enrollment_term_id" />' . implode($termOptions) . '</select>
 				<input type="submit" value="List" />
 			</form></dd>
 			
@@ -26,13 +33,13 @@ displayPage('
 	
 		<dt>List teachers of courses</dt>
 			<dd><form action="list-teachers-of-courses.php">
-				enrollment_term_id <input type="text" name="enrollment_term_id" />
+				enrollment_term_id <select name="enrollment_term_id" />' . implode($termOptions) . '</select>
 				<input type="submit" value="List" />
 			</form></dd>
 			
 		<dt>List users enrolled in term</dt>
 			<dd><form action="list-users-enrolled-in-term.php">
-				enrollment_term_id <input type="text" name="enrollment_term_id" />
+				enrollment_term_id <select name="enrollment_term_id" />' . implode($termOptions) . '</select>
 				<input type="submit" value="List" />
 			</form></dd>
 	
