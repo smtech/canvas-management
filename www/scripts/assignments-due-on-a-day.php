@@ -2,9 +2,9 @@
 
 // TODO UI!
 
-require_once('config.inc.php');
-
 define ('TOOL_NAME', 'Assignments due on a day');
+
+require_once('config.inc.php');
 	
 $sisIdFilter = '/.*((orange)|(plum)).*/i';
 $dateFilter = '/2014-01-13T.*/';

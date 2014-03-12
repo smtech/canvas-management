@@ -1,8 +1,8 @@
 <?php
 
-require_once(__DIR__ . '/../config.inc.php');
-
 define('TOOL_NAME', 'Blackboard 8 &rarr; Canvas Import Tool'); // what the tool calls itself
+
+require_once(__DIR__ . '/../config.inc.php');
 
 define('UPLOAD_DIR', '/var/www-data/canvas/blackboard-import'); // where we'll store uploaded files
 define('WORKING_DIR', UPLOAD_DIR . '/tmp'); // where we'll be dumping temp files (and cleaning up, too!)

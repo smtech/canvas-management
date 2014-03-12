@@ -1,8 +1,8 @@
 <?php
 
-require_once('config.inc.php');
-
 define ('TOOL_NAME', "Students as Teachers Audit");
+
+require_once('config.inc.php');
 
 debugFlag('START');
 
