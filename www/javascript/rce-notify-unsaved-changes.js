@@ -1,5 +1,7 @@
 // from https://help.instructure.com/entries/20451427-Save-reminder-before-leaving-an-edit-screen?page=1#post_21624684
 
+// will be rendered obsolete https://help.instructure.com/entries/31780970-04-12-14-Canvas-Production-Release-Notes-Featuring-Profile-Picture-Uploader
+
 /* Be Notified when leaving the MCE Editor */
 
 function stmarks_rceNotifyUnsavedChanges() {
