@@ -56,10 +56,16 @@
   height: 70px;
   left: 0px;
   width: 250px;
+  top: 0px;
 }
+
+#header-inner {
+	min-height: 44px;
+}
+
 /* if you are going to replace the Canvas logo on the top left with your school's, 
 you should move a (smaller) Cavas logo to the right side of the header'*/
-#header-logo-secondary {
+#header-logo-secondary, #header.no-user #header-logo-secondary {
   /* note, you should set up you webserver to set the right headers to cache these 
      images you link to for a long time (eg: 1 year) and change the querystring 
      (the part that says "?v1") to force users to download a new version if you 
@@ -72,6 +78,7 @@ you should move a (smaller) Cavas logo to the right side of the header'*/
   width: 135px;
   display: block;
 }
+
 /*make room for the menu since my sample logo is bigger than default canvas logo*/
 #menu{ margin-left: 200px; }
 
