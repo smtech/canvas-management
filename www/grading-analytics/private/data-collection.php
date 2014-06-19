@@ -2,9 +2,10 @@
 require_once(__DIR__ . '/../../config.inc.php');
 require_once(__DIR__ . '/../config.inc.php');
 require_once(__DIR__ . '/../.ignore.grading-analytics-authentication.inc.php');
+require_once(APP_PATH . '/include/debug.inc.php');
+define('DEBUGGING', DEBUGGING_LOG);
 require_once(APP_PATH . '/include/canvas-api.inc.php');
 require_once(APP_PATH . '/include/mysql.inc.php');
-
 
 function collectStatistics($term) {
 	$coursesApi = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
@@ -16,7 +17,7 @@ function collectStatistics($term) {
 		'/accounts/132/courses',
 		array(
 			'with_enrollments' => 'true',
-			'enrollment_term_id' => $term
+			'enrollment_term_id' => $term // FIXME: this is only 2013-2014 Full year
 		)
 	);
 	
@@ -39,7 +40,6 @@ function collectStatistics($term) {
 			);
 		
 			$teacherIds = array();
-			$teacherNames = array();
 			$teachers = $lookupApi->get(
 				"/courses/{$course['id']}/enrollments",
 				array(
@@ -48,17 +48,10 @@ function collectStatistics($term) {
 			);
 			do {
 				foreach ($teachers as $teacher) {
-					$teacherIds[] = $teacher['user']['id'];
-					$teacherNames[] = $teacher['user']['sortable_name'];
+					$teacherIds[] = $teacher['id'];
 				}
 			} while ($teachers = $lookupApi->nextPage());
 			$statistic['teacher[id]s'] = serialize($teacherIds);
-			$statistic['teacher[sortable_name]s'] = serialize($teacherNames);
-			
-			$account = $lookupApi->get(
-				"/accounts/{$course['account_id']}"
-			);
-			$statistic['account[name]'] = $account['name'];
 			
 			// ignore classes with no teachers (how do they even exist? weird.)
 			if (count($teacherIds) != 0) {
@@ -116,18 +109,15 @@ function collectStatistics($term) {
 											}
 										} while ($submissions = $lookupApi->nextPage());
 										
-										// FIXME: naming scheme is... inconsistent, should be something more like 'oldest_assignment[due_at]'
 										if (!$hasBeenGraded) {
 											if (array_key_exists('oldest_ungraded_assignment_due_date', $statistic)) {
 												if (strtotime($assignment['due_at']) < strtotime($statistic['oldest_ungraded_assignment_due_date'])) {
 													$statistic['oldest_ungraded_assignment_due_date'] = $assignment['due_at'];
 													$statistic['oldest_ungraded_assignment_url'] = $assignment['html_url'];
-													$statistic['oldest_ungraded_assignment_name'] = $assignment['name'];
 												}
 											} else {
 												$statistic['oldest_ungraded_assignment_due_date'] = $assignment['due_at'];
 												$statistic['oldest_ungraded_assignment_url'] = $assignment['html_url'];
-												$statistic['oldest_ungraded_assignment_name'] = $assignment['name'];
 											}
 										}
 									}
@@ -157,7 +147,6 @@ function collectStatistics($term) {
 					}
 					$query .= ' (`' . implode('`, `', $fields) . "`) VALUES ('" . implode("', '", $values) . "')";
 					$result = mysqlQuery($query);
-					if (!$result) print_r(mysqlError());
 					/* displayError(
 						array(
 							'gradedSubmissionsCount' => $gradedSubmissionsCount,
@@ -176,10 +165,10 @@ function collectStatistics($term) {
 
 debugFlag('START');
 
-// FIXME: this is only 2013-2014 Full year
-// FIXME: a more elegant solution would be to query for terms that are currently active and then loop across them
+// FIXME a more elegant solution would be to query for terms that are currently active and then loop across them
 collectStatistics(106);
 collectStatistics(107);
+collectStatistics(108);
 
 /* check to see if this data collection has been scheduled. If it hasn't,
    schedule it to run nightly. */
