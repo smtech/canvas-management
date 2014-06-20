@@ -50,7 +50,13 @@ displayPage('
 		<dt><a href="list-users-without-sis_id.php">List users with SIS ID</a></dt>
 		
 		<dt><a href="students-as-teachers-audit.php">Students as teachers audit</a></dt>
-	
+		
+		<dt>Transfer Outcomes</dt>
+			<dd><form action="transfer-outcomes.php">
+				<div>source_url <input name="source_url" type="text" /></div>
+				<div>destination_url <input name="destination_url" type="text" /></div>
+				<input type="submit" value="Transfer" />
+			</dd>
 	</dl>
 ');
 
