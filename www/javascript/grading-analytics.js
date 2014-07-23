@@ -7,7 +7,7 @@ function stmarks_addGradingAnalyticsButton(sidebarButtons) {
 		var courseId = document.location.href.match(courseUrl)[1];
 		var gradingAnalyticsButton = document.createElement('a');
 		gradingAnalyticsButton.target = '_blank';
-		gradingAnalyticsButton.href = 'http://area51.stmarksschool.org/project/canvas/dev/grading-analytics/course-summary.php?course_id=' + courseId;
+		gradingAnalyticsButton.href = 'http://area51.stmarksschool.org/project/canvas/stable/grading-analytics/course-summary.php?course_id=' + courseId;
 		gradingAnalyticsButton.className = 'btn button-sidebar button-sidebar-wide';
 		gradingAnalyticsButton.innerHTML = '<span class="analytics-button-icon">&nbsp;</span> View Grading Analytics';
 		courseAnalyticsButton.parentElement.appendChild(gradingAnalyticsButton);

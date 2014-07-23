@@ -1,7 +1,9 @@
 <?php
 
 /* this will break if there are mod_rewrites, but will do for now... */
-define('APP_URL', 'http://' . $_SERVER['SERVER_NAME'] . str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath(__DIR__)));
+if (isset($_SERVER['SERVER_NAME'])) {
+	define('APP_URL', 'http://' . $_SERVER['SERVER_NAME'] . str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath(__DIR__)));
+}
 define('APP_PATH', realpath(__DIR__));
 
 /* customize generated pages */
