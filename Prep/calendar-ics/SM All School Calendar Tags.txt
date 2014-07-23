@@ -1,0 +1,11 @@
+No Tag - All School
+[NONE] Will not move to web
+[DRAFT] will not move to the web ut will once you remove the draft tag -- for a work in progress
+[ALUM] Alumni calendar
+[PAR] Parents calendar
+[ACA] Academic Calendar
+[ADM] Admission Calendar
+[HOME] Homepage Calendar
+[CC] College Counseling
+[ARTS] Arts
+[MIW] Math Institute
