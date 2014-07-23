@@ -82,9 +82,7 @@ Miscellaneous one-off JavaScript add-ons (see [above](#dev-javascript) for merge
 
 ### [dev-grading-analytics](https://github.com/smtech/canvas/tree/dev-grading-analytics/www/api/grading-analytics)
 
-Generate some reporting on faculty grading practices.
-
-[Known Issues](http://github.com/smtech/canvas/issues?milestone=13)
+This fork has become its own repo: [smtech/smcanvas-grading-analytics](https://github.com/smtech/smcanvas-grading-analytics).
 
 ### [dev-grading-scheme](http://github.com/smtech/canvas/tree/dev-grading-scheme/www/api/grading-scheme)
 
