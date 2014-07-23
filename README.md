@@ -36,9 +36,7 @@ This fork has become its own repo: [smtech/smcanvaslib](https://github.com/smtec
 
 ### [dev-faculty-journal](http://github.com/smtech/canvas/tree/dev-faculty-journal/www/javascript/faculty-journal.js)
 
-Allow teachers to open a scrollable faculty journal page from their People listing for a course. Inserts a menu and next/prev buttons into the resulting faculty journal page to let teachers scroll through each student in their course, from within the faculty journal.
-
-[Known Issues](http://github.com/smtech/canvas/issues?milestone=11)
+This fork has become its own repo: [smtech/smcanvas-faculty-journal](https://github.com/smtech/smcanvas-faculty-journal).
 
 ### [dev-javascript](http://github.com/smtech/canvas/tree/dev-javascript/www/javascript)
 
