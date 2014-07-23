@@ -3,7 +3,7 @@
 define('TOOL_NAME', 'Scripts');
 
 require_once('config.inc.php');
-require_once(APP_PATH . '/include/page-generator.inc.php');
+require_once(SMCANVASLIB_PATH . '/include/page-generator.inc.php');
 
 $termsApi = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
 $terms = $termsApi->get('/accounts/1/terms');
