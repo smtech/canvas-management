@@ -254,7 +254,7 @@ var lionHub = {
 							title: ' Technology Help Desk',
 							// subtitle: 'Technology Issues',
 							target: '_blank',
-							url: 'http://helpdesk.stmarksschool.org'
+							url: 'http://stmarks.zendesk.com'
 						},
 						{
 							title: 'School Dude',
