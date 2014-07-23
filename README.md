@@ -28,13 +28,7 @@ Apply St. Mark's branding to our Canvas instance.
 
 ### [dev-calendar-ics](http://github.com/smtech/canvas/tree/dev-calendar-ics/www/api/calendar-ics)
 
-A pair (trio?) of tools for working with Canvas and ICS feeds. There is an [export tool](http://github.com/smtech/canvas/tree/dev-calendar-ics/www/api/calendar-ics/export.php) that exposes the pre-existing ICS feed for course calendars and there is an [import tool](http://github.com/smtech/canvas/tree/dev-calendar-ics/www/api/calendar-ics/import.php) that pairs an ICS feed with (theoretically) a course, group or user in Canvas and imports all of the ICS events into that calendar, deleting any residual events created by prior imports of that pairing. The quasi-third tool, a [sync tool](http://github.com/smtech/canvas/tree/dev-calendar-ics/www/api/calendar-ics/sync.php), is really just a wrapper for using crontab to trigger regular re-imports of an ICS feed pairing.
-
-Some care has been taken to protect privacy by not caching the actual calendar events in our MySQL database cache of ICS/Canvas pairings, but, of course, potentially private information is passing through third party hands, etc., etc.
-
-This would benefit from an OAuth setup, so that individual users could set up their own pairings. However, at the moment, it requires administrative intervention and relies on a single API user, Calendar API Process, to handle all imports. The API user is an admin on our main account.
-
-[Known Issues](http://github.com/smtech/canvas/issues?milestone=6)
+This fork has become its own repo: [smtech/smcanvas-ics-sync](https://github.com/smtech/smcanvas-ics-sync).
 
 ### [dev-support](http://github.com/smtech/canvas/tree/dev-support/www/include) (Formerly [dev-canvas-api](http://github.com/smtech/canvas/tree/dev-canvas-api))
 
