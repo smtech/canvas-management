@@ -32,9 +32,7 @@ This fork has become its own repo: [smtech/smcanvas-ics-sync](https://github.com
 
 ### [dev-support](http://github.com/smtech/canvas/tree/dev-support/www/include) (Formerly [dev-canvas-api](http://github.com/smtech/canvas/tree/dev-canvas-api))
 
-This branch contains code for working with the Canvas API, generating HTML pages (with supporting JavaScript, CSS and images). Basically, all the code that everything else depends on.
-
-[Known Issues](https://github.com/smtech/canvas/issues?milestone=12)
+This fork has become its own repo: [smtech/smcanvaslib](https://github.com/smtech/smcanvaslib).
 
 ### [dev-faculty-journal](http://github.com/smtech/canvas/tree/dev-faculty-journal/www/javascript/faculty-journal.js)
 
