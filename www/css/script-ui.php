@@ -34,6 +34,17 @@ code, .code {
 	font-family: Inconsolata, Monaco, "Courier New", Courier, monospace;
 }
 
+dt {
+	font-weight: bold;
+	font-size: 12pt;
+	padding-top: 1em;
+}
+
+dd {
+	margin-left: 2em;
+	padding-top: 0.25em;
+}
+
 .caption {
 	font-style: italic;
 }

@@ -2,9 +2,10 @@
 require_once(__DIR__ . '/../../config.inc.php');
 require_once(__DIR__ . '/../config.inc.php');
 require_once(__DIR__ . '/../.ignore.grading-analytics-authentication.inc.php');
+require_once(APP_PATH . '/include/debug.inc.php');
+define('DEBUGGING', DEBUGGING_LOG);
 require_once(APP_PATH . '/include/canvas-api.inc.php');
 require_once(APP_PATH . '/include/mysql.inc.php');
-
 
 function collectStatistics($term) {
 	$coursesApi = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
@@ -28,6 +29,7 @@ function collectStatistics($term) {
 			$statistic = array(
 				'timestamp' => date(DATE_ISO8601, $timestamp),
 				'course[id]' => $course['id'],
+				'course[name]' => $course['name'],
 				'course[account_id]' => $course['account_id'],
 				'gradebook_url' => 'https://' . parse_url(CANVAS_API_URL, PHP_URL_HOST) . "/courses/{$course['id']}/gradebook2",
 				'assignments_due_count' => 0,
@@ -49,7 +51,7 @@ function collectStatistics($term) {
 					$teacherIds[] = $teacher['id'];
 				}
 			} while ($teachers = $lookupApi->nextPage());
-			$statistic['teacher_ids'] = serialize($teacherIds);
+			$statistic['teacher[id]s'] = serialize($teacherIds);
 			
 			// ignore classes with no teachers (how do they even exist? weird.)
 			if (count($teacherIds) != 0) {
@@ -166,6 +168,7 @@ debugFlag('START');
 // FIXME a more elegant solution would be to query for terms that are currently active and then loop across them
 collectStatistics(106);
 collectStatistics(107);
+collectStatistics(108);
 
 /* check to see if this data collection has been scheduled. If it hasn't,
    schedule it to run nightly. */
