@@ -56,7 +56,13 @@ displayPage('
 				<div>source_url <input name="source_url" type="text" /></div>
 				<div>destination_url <input name="destination_url" type="text" /></div>
 				<input type="submit" value="Transfer" />
-			</dd>
+			</form></dd>
+			
+		<dt>Summer Course Merge</dt>
+			<dd><form action="summer-course-merge.php" action="post">
+				<div>merge_csv <input name="merge_csv" type="file" /></div>
+				<input type="submit" value="Merge" />
+			</form></dd>
 	</dl>
 ');
 
