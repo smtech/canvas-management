@@ -62,12 +62,20 @@ foreach($termsResponse['enrollment_terms'] as $t) {
 
 /* cache account ID/SIS ID associations */
 // FIXME this also ignores pagination
-$accountsResponse = $api->get('accounts/132/sub_accounts', array('recursive' => 'true'));
+$accountsResponse = $api->get('accounts/1/sub_accounts', array('recursive' => 'true'));
 $accounts = array();
 foreach($accountsResponse as $a) {
 	$accounts[$a['sis_account_id']] = $a['id'];
 }
 
+/* cache course ID/SIS ID associations */
+$courseResponse = $api->get('accounts/132/courses');
+$courses = array();
+do {
+	foreach($courseResponse as $c) {
+		$courses[$c['sis_course_id']] = $c['id'];
+	}
+} while ($courseResponse = $api->nextPage());
 
 // FIXME stupid file upload isn't stupid working and I stupid don't have stupid time to stupid deal with it
 if (($csv = fopen(/*$mergeCsv*/'Summer Course Merge - merge.csv', 'r')) !== false) {
@@ -82,18 +90,8 @@ if (($csv = fopen(/*$mergeCsv*/'Summer Course Merge - merge.csv', 'r')) !== fals
 	/* walk through the data and deal with each course one at a time */
 	while (($data = fgetcsv($csv)) !== false) {
 	
-		/* cache current course information */
-		if ($data[$column['action']] != 'add') {
-			$courseResponse = $api->get("accounts/{$accounts[$data[$column['sis_account_id']]]}/courses"
-				array(
-					'search_term' => $data[$column['summer_sis_course_id']]
-				)
-			);
-			$course = $courseResponse[0];
-		}
-
 		switch ($data[$column['action']]) {
-			case 'add': break;{
+			case 'add': {
 			
 				/* create the course */
 				$course = $api->post("accounts/{$accounts[$data[$column['sis_account_id']]]}/courses",
@@ -102,9 +100,10 @@ if (($csv = fopen(/*$mergeCsv*/'Summer Course Merge - merge.csv', 'r')) !== fals
 						'course[name]' => $data[$column['long_name']],
 						'course[course_code]' => $data[$column['short_name']],
 						'course[term_id]' => $terms[$data[$column['sis_term_id']]],
-						'course[course_sis_id]' => $data[$column['sis_course_id']]
+						'course[sis_course_id]' => $data[$column['sis_course_id']]
 					)
 				);
+				$courses[$course['sis_course_id']] = $course['id'];
 				echo "Created '{$course['name']}' with SIS ID {$course['sis_course_id']} and ID {$course['id']}\n";
 				
 				/* create the matching section name and SIS ID */
@@ -138,33 +137,54 @@ if (($csv = fopen(/*$mergeCsv*/'Summer Course Merge - merge.csv', 'r')) !== fals
 				break;
 			}
 			case 'delete': {
+			
+				/* move deleted courses into sandbox term (no edits) and "Marked for Deletion" account to filter by hand */
+				$course = $api->put("courses/{$courses[$data[$column['summer_sis_course_id']]]}",
+					array(
+						'course[name]' => "OBSOLETE {$course['name']}",
+						'course[course_code]' => $course['course_code'],
+						'course[term_id]' => $terms['sandbox'],
+						'course[account_id]' => $accounts['delete']
+					)
+				);
+				$courses[$course['sis_course_id']] = $course['id'];
+				echo "Marked '{$course['name']}' for deletion with SIS ID {$course['sis_course_id']} and ID {$course['id']}\n";
 				break;
 			}
 			case 'rename': {
+			
 				/* do nothing -- these courses will be handled later */
 				break;
 			}
 			case 'modify': {
-				/* modify is actually the default case */
+			
+				/* modify is actually the default case, since everyone gets modified, not just the one's specifically marked */
+				
+				/* because the course codes are semester-specific, to get them to match, there are some duplicate entries for courses -- modified courses need to refer back to their original course code */
+				$data[$column['summer_sis_course_id']] = $data[$column['modified_sis_course_id']];
 			}
 			default: {
-				$course = $api->put("courses/{$course['id']}",
+				$course = $api->put("courses/{$courses[$data[$column['summer_sis_course_id']]]}",
 					array(
 						'course[name]' => $data[$column['long_name']],
 						'course[course_code]' => $data[$column['short_name']],
-						'course[course_sis_id]' => $data[$column['sis_course_id']],
-						'course[term_id]' => $terms[$data[$column['sis_term_id']]]
+						'course[sis_course_id]' => $data[$column['sis_course_id']],
+						'course[term_id]' => $terms[$data[$column['sis_term_id']]],
+						'course[account_id]' => $accounts[$data[$column['sis_account_id']]]
 					)
 				);
-				echo "Updated '{$course['name']' from SIS ID {$data[$column['summer_sis_course_id']]} to {$course['sis_course_id']} with ID {$course['id']}\n";
+				$courses[$course['sis_course_id']] = $course['id'];
+				echo "Updated '{$course['name']}' from SIS ID {$data[$column['summer_sis_course_id']]} to {$course['sis_course_id']} with ID {$course['id']}\n";
 				
 				$sectionResponse = $api->get("courses/{$course['id']}/sections");
 				if (($section = $sectionResponse[0]) != false) {
 					$section = $api->put("sections/{$section['id']}",
-						'name' => $data[$column['long_name']],
-						'sis_section_id' => $data[$column['sis_section_id']]
+						array(
+							'course_section[name]' => $data[$column['long_name']],
+							'course_section[sis_section_id]' => $data[$column['sis_section_id']]
+						)
 					);
-					echo "Updated section to '{$section['name']}' to SIS ID '{$section['sis_section_id']} with ID {$section['id']}\n";
+					echo "Updated section to '{$section['name']}' to SIS ID '{$section['sis_section_id']}' with ID {$section['id']}\n";
 				} else {
 					$section = $api->post("courses/{$course['id']}/sections",
 						array(
