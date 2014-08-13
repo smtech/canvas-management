@@ -1,5 +1,8 @@
 <?php
 
+// TODO generate a real log file
+// TODO rejigger a real CSV upload -- something was broken and I was in a rush
+
 define ('TOOL_NAME', "Summer Course Merge");
 require_once('config.inc.php');
 
@@ -49,118 +52,131 @@ echo "Began processing '$mergeCsv'\n";
 */
 $api = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
 
+/* cache term ID/SIS ID associations */
 // FIXME this ignores pagination -- should fix the Api Process to make that not a problem
 $termsResponse = $api->get('accounts/1/terms');
 $terms = array();
-foreach($termsResponse['enrollment_terms'] as $term) {
-	$terms[$term['sis_term_id']] = $term['id'];
+foreach($termsResponse['enrollment_terms'] as $t) {
+	$terms[$t['sis_term_id']] = $t['id'];
 }
 
+/* cache account ID/SIS ID associations */
 // FIXME this also ignores pagination
 $accountsResponse = $api->get('accounts/132/sub_accounts', array('recursive' => 'true'));
 $accounts = array();
-foreach($accountsResponse as $acct) {
-	$accounts[$acct['sis_account_id']] = $acct['id'];
+foreach($accountsResponse as $a) {
+	$accounts[$a['sis_account_id']] = $a['id'];
 }
 
+
+// FIXME stupid file upload isn't stupid working and I stupid don't have stupid time to stupid deal with it
 if (($csv = fopen(/*$mergeCsv*/'Summer Course Merge - merge.csv', 'r')) !== false) {
-	$col = fgetcsv($csv); {
-		$summerCourseSisId = array_search('summer_course_sis_id', $col);
-		$action = array_search('action', $col);
-		$courseSisId = array_search('course_sis_id', $col);
-		$sectionSisId = array_search('section_sis_id', $col);
-		$longName = array_search('long_name', $col);
-		$shortName = array_search('short_name', $col);
-		$accountId = array_search('account_id', $col);
-		$termId = array_search('term_id', $col);
-		$teacherSisId = array_search('teacher_sis_id', $col);
+	$column = array();
+	
+	/* figure out column label indices */
+	$columnLabels = fgetcsv($csv);
+	while (list($key, $label) = each($columnLabels)) {
+		$column[$label] = $key;
 	}
+	
+	/* walk through the data and deal with each course one at a time */
 	while (($data = fgetcsv($csv)) !== false) {
-		switch ($data[$action]) {
+	
+		/* cache current course information */
+		if ($data[$column['action']] != 'add') {
+			$courseResponse = $api->get("accounts/{$accounts[$data[$column['sis_account_id']]]}/courses"
+				array(
+					'search_term' => $data[$column['summer_sis_course_id']]
+				)
+			);
+			$course = $courseResponse[0];
+		}
+
+		switch ($data[$column['action']]) {
 			case 'add': break;{
 			
 				/* create the course */
-				$course = $api->post("accounts/{$accounts[$data[$accountId]]}/courses",
+				$course = $api->post("accounts/{$accounts[$data[$column['sis_account_id']]]}/courses",
 					array(
-						'account_id' => $accounts[$data[$accountId]],
-						'course[name]' => $data[$longName],
-						'course[course_code]' => $data[$shortName],
-						'course[term_id]' => $terms[$data[$termId]],
-						'course[course_sis_id]' => $data[$courseSisId]
+						'account_id' => $accounts[$data[$column['sis_account_id']]],
+						'course[name]' => $data[$column['long_name']],
+						'course[course_code]' => $data[$column['short_name']],
+						'course[term_id]' => $terms[$data[$column['sis_term_id']]],
+						'course[course_sis_id]' => $data[$column['sis_course_id']]
 					)
 				);
 				echo "Created '{$course['name']}' with SIS ID {$course['sis_course_id']} and ID {$course['id']}\n";
 				
 				/* create the matching section name and SIS ID */
-				// FIXME probably not a good idea to assume that there is just one section... but there are, in this case
 				$section = $api->post("courses/{$course['id']}/sections",
 					array(
-						'course_section[name]' => $data[$longName],
-						'course_section[sis_section_id]' => $data[$sectionSisId]
+						'course_section[name]' => $data[$column['long_name']],
+						'course_section[sis_section_id]' => $data[$column['sis_section_id']]
 					)
 				);
 				echo "Created section '{$section['name']}' with SIS ID {$section['sis_section_id']} and ID {$section['id']}\n";
 				
 				/* enroll the teacher in the section */
-				// FIXME again, poor form to assume only one unique response here
+				// FIXME assuming that one SIS ID cannot be a substring of another. May not be safe!
 				$users = $api->get('accounts/1/users',
 					array(
-						'search_term' => $data[$teacherSisId]
+						'search_term' => $data[$column['sis_teacher_id']]
 					)
 				);
-				$user = $users[0];
+				if (($user = $users[0]) != false) {
+					$api->post("sections/{$section['id']}/enrollments",
+						array(
+							'enrollment[user_id]' => $user['id'],
+							'enrollment[type]' => 'TeacherEnrollment'
+						)
+					);
+					echo "Enrolled {$user['name']} with SIS ID {$user['sis_user_id']} and ID {$user['id']} as teacher\n";
+				} else {
+					echo "A teacher with the SIS ID {$data[$column['sis_teacher_id']]} could not be found for this class\n";
+				}
 				
-				$api->post("sections/{$section['id']}/enrollments",
-					array(
-						'enrollment[user_id]' => $user['id'],
-						'enrollment[type]' => 'TeacherEnrollment'
-					)
-				);
-				echo "Enrolled {$user['name']} with SIS ID {$user['sis_user_id']} and ID {$user['id']} as teacher\n";
 				break;
 			}
 			case 'delete': {
 				break;
 			}
 			case 'rename': {
-				// do nothing -- this will be caught later
+				/* do nothing -- these courses will be handled later */
 				break;
 			}
-			case 'modify':
+			case 'modify': {
+				/* modify is actually the default case */
+			}
 			default: {
-				$courseResponse = $api->get("accounts/{$accounts[$data[$accountId]]}/courses"
+				$course = $api->put("courses/{$course['id']}",
 					array(
-						'search_term' => $data[$summerCourseSisId]
+						'course[name]' => $data[$column['long_name']],
+						'course[course_code]' => $data[$column['short_name']],
+						'course[course_sis_id]' => $data[$column['sis_course_id']],
+						'course[term_id]' => $terms[$data[$column['sis_term_id']]]
 					)
 				);
-				$course = $courseResponse[0];
-				$course = $api->("courses/{$course['id']}",
-					array(
-						'course[name]' => $data[$longName],
-						'course[course_code]' => $data[$shortName],
-						'course[course_sis_id]' => $data[$courseSisId]
-					)
-				);
-				echo "Updated '{$course['name']' from SIS ID {$data[$summerCourseSisId]} to {$course['sis_course_id']} with ID {$course['id']}\n";
+				echo "Updated '{$course['name']' from SIS ID {$data[$column['summer_sis_course_id']]} to {$course['sis_course_id']} with ID {$course['id']}\n";
 				
 				$sectionResponse = $api->get("courses/{$course['id']}/sections");
-				if ($section = $sectionResponse[0]) {
+				if (($section = $sectionResponse[0]) != false) {
 					$section = $api->put("sections/{$section['id']}",
-						'name' => $data[$longName],
-						'sis_section_id' => $data[$sectionSisId]
+						'name' => $data[$column['long_name']],
+						'sis_section_id' => $data[$column['sis_section_id']]
 					);
 					echo "Updated section to '{$section['name']}' to SIS ID '{$section['sis_section_id']} with ID {$section['id']}\n";
 				} else {
 					$section = $api->post("courses/{$course['id']}/sections",
 						array(
-							'course_section[name]' => $data[$longName],
-							'course_section[sis_section_id]' => $data[$sectionSisId]
+							'course_section[name]' => $data[$column['long_name']],
+							'course_section[sis_section_id]' => $data[$column['sis_section_id']]
 						)
 					);
 					echo "Created section '{$section['name']}' with SIS ID {$section['sis_section_id']} and ID {$section['id']}\n";
 				}
 			}
 		}
+		echo "\n\n";
 	}
 }
 
