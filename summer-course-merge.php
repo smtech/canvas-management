@@ -3,6 +3,7 @@
 // TODO generate a real log file
 // TODO rejigger a real CSV upload -- something was broken and I was in a rush
 
+require_once('.ignore.calendar-ics-authentication.inc.php');
 define ('TOOL_NAME', "Summer Course Merge");
 require_once('config.inc.php');
 
