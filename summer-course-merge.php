@@ -3,7 +3,7 @@
 // TODO generate a real log file
 // TODO rejigger a real CSV upload -- something was broken and I was in a rush
 
-require_once('.ignore.calendar-ics-authentication.inc.php');
+require_once('.ignore.stmarksschool-test-authentication.inc.php');
 define ('TOOL_NAME', "Summer Course Merge");
 require_once('config.inc.php');
 
@@ -93,63 +93,74 @@ if (($csv = fopen(/*$mergeCsv*/'Summer Course Merge - merge.csv', 'r')) !== fals
 	
 		switch ($data[$column['action']]) {
 			case 'add': {
-			
-				/* create the course */
-				$course = $api->post("accounts/{$accounts[$data[$column['sis_account_id']]]}/courses",
-					array(
-						'account_id' => $accounts[$data[$column['sis_account_id']]],
-						'course[name]' => $data[$column['long_name']],
-						'course[course_code]' => $data[$column['short_name']],
-						'course[term_id]' => $terms[$data[$column['sis_term_id']]],
-						'course[sis_course_id]' => $data[$column['sis_course_id']]
-					)
-				);
-				$courses[$course['sis_course_id']] = $course['id'];
-				echo "Created '{$course['name']}' with SIS ID {$course['sis_course_id']} and ID {$course['id']}\n";
+				if ($courses[$data[$column['sis_course_id']]] !== null) {
 				
-				/* create the matching section name and SIS ID */
-				$section = $api->post("courses/{$course['id']}/sections",
-					array(
-						'course_section[name]' => $data[$column['long_name']],
-						'course_section[sis_section_id]' => $data[$column['sis_section_id']]
-					)
-				);
-				echo "Created section '{$section['name']}' with SIS ID {$section['sis_section_id']} and ID {$section['id']}\n";
-				
-				/* enroll the teacher in the section */
-				// FIXME assuming that one SIS ID cannot be a substring of another. May not be safe!
-				$users = $api->get('accounts/1/users',
-					array(
-						'search_term' => $data[$column['sis_teacher_id']]
-					)
-				);
-				if (($user = $users[0]) != false) {
-					$api->post("sections/{$section['id']}/enrollments",
+					/* create the course */
+					$course = $api->post("accounts/{$accounts[$data[$column['sis_account_id']]]}/courses",
 						array(
-							'enrollment[user_id]' => $user['id'],
-							'enrollment[type]' => 'TeacherEnrollment'
+							'account_id' => $accounts[$data[$column['sis_account_id']]],
+							'course[name]' => $data[$column['long_name']],
+							'course[course_code]' => $data[$column['short_name']],
+							'course[term_id]' => $terms[$data[$column['sis_term_id']]],
+							'course[sis_course_id]' => $data[$column['sis_course_id']]
 						)
 					);
-					echo "Enrolled {$user['name']} with SIS ID {$user['sis_user_id']} and ID {$user['id']} as teacher\n";
+					$courses[$course['sis_course_id']] = $course['id'];
+					echo "Created '{$course['name']}' with SIS ID {$course['sis_course_id']} and ID {$course['id']}\n";
+					
+					/* create the matching section name and SIS ID */
+					$section = $api->post("courses/{$course['id']}/sections",
+						array(
+							'course_section[name]' => $data[$column['long_name']],
+							'course_section[sis_section_id]' => $data[$column['sis_section_id']]
+						)
+					);
+					echo "Created section '{$section['name']}' with SIS ID {$section['sis_section_id']} and ID {$section['id']}\n";
+					
+					/* enroll the teacher in the section */
+					// FIXME assuming that one SIS ID cannot be a substring of another. May not be safe!
+					$users = $api->get('accounts/1/users',
+						array(
+							'search_term' => $data[$column['sis_teacher_id']]
+						)
+					);
+					if (($user = $users[0]) != false) {
+						$api->post("sections/{$section['id']}/enrollments",
+							array(
+								'enrollment[user_id]' => $user['id'],
+								'enrollment[type]' => 'TeacherEnrollment'
+							)
+						);
+						echo "Enrolled {$user['name']} with SIS ID {$user['sis_user_id']} and ID {$user['id']} as teacher\n";
+					} else {
+						echo "A teacher with the SIS ID {$data[$column['sis_teacher_id']]} could not be found for this class\n";
+					}
 				} else {
-					echo "A teacher with the SIS ID {$data[$column['sis_teacher_id']]} could not be found for this class\n";
+					echo "Did not recreate '{$data[$column['long_name']]}' with SIS ID {$data[$column['sis_course_id']]}\n";
 				}
 				
 				break;
 			}
 			case 'delete': {
 			
-				/* move deleted courses into sandbox term (no edits) and "Marked for Deletion" account to filter by hand */
-				$course = $api->put("courses/{$courses[$data[$column['summer_sis_course_id']]]}",
-					array(
-						'course[name]' => "OBSOLETE {$course['name']}",
-						'course[course_code]' => $course['course_code'],
-						'course[term_id]' => $terms['sandbox'],
-						'course[account_id]' => $accounts['delete']
-					)
-				);
-				$courses[$course['sis_course_id']] = $course['id'];
-				echo "Marked '{$course['name']}' for deletion with SIS ID {$course['sis_course_id']} and ID {$course['id']}\n";
+				if ($courses[$data[$column['summer_sis_course_id']]] !== null) {
+					$courseResponse = $api->get("courses/{$courses[$data[$column['summer_sis_course_id']]]}");
+					$course = $courseResponse[0];
+				
+					/* move deleted courses into sandbox term (no edits) and "Marked for Deletion" account to filter by hand */
+					$course = $api->put("courses/{$courses[$data[$column['summer_sis_course_id']]]}",
+						array(
+							'course[name]' => "OBSOLETE {$course['name']}",
+							'course[course_code]' => $course['course_code'],
+							'course[term_id]' => $terms['sandbox'],
+							'course[account_id]' => $accounts['delete']
+						)
+					);
+					$courses[$course['sis_course_id']] = $course['id'];
+					echo "Marked '{$course['name']}' for deletion with SIS ID {$course['sis_course_id']} and ID {$course['id']}\n";
+				} else {
+					echo "Did not re-delete '{$data[$column['long_name']]}' with SIS ID {$data[$column['summer_sis_course_id']]}\n";
+				}
 				break;
 			}
 			case 'rename': {
@@ -165,37 +176,42 @@ if (($csv = fopen(/*$mergeCsv*/'Summer Course Merge - merge.csv', 'r')) !== fals
 				$data[$column['summer_sis_course_id']] = $data[$column['modified_sis_course_id']];
 			}
 			default: {
-				$course = $api->put("courses/{$courses[$data[$column['summer_sis_course_id']]]}",
-					array(
-						'course[name]' => $data[$column['long_name']],
-						'course[course_code]' => $data[$column['short_name']],
-						'course[sis_course_id]' => $data[$column['sis_course_id']],
-						'course[term_id]' => $terms[$data[$column['sis_term_id']]],
-						'course[account_id]' => $accounts[$data[$column['sis_account_id']]]
-					)
-				);
-				$courses[$course['sis_course_id']] = $course['id'];
-				echo "Updated '{$course['name']}' from SIS ID {$data[$column['summer_sis_course_id']]} to {$course['sis_course_id']} with ID {$course['id']}\n";
-				
-				$sectionResponse = $api->get("courses/{$course['id']}/sections");
-				if (($section = $sectionResponse[0]) != false) {
-					$section = $api->put("sections/{$section['id']}",
+			
+				if ($courses[$data[$column['sis_course_id']]] !== null) {
+					$course = $api->put("courses/{$courses[$data[$column['summer_sis_course_id']]]}",
 						array(
-							'course_section[name]' => $data[$column['long_name']],
-							'course_section[sis_section_id]' => $data[$column['sis_section_id']]
+							'course[name]' => $data[$column['long_name']],
+							'course[course_code]' => $data[$column['short_name']],
+							'course[sis_course_id]' => $data[$column['sis_course_id']],
+							'course[term_id]' => $terms[$data[$column['sis_term_id']]],
+							'course[account_id]' => $accounts[$data[$column['sis_account_id']]]
 						)
 					);
-					echo "Updated section to '{$section['name']}' to SIS ID '{$section['sis_section_id']}' with ID {$section['id']}\n";
+					$courses[$course['sis_course_id']] = $course['id'];
+					echo "Updated '{$course['name']}' from SIS ID {$data[$column['summer_sis_course_id']]} to {$course['sis_course_id']} with ID {$course['id']}\n";
+					
+					$sectionResponse = $api->get("courses/{$course['id']}/sections");
+					if (($section = $sectionResponse[0]) != false) {
+						$section = $api->put("sections/{$section['id']}",
+							array(
+								'course_section[name]' => $data[$column['long_name']],
+								'course_section[sis_section_id]' => $data[$column['sis_section_id']]
+							)
+						);
+						echo "Updated section to '{$section['name']}' to SIS ID '{$section['sis_section_id']}' with ID {$section['id']}\n";
+					} else {
+						$section = $api->post("courses/{$course['id']}/sections",
+							array(
+								'course_section[name]' => $data[$column['long_name']],
+								'course_section[sis_section_id]' => $data[$column['sis_section_id']]
+							)
+						);
+						echo "Created section '{$section['name']}' with SIS ID {$section['sis_section_id']} and ID {$section['id']}\n";
+					}
 				} else {
-					$section = $api->post("courses/{$course['id']}/sections",
-						array(
-							'course_section[name]' => $data[$column['long_name']],
-							'course_section[sis_section_id]' => $data[$column['sis_section_id']]
-						)
-					);
-					echo "Created section '{$section['name']}' with SIS ID {$section['sis_section_id']} and ID {$section['id']}\n";
+					echo "'{$data[$column['long_name']]}' has already been updated\n";
 				}
-			}
+			} 
 		}
 		echo "\n\n";
 	}
