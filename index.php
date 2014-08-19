@@ -17,6 +17,13 @@ do {
 displayPage('
 	<dl>
 	
+		<dt>Advisors as Observers</dt>
+			<dd><form action="advisors-as-observers.php">
+				<div>enrollment_term_id <select name="enrollment_term_id" />' . implode($termOptions) . '</select></div>
+				<div>reset_passwords <input name="reset_passwords" type="checkbox" value="yes" unchecked /></div>
+				<input type="submit" value="Create/Reset" />
+			</form></dd>
+
 		<dt><a href="assignments-due-on-a-day.php">Assignments due on a day</a></dt>
 		
 		<dt>Courses in Term with ID</dt>
@@ -51,18 +58,18 @@ displayPage('
 		
 		<dt><a href="students-as-teachers-audit.php">Students as teachers audit</a></dt>
 		
-		<dt>Transfer Outcomes</dt>
-			<dd><form action="transfer-outcomes.php">
-				<div>source_url <input name="source_url" type="text" /></div>
-				<div>destination_url <input name="destination_url" type="text" /></div>
-				<input type="submit" value="Transfer" />
-			</form></dd>
-			
 		<dt>Summer Course Merge</dt>
 			<dd><form action="summer-course-merge.php" action="post">
 				<div>merge_csv <input name="merge_csv" type="file" /></div>
 				<input type="submit" value="Merge" />
 			</form></dd>
+
+		<dt>Transfer Outcomes</dt>
+			<dd><form action="transfer-outcomes.php">
+				<div>source_url <input name="source_url" type="text" /></div>
+				<div>destination_url <input name="destination_url" type="text" /></div>
+				<input type="submit" value="Transfer" />
+			</form></dd>			
 	</dl>
 ');
 
