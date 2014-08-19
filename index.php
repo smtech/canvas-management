@@ -18,6 +18,7 @@ displayPage('
 	<dl>
 	
 		<dt>Advisors as Observers</dt>
+			<dd>This script requires that the "Users can delete their institution-assigned email address" setting be enabled in Canvas.</dd>
 			<dd><form action="advisors-as-observers.php">
 				<div>enrollment_term_id <select name="enrollment_term_id" />' . implode($termOptions) . '</select></div>
 				<div>reset_passwords <input name="reset_passwords" type="checkbox" value="yes" unchecked /></div>

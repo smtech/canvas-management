@@ -12,7 +12,7 @@ define('PASSWORD_NO_VOWELS', false); // we'll risk generating dirty words
 define('PASSWORD_SYMBOLS', false); // no confusing symbols
 
 
-require_once('.ignore.stmarksschool-test-authentication.inc.php');
+require_once('.ignore.live-authentication.inc.php');
 
 define('TOOL_NAME', "Advisors as Observers");
 
