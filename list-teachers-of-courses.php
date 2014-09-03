@@ -2,6 +2,7 @@
 
 define('TOOL_NAME','List Teachers of Courses');
 
+require_once('.ignore.live-authentication.inc.php');
 require_once('config.inc.php');
 
 debugFlag('START');

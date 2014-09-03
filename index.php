@@ -2,17 +2,23 @@
 
 define('TOOL_NAME', 'Scripts');
 
+define('CACHE_DURATION', 7/*days*/ * 24/*hours*/ * 60/*min*/ * 60/*sec*/);
+
 require_once('config.inc.php');
 require_once(SMCANVASLIB_PATH . '/include/page-generator.inc.php');
 
-$termsApi = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
-$terms = $termsApi->get('/accounts/1/terms');
-$termOptions = array();
-do {
-	foreach($terms['enrollment_terms'] as $term) {
-		$termOptions[] = "<option value=\"{$term['id']}\">{$term['name']}</option>";
-	}
-} while($terms = $termsApi->nextPage());
+$termOptions = getCache('key', 'index-terms','data');
+if (!$termOptions) {
+	$termsApi = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
+	$terms = $termsApi->get('/accounts/1/terms');
+	$termOptions = array();
+	do {
+		foreach($terms['enrollment_terms'] as $term) {
+			$termOptions[] = "<option value=\"{$term['id']}\">{$term['name']}</option>";
+		}
+	} while($terms = $termsApi->nextPage());
+	setCache('key', 'index-terms', 'data', $termOptions);
+}
 
 displayPage('
 	<dl>

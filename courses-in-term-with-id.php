@@ -4,7 +4,7 @@
 <?php
 
 define ('TOOL_NAME', "Courses in Term {$_REQUEST['enrollment_term_id']} with IDs");
-
+require_once('.ignore.live-authentication.inc.php');
 require_once('config.inc.php');
 
 $coursesApi = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);

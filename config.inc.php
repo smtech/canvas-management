@@ -6,6 +6,7 @@ if (!defined('CANVAS_API_URL')) {
 }
 require_once(SMCANVASLIB_PATH . '/include/debug.inc.php');
 require_once(SMCANVASLIB_PATH . '/include/canvas-api.inc.php');
+require_once(SMCANVASLIB_PATH . '/include/cache.inc.php');
 
 define('START_PAGE', APP_URL . '/scripts/index.php');
 
