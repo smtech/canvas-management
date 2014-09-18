@@ -4,6 +4,7 @@ define('TOOL_NAME', 'Scripts');
 
 define('CACHE_DURATION', 7/*days*/ * 24/*hours*/ * 60/*min*/ * 60/*sec*/);
 
+require_once('.ignore.live-authentication.inc.php');
 require_once('config.inc.php');
 require_once(SMCANVASLIB_PATH . '/include/page-generator.inc.php');
 

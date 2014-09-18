@@ -5,6 +5,7 @@
 
 define ('TOOL_NAME', "List Users Enrolled in Term {$_REQUEST['enrollment_term_id']}");
 
+require_once('.ignore.live-authentication.inc.php');
 require_once('config.inc.php');
 
 debugFlag('START');
