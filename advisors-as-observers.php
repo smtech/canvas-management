@@ -127,6 +127,20 @@ do {
 					foreach($channelsToDelete as $channelToDelete) {
 						$api->delete("users/{$advisor['id']}/communication_channels/{$channelToDelete}");
 					}
+					
+					/* turn off notifications */
+					$communicationChannels = $api->get("users/{$advisor['id']}/communication_channels");
+					$notificationPreferences = $api->get("users/{$advisor['id']}/communication_channels/{$communicationChannels[0]['id']}/notification_preferences");
+					$newPrefs = array();
+					foreach ($notificationPreferences['notification_preferences'] as $pref) {
+						if (($pref['frequency'] != 'never') && ($pref['notification'] != 'confirm_sms_communication_channel')) {
+							$newPrefs["notification_preferences[{$pref['notification']}][frequency]"] = 'never';
+						}
+					}
+					if (count($newPrefs)) {
+						$newPrefs['as_user_id'] = $advisor['id'];
+						$api->put("users/self/communication_channels/{$communicationChannels[0]['id']}/notification_preferences", $newPrefs);
+					}
 										
 					/* reset password */
 					if (isset($_REQUEST['reset_passwords'])) {
