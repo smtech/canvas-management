@@ -31,6 +31,9 @@ displayPage('
 				<div>reset_passwords <input name="reset_passwords" type="checkbox" value="yes" unchecked /></div>
 				<input type="submit" value="Create/Reset" />
 			</form></dd>
+			<dd><form action="turn-off-advisor-notifications.php">
+				Turn off notifications for all advisor accounts. <input type="submit" value="Silence" />
+			</form></dd>
 
 		<dt><a href="assignments-due-on-a-day.php">Assignments due on a day</a></dt>
 		
