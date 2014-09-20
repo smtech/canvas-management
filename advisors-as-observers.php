@@ -36,6 +36,18 @@ $courses = $coursesApi->get('accounts/' . ADVISORY_SUBACCOUNT . '/courses',
 			'enrollment_term_id' => $_REQUEST['enrollment_term_id']
 		)
 	);
+	
+echo "advisee[name]\t" .
+	"advisee[sis_user_id]\t" .
+	"user_id\t" .
+	"login_id\t" .
+	"password\t" .
+	"full_name\t" .
+	"sortable_name\t" .
+	"short_name\t" .
+	"email\t" .
+	"status\t" .
+	"page[url]\n";
 do {
 	foreach($courses as $advisoryCourse) {
 		/* cache the teacher */
@@ -74,14 +86,14 @@ do {
 				/* generate what the advisor account info should be */
 				$advisorLogin['sis_user_id'] = "{$student['sis_user_id']}-advisor";
 				$advisorLogin['last_name'] = substr($teacher['sortable_name'], 0, strpos($teacher['sortable_name'], ','));
-				$advisorLogin['login'] = 'advisor' . substr($student['login_id'], 0, strpos($student['login_id'], '@'));
+				$advisorLogin['login'] = strtolower('advisor' . substr($student['login_id'], 0, strpos($student['login_id'], '@')));
 				$advisorLogin['password'] = $pwgen->generate();
 				$advisorLogin['name'] = "{$student['name']} ({$advisorLogin['last_name']} Advisor)";
 				$advisorLogin['sortable_name'] = "{$student['sortable_name']} ({$advisorLogin['last_name']} Advisor)";
 				$advisorLogin['short_name'] = "{$student['short_name']} ({$advisorLogin['last_name']} Advisor)";
 				
 				/* this email format works for Google Apps domains -- it's the advisor's email address with a tag that identifies the email as relating to the advisee */
-				$advisorLogin['email'] = substr($teacher['sis_login_id'], 0, strpos($teacher['sis_login_id'], '@')) . '+' . substr($student['sis_login_id'], 0, strpos($student['sis_login_id'], '@')) . substr($teacher['sis_login_id'], strpos($teacher['sis_login_id'], '@'));
+				$advisorLogin['email'] = strtolower(substr($teacher['sis_login_id'], 0, strpos($teacher['sis_login_id'], '@')) . '+' . substr($student['sis_login_id'], 0, strpos($student['sis_login_id'], '@')) . substr($teacher['sis_login_id'], strpos($teacher['sis_login_id'], '@')));
 								
 				/* check for an existing advisor account */
 				$response = $api->get('accounts/1/users',
@@ -170,20 +182,8 @@ do {
 					);
 				}
 				
-				/* check to see if the advisor is already an observer of the advisee */
-				$observees = $api->get("users/{$advisor['id']}/observees");
-				$observed = false;
-				foreach($observees as $observee) {
-					if ($observee['id'] == $student['id']) {
-						$observed = true;
-						break;
-					}
-				}
-				
-				/* if not already observed, set up observation pairing */
-				if (!$observed) {
-					$api->put("users/{$advisor['id']}/observees/{$student['id']}");
-				}
+				/* set up observation pairing */
+				$api->put("users/{$advisor['id']}/observees/{$student['id']}");
 															
 				$advisees[] = array(
 					'student' => $student,
@@ -207,7 +207,17 @@ do {
 				</tr>';
 		$row = 0;
 		foreach($advisees as $advisee) {
-			echo "{$advisee['student']['name']}\t{$advisee['advisor_login']['email']}\t{$advisee['advisor_login']['login']}\t{$advisee['advisor_login']['password']}\thttps://" . parse_url(CANVAS_API_URL, PHP_URL_HOST) . "/courses/{$advisoryCourse['id']}/pages/" . LOGIN_PAGE_URL . "\n";
+			echo "{$advisee['student']['name']}\t" .
+				"{$advisee['student']['sis_user_id']}\t" .
+				"{$advisee['advisor_login']['sis_user_id']}\t" .
+				"{$advisee['advisor_login']['login']}\t" .
+				"{$advisee['advisor_login']['password']}\t" .
+				"{$advisee['advisor_login']['name']}\t" .
+				"{$advisee['advisor_login']['sortable_name']}\t" .
+				"{$advisee['advisor_login']['short_name']}\t" .
+				"{$advisee['advisor_login']['email']}\t" .
+				"active\t" .
+				"https://" . parse_url(CANVAS_API_URL, PHP_URL_HOST) . "/courses/{$advisoryCourse['id']}/pages/" . LOGIN_PAGE_URL . "\n";
 			$page .= "
 				<tr" . ($row++ % 2 ? ' class="stripe"' : '') . ">
 					<td>{$advisee['student']['name']}</td>
