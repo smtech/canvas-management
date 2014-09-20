@@ -2,5 +2,5 @@
 # http://httpd.apache.org/docs/2.2/programs/htpasswd.html for more info
 AuthType Basic
 AuthName "scripts"
-AuthUserFile /var/www-data/canvas/scripts/.htpasswd
+AuthUserFile /var/www-data/canvas/.htpasswd
 Require valid-user
