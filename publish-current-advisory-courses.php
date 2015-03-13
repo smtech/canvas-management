@@ -5,6 +5,8 @@ define ('TOOL_NAME', "Turn Off Advisor Notifications");
 require_once('config.inc.php');
 require_once(SMCANVASLIB_PATH . '/include/page-generator.inc.php');
 
+/* FIXME no hard coding! hard coding = bad! Make it actually detect the current term! */
+
 debugFlag('START');
 
 $api = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
