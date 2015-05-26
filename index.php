@@ -72,9 +72,9 @@ displayPage('
 		
 		<dt><a href="students-as-teachers-audit.php">Students as teachers audit</a></dt>
 		
-		<dt>Summer Course Merge</dt>
-			<dd><form action="summer-course-merge.php" action="post">
-				<div>merge_csv <input name="merge_csv" type="file" /></div>
+		<dt>2014 Summer Course Merge</dt>
+			<dd><form action="summer-course-merge.php" enctype="multipart/form-data" method="post">
+				<div>merge_csv <input id="csvId" name="merge_csv" type="file" /></div>
 				<input type="submit" value="Merge" />
 			</form></dd>
 
