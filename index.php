@@ -72,6 +72,12 @@ displayPage('
 		
 		<dt><a href="students-as-teachers-audit.php">Students as teachers audit</a></dt>
 		
+		<dt>CSV Import and Clone</dt>
+			<dd><form action="csv-import-and-clone.php" enctype="multipart/form-data" method="post">
+				<div>csv import <input name="csv" type="file" /></div>
+				<input type="submit" value="Import and Clone" />
+			</form></dd>
+		
 		<dt>2014 Summer Course Merge</dt>
 			<dd><form action="summer-course-merge.php" enctype="multipart/form-data" method="post">
 				<div>merge_csv <input id="csvId" name="merge_csv" type="file" /></div>
