@@ -1,12 +1,10 @@
 <pre><?php
 
-define ('TOOL_NAME', 'CSV Import and Clone');
-
+require_once('vendor/autoload.php')
 require_once('config.inc.php');
-require_once(SMCANVASLIB_PATH . '/include/debug.inc.php');
 require_once(SMCANVASLIB_PATH . '/include/working-directory.inc.php');
 
-$api = new CanvasApiProcess(CANVAS_API_URL, CANVAS_API_TOKEN);
+$api = new CanvasPest(CANVAS_API_URL, CANVAS_API_TOKEN);
 
 /* store the uploaded file */
 // TODO real file verification checks

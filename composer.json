@@ -1,0 +1,14 @@
+{
+    "name": "smtech/smcanvas-scripts",
+    "description": "A motley collection of management scripts for Instructure Canvas",
+    "authors": [
+        {
+            "name": "Seth Battis",
+            "email": "SethBattis@stmarksschool.org"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+	    "smtech/canvaspest" : "dev-master"
+    }
+}
