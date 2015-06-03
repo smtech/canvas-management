@@ -1,6 +1,7 @@
 <pre><?php
 
 require_once('vendor/autoload.php');
+require_once('.ignore.live-authentication.inc.php');
 require_once('config.inc.php');
 require_once(SMCANVASLIB_PATH . '/include/working-directory.inc.php');
 
@@ -25,6 +26,9 @@ if (($handle = fopen($csvFile, 'r')) !== false) {
 	}
 	fclose($handle);
 }
+
+header('Content-Disposition: attachment; filename="' . date('Y-m-d_H-i-s') .'-clones.csv";');
+header('Content-Type: text/csv');
 
 /* build a local cache of account id numbers, organized by SIS id  (we're
    intentionally not including the root account because, honestly, who would
@@ -51,7 +55,7 @@ do {
 } while ($termsResponse = $api->nextPage());
 
 /* create and clone courses */
-echo "id\t" . implode("\t", $headers) . "\n";
+echo "id," . implode(",", $headers) . "\n";
 $courses = array();
 foreach ($clones as $c) {
 	/* create the cloned course */
@@ -96,7 +100,7 @@ foreach ($clones as $c) {
 		'settings[source_course_id]' => $c['template_id']
 	));
 	
-	echo "{$cc['id']}\t" . implode("\t", $c) . "\n";
+	echo "{$cc['id']},\"" . implode("\",\"", $c) . "\"\n";
 }
 
 ?></pre>
