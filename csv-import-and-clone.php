@@ -59,11 +59,11 @@ echo "id," . implode(",", $headers) . "\n";
 $courses = array();
 foreach ($clones as $c) {
 	/* create the cloned course */
-	$cc = $api->post('accounts/1/courses', array(
+	$cc = $api->post("accounts/{$accounts[$c['account_id']]}/courses", array(
+		'account_id' => $accounts[$c['account_id']],
 		'course[sis_course_id]' => $c['course_id'],
 		'course[name]' => $c['long_name'],
 		'course[course_code]' => $c['short_name'],
-		'account_id' => $accounts[$c['account_id']],
 		'course[term_id]' => $terms[$c['term_id']],
 		'course[start_at]' => $c['start_date'],
 		'course[end_at]' => $c['end_date']
