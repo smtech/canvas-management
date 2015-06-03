@@ -54,18 +54,23 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smtech/canvaspest.git",
-                "reference": "3e01b09ec92d5cba551d99248ad9a6593a33ac15"
+                "reference": "acbf7fb8b8c47aae450c5ef138afd56f1500f3ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smtech/canvaspest/zipball/3e01b09ec92d5cba551d99248ad9a6593a33ac15",
-                "reference": "3e01b09ec92d5cba551d99248ad9a6593a33ac15",
+                "url": "https://api.github.com/repos/smtech/canvaspest/zipball/acbf7fb8b8c47aae450c5ef138afd56f1500f3ed",
+                "reference": "acbf7fb8b8c47aae450c5ef138afd56f1500f3ed",
                 "shasum": ""
             },
             "require": {
                 "educoder/pest": "dev-master"
             },
             "type": "library",
+            "autoload": {
+                "classmap": [
+                    ""
+                ]
+            },
             "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
@@ -74,7 +79,7 @@
                 }
             ],
             "description": "An extension of Pest to make RESTful queries to the Instructure Canvas API",
-            "time": "2015-05-28 14:17:11"
+            "time": "2015-06-03 03:56:50"
         }
     ],
     "packages-dev": [],
