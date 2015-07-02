@@ -17,11 +17,12 @@ This generates a tab-separated-values list of all of the courses in a particular
 #####[courses-with-a-single-assignment-group](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/courses-with-a-single-assignment-group.php)
 Lists all courses (in the current term(s) -- hard-coded!) with only a single assignment group. This is an early warning flag that folks are not prepared for the second window and will not be able to compute their second window grades.
 
-#####[csv-import-and-clone](https://github.com/smtech/smcanvas-scripts/blob/master/csv-import-and-clone.php) This takes a standard [courses.csv](https://canvas.instructure.com/doc/api/file.sis_csv.html)
-Import file with one additional column: template_id, which takes the Canvas ID of the source course to be duplicated into the new course. This duplicates both the contents and all (API-accessible) settings of the original course in the new course.
+#####[csv-import-and-clone](https://github.com/smtech/smcanvas-scripts/blob/master/csv-import-and-clone.php)
+This takes a standard [courses.csv](https://canvas.instructure.com/doc/api/file.sis_csv.html) Import file with one additional column: template_id, which takes the Canvas ID of the source course to be duplicated into the new course. This duplicates both the contents and all (API-accessible) settings of the original course in the new course.
 
 #####[generate-course-and-section-sis_id](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/generate-course-and-section-sis_id.php)
 generates unique (MD5 hash-based) SIS IDs for all courses and sections in the Canvas instance that do not already have SIS IDs. Quite useful for doing SIS export reports from Canvas that include _everything_.
+
 #####[list-teachers-of-courses](http://github.com/smtech/canvas/tree/dev-scripts/www/api/scripts/list-teachers-of-courses.php)
 Lists all of teachers of courses in a particular enrollment_term.
 
