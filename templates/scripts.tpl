@@ -1,6 +1,15 @@
 {extends file="page.tpl"}
 {block name="content"}
 	<dl>
+		<dt>CSV Import and Clone</dt>
+			<dd>This takes a standard courses.csv Import file with one additional column: template_id, which takes the Canvas ID of the source course to be duplicated into the new course. This duplicates both the contents and all (API-accessible) settings of the original course in the new course.</dd>
+			<dd>
+				<form action="scripts/csv-import-and-clone.php" method="post">
+					<p>csv import <input name="csv" type="file" /></p>
+					<input type="submit" value="Import and Clone" />
+				</form>
+			</dd>
+		
 		<dt>Advisors as Observers</dt>
 			<dd>Generate (and/or update) the advisor users and post their logins as an unpublished wiki page in the advisor course (the script knows who the advisor and advisees are because there are a bunch of advisory courses in a particular sub-account and term).</dd>
 			<dd>
@@ -47,7 +56,16 @@
 								<input type="submit" value="Generate List" />
 							</form>
 						</dd>
+					
+					<dt>Students-as-Teachers Audit</dt>
+						<dd>Generates a TSV list of all users who are not enrolled in our Faculty Resources course (and therefore identifiable as a faculty member) but who are enrolled as teachers elsewhere (giving them potentially inappropriate access to the faculty journal for other students).</dd>
+						<dd>
+							<form action="scripts/students-as-teachers-audit.php" method="post">
+								<input type="submit" value="Generate List" />
+							</form>
+						</dd>
 				</dl>
 			</dd>		
 	</dl>
 {/block}
+ No newline at end of file
