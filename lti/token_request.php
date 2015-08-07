@@ -13,19 +13,15 @@ try {
 if (isset($_REQUEST['oauth'])) {
 	switch ($_REQUEST['oauth']) {
 		case 'request': {
-			echo '
-<html>
-	<body>
-		<h1>Token Request</h1>
+			$smarty->assign('content', '<h1>Token Request</h1>
 		<p>This application requires access to the Canvas APIs. Canvas is about to ask you to give permission for this.</p>
-		<p><a href="' . $_SERVER['PHP_SELF'] . '?oauth=process">Click to continue</a></p>
-	</body>
-</html>';
+		<p><a href="' . $_SERVER['PHP_SELF'] . '?oauth=process">Click to continue</a></p>');
+			$smarty->display();
 			exit;
 		}
 		case 'process': {
 			$oauth = new OAuthNegotiator(
-				"{$metadata['CANVAS_INSTANCE_URL']}/login/oauth2",
+				'https://' . $toolProvider->user->getResourceLink()->settings['custom_canvas_api_domain'] . '/login/oauth2',
 				(string) $secrets->oauth->id,
 				(string) $secrets->oauth->key,
 				"{$_SERVER['PHP_SELF']}?oauth=complete",
