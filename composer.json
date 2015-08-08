@@ -26,7 +26,9 @@
 		"smtech/canvaspest": "1.*",
 		"smtech/oauth-negotiator": "1.*",
 		"smtech/stmarkssmarty": "dev-master",
+		"smtech/stmarks-colors": "dev-master",
 		"battis/appmetadata": "1.*",
+		"battis/simplecache": "1.*",
 		"spvsoftwareproducts/LTI_Tool_Provider": "2.5.*",
 		"pear/log": "1.12.*"
 	},

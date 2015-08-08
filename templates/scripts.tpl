@@ -18,6 +18,13 @@
 				</form>
 			</dd>
 
+		<dt>Color-code Courses</dt>
+			<dd>Set the custom color for each course for each user to match the color block</dd>
+			<dd>
+				<form action="scripts/color-code-courses.php" method="post">
+					<input type="submit" value="Color Code Courses" />
+				</form>
+			</dd>
 		
 		<dt>Sanity Checks</dt>
 			<dd>A variety of sanity checks on user information.</dd>
