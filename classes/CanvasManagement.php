@@ -41,7 +41,7 @@ class CanvasManagement {
 				'user_id' => $toolProvider->user->getResourceLink()->settings['custom_canvas_user_id']
 			)
 		);
-		
+
 		if ($admins->count() === 1) {
 			return true;
 		} else {

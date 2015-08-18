@@ -1,6 +1,26 @@
 {extends file="page.tpl"}
 {block name="content"}
+
+	<style>
+		dt {
+			font-size: 12pt;
+			font-weight: bold;
+			margin-top: 2em;
+			margin-bottom: 0.5em;
+		}
+		
+		dd {
+			margin: 0;
+			font-size: 9pt;
+		}
+		
+		dd form {
+			margin: 1em;
+		}
+	</style>
+
 	<dl>
+		<!--
 		<dt>CSV Import and Clone</dt>
 			<dd>This takes a standard courses.csv Import file with one additional column: template_id, which takes the Canvas ID of the source course to be duplicated into the new course. This duplicates both the contents and all (API-accessible) settings of the original course in the new course.</dd>
 			<dd>
@@ -17,7 +37,7 @@
 					<input type="submit" value="Reset Advisor Users" />
 				</form>
 			</dd>
-
+		-->
 		<dt>Color-code Courses</dt>
 			<dd>Set the custom color for each course for each user to match the color block</dd>
 			<dd>
@@ -25,7 +45,15 @@
 					<input type="submit" value="Color Code Courses" />
 				</form>
 			</dd>
-		
+			
+		<dt>Custom Prefs User Roles</dt>
+			<dd>Assign roles to users external to Canvas (e.g. faculty or student), for use by custom-prefs-reliant tools to generate things like custom navigation menus based on those roles.</dd>
+			<dd>
+				<form action="scripts/custom-prefs-user-roles.php" method="post">
+					<input type="submit" value="List All Users" />
+				</form>
+			</dd>
+		<!--
 		<dt>Sanity Checks</dt>
 			<dd>A variety of sanity checks on user information.</dd>
 			<dd>
@@ -72,7 +100,8 @@
 							</form>
 						</dd>
 				</dl>
-			</dd>		
+			</dd>
+			-->		
 	</dl>
 {/block}
  No newline at end of file

@@ -12,4 +12,10 @@ try {
 	}
 }
 
+function html_var_dump($var) {
+	echo '<pre>';
+	var_dump($var);
+	echo '</pre>';
+}
+
 ?>
