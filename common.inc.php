@@ -1,6 +1,6 @@
 <?php
 
-require_once('vendor/autoload.php');
+require_once(__DIR__ . '/vendor/autoload.php');
 
 define('SECRETS_FILE', __DIR__ . '/secrets.xml');
 define('SCHEMA_FILE', __DIR__ . '/admin/schema-app.sql');
@@ -89,6 +89,12 @@ function initAppMetadata() {
 	return $metadata;
 }
 
+function html_var_dump($var) {
+	echo '<pre>';
+	var_dump($var);
+	echo '</pre>';
+}
+
 /*****************************************************************************
  *                                                                           *
  * The script begins here                                                    *
@@ -120,29 +126,35 @@ try {
 
 /* interactive initialization only */
 if ($ready && php_sapi_name() != 'cli') {
-	try {
-		if (isset($_SESSION['toolProvider'])) {
-			$toolProvider = $_SESSION['toolProvider'];
-		} else {
-			if (!midLaunch()) {
-				throw new CanvasAPIviaLTI_Exception(
-					'The LTI launch request is missing',
-					CanvasAPIviaLTI_Exception::LAUNCH_REQUEST
-				);
+	
+	/* allow web apps to use common.inc.php without LTI authentication */
+	if (!defined('IGNORE_LTI')) {
+		try {
+			if (isset($_SESSION['toolProvider'])) {
+				$toolProvider = $_SESSION['toolProvider'];
+			} else {
+				if (!midLaunch()) {
+					throw new CanvasAPIviaLTI_Exception(
+						'The LTI launch request is missing',
+						CanvasAPIviaLTI_Exception::LAUNCH_REQUEST
+					);
+				}
 			}
+			
+		} catch (CanvasAPIviaLTI_Exception $e) {
+			$ready = false;
 		}
-		
-	} catch (CanvasAPIviaLTI_Exception $e) {
-		$ready = false;
 	}
 
 	if ($ready) {
 		$smarty->addStylesheet($metadata['APP_URL'] . '/stylesheets/canvas-api-via-lti.css', 'starter-canvas-api-via-lti');
 		$smarty->addStylesheet($metadata['APP_URL'] . '/stylesheets/app.css');
 		
-		if (!midLaunch()) {
-			require_once('common-app.inc.php');
-			$smarty->assign('ltiUser', $toolProvider->user);
+		if (!midLaunch() || !defined('IGNORE_LTI')) {
+			require_once(__DIR__ . '/common-app.inc.php');
+			if (!defined('IGNORE_LTI')) {
+				$smarty->assign('ltiUser', $toolProvider->user);
+			}
 		}
 	}
 }
