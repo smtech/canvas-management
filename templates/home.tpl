@@ -7,7 +7,7 @@
 		</div>
 	</div>
 	<div class="container">
-		<h2><a href="custom-preferences/assign-user-roles.php">Custom Preferences</a></h2>
+		<h2>Custom Preferences</h2>
 		<p>Tools for creating and managing tools that, essentially, create additional custom preferences for users, courses and accounts in Canvas. For example, configuring color blocks or the top navigation menu.</p>
 	</div>
 	<div class="container">
