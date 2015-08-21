@@ -33,7 +33,7 @@ class CanvasManagement {
 	
 	/** Check if the current user is a root-level AccountAdmin */
 	private function validateUser() {
-		global $toolProvider;
+		global $toolProvider; // FIXME grown-ups don't program like this
 		
 		$admins = $this->api->get(
 			'accounts/1/admins',

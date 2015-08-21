@@ -12,10 +12,7 @@ try {
 	}
 }
 
-function html_var_dump($var) {
-	echo '<pre>';
-	var_dump($var);
-	echo '</pre>';
-}
+$smarty->assign('navbarActive', basename(dirname($_SERVER['REQUEST_URI'])));
+$smarty->assign('formAction', $_SERVER['PHP_SELF']);
 
 ?>
