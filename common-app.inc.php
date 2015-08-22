@@ -1,5 +1,29 @@
 <?php
 
+/**
+ * Explode a string
+ *
+ * Explode into comma- and newline-delineated parts, and trim those parts.
+ *
+ * @param string $str
+ *
+ * @return string[]
+ **/
+function explodeCommaAndNewlines($str) {
+	$list = array();
+	$lines = explode("\n", $str);
+	foreach ($lines as $line) {
+		$items = explode(',', $line);
+		foreach ($items as $item) {
+			$trimmed = trim($item);
+			if (!empty($trimmed)) {
+				$list[] = $trimmed;
+			}
+		}
+	}
+	return $list;
+}
+
 try {
 	$canvasManagement = CanvasManagement::getInstance();
 } catch (CanvasManagement_Exception $e) {

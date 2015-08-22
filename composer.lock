@@ -321,16 +321,16 @@
         },
         {
             "name": "smtech/canvaspest",
-            "version": "v1.0.1",
+            "version": "v1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smtech/canvaspest.git",
-                "reference": "204e6a8fe3a1a21dcbe594dec5b342de48e2ed1e"
+                "reference": "fd29f4b62b500ee3016efe56f2324829f3cfd725"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smtech/canvaspest/zipball/204e6a8fe3a1a21dcbe594dec5b342de48e2ed1e",
-                "reference": "204e6a8fe3a1a21dcbe594dec5b342de48e2ed1e",
+                "url": "https://api.github.com/repos/smtech/canvaspest/zipball/fd29f4b62b500ee3016efe56f2324829f3cfd725",
+                "reference": "fd29f4b62b500ee3016efe56f2324829f3cfd725",
                 "shasum": ""
             },
             "require": {
@@ -353,7 +353,7 @@
                 }
             ],
             "description": "An extension of Pest to make RESTful queries to the Instructure Canvas API",
-            "time": "2015-08-17 16:44:57"
+            "time": "2015-08-22 01:41:57"
         },
         {
             "name": "smtech/oauth-negotiator",
@@ -425,12 +425,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smtech/stmarkssmarty.git",
-                "reference": "c2e51aed4e7ddfb20964f72e9d776a6b652784d4"
+                "reference": "79d3c375efdd2f318bbab12292ee90f00c3a5652"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smtech/stmarkssmarty/zipball/c2e51aed4e7ddfb20964f72e9d776a6b652784d4",
-                "reference": "c2e51aed4e7ddfb20964f72e9d776a6b652784d4",
+                "url": "https://api.github.com/repos/smtech/stmarkssmarty/zipball/79d3c375efdd2f318bbab12292ee90f00c3a5652",
+                "reference": "79d3c375efdd2f318bbab12292ee90f00c3a5652",
                 "shasum": ""
             },
             "require": {
@@ -454,7 +454,7 @@
                 }
             ],
             "description": "A standard Smarty install for St. Mark's projects",
-            "time": "2015-08-21 16:28:07"
+            "time": "2015-08-22 02:01:32"
         },
         {
             "name": "spvsoftwareproducts/LTI_Tool_Provider",
