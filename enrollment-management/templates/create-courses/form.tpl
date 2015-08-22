@@ -40,7 +40,28 @@
 			</select>
 		</div>
 	</div>
+	
+	<div class="form-group">
+		<label for="prefix" class="control-label col-sm-2">SIS ID prefix</label>
+		<div class="col-sm-2">
+			<input type="text" id="prefix" name="prefix" class="form-control " placeholder="2015-2016" />
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<label for="suffix" class="control-label col-sm-2">SIS ID suffix</label>
+		<div class="col-sm-2">
+			<input type="text" id="suffix" name="suffix" class="form-control" placeholder="abracadabra" />
+		</div>
+	</div>
 
+	<div class="form-group">
+		<div class="checkbox col-sm-offset-2 col-sm-2">
+			<label for="unique" class="control-label">
+				<input type="checkbox" id="unique" name="unique" value="true"> Unique SIS IDs</label>
+		</div>
+	</div>
+	
 	<div class="form-group">
 		<div class="col-sm-offset-2 col-sm-10">
 			<button type="submit" class="btn btn-default">Create</button>

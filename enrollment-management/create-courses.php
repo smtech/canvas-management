@@ -16,7 +16,7 @@ define('CACHE_LIFETIME', 7 * 24 * 60 * 60); // 1 week
  * @return string
  **/
 function generateSisId($name) {
-	return strtolower(preg_replace('/[^a-z0-9\-]+/i', '-', $name) . '.' . md5(time()));
+	return strtolower(preg_replace('/[^a-z0-9\-]+/i', '-', $_REQUEST['prefix'] . $name . $_REQUEST['suffix']) . (empty($_REQUEST['unique']) ? '' : '.' . md5(time())));
 }
 
 $cache = new Battis\HiearchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
@@ -28,16 +28,8 @@ $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 
 switch ($step) {
 	case STEP_RESULT:
-		if (!empty($_REQUEST['courses'])) {
-			$courses = array();
-			$lines = explode("\n", $_REQUEST['courses']);
-			foreach ($lines as $line) {
-				$items = explode(',', $line);
-				foreach ($items as $item) {
-					$courses[] = trim($item);
-				}
-			}
-		}
+	
+		$courses = explodeCommaAndNewlines($_REQUEST['courses']);
 		
 		if (!empty($courses)) {
 			if (empty($_REQUEST['account'])) {
