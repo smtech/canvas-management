@@ -9,17 +9,6 @@ $DEFAULT_TERM = 195;
 define('CACHE_LIFETIME', 20 * 60); // 20 minutes
 define('LONG_CACHE_LIFETIME', 7 * 24 * 60 * 60); // 1 week
 
-/**
- * Generate a unique SIS ID
- *
- * @param string $name
- *
- * @return string
- **/
-function generateSisId($name) {
-	return strtolower(preg_replace('/[^a-z0-9\-]+/i', '-', $name) . '.' . md5(time()));
-}
-
 $cache = new Battis\HiearchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
 
 define('STEP_INSTRUCTIONS', 1);
@@ -120,14 +109,14 @@ switch ($step) {
 				);
 			} elseif ($step == STEP_ENROLL) {
 				$count = 0;
-				foreach ($users as $user) {
+				foreach ($_REQUEST['users'] as $user) {
 					$enrollment = $canvasManagement->api->post(
 						"/courses/{$_REQUEST['course']}/enrollments",
 						array(
 							'enrollment[user_id]' => $user['id'],
 							'enrollment[type]' => $user['role'],
-							'enrollment[state]' => 'active',
-							'enrollment[notify]' => $user['notify']
+							'enrollment[enrollment_state]' => 'active',
+							'enrollment[notify]' => (empty($user['notify']) ? 'false' : $user['notify'])
 						)
 					);
 					if (!empty($enrollment['id'])) {
