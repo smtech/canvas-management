@@ -1,0 +1,5 @@
+# Allow for ludicrously many FORM input vars
+php_value max_input_vars 10000
+php_value suhosin.get.max_vars 10000
+php_value suhosin.post.max_vars 10000
+php_value suhosin.request.max_vars 10000

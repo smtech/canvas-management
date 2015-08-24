@@ -14,6 +14,7 @@
 		</a>
 		<ul class="dropdown-menu">
 			<li><a href="{$metadata['APP_URL']}/enrollment-management/create-courses.php">Create Courses</a></li>
+			<li><a href="{$metadata['APP_URL']}/enrollment-management/batch-update-courses.php">Batch Update Courses</a></li>
 			<li><a href="{$metadata['APP_URL']}/enrollment-management/enroll-users.php">Enroll Users</a></li>
 		</ul>
 	</li>
