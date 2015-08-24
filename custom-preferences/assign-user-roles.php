@@ -20,7 +20,7 @@ switch ($step) {
 		$users = $cache->getCache('users');
 		if ($users === false) {
 			$users = array();
-			$response = $canvasManagement->api->get('/accounts/1/users');
+			$response = $api->get('/accounts/1/users');
 			foreach ($response as $user) {
 				$users[$user['id']] = $user;
 			}

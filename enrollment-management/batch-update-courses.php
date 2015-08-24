@@ -24,6 +24,7 @@ switch ($step) {
 				}
 				$courses[] = $course;
 			}
+			fclose($csv);
 		} else {
 			$step = STEP_INSTRUCTIONS;
 			$smarty->addMessage(
@@ -81,7 +82,7 @@ switch ($step) {
 					}
 					
 					try {
-						$response = $canvasManagement->api->put(
+						$response = $api->put(
 							"courses/sis_course_id%3A{$course['old_course_id']}",
 							array(
 								'course' => $params

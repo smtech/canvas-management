@@ -32,7 +32,7 @@ switch ($step) {
 		} else {
 			$courses = $cache->getCache("courses/{$_REQUEST['course']}");
 			if ($courses === false) {
-				$courses = $canvasManagement->api->get(
+				$courses = $api->get(
 					'accounts/1/courses',
 					array(
 						'search_term' => $_REQUEST['course']
@@ -56,7 +56,7 @@ switch ($step) {
 			foreach($users as $term) {
 				$confirm[$term] = $cache->getCache("users/$term");
 				if ($confirm[$term] === false) {
-					$confirm[$term] = $canvasManagement->api->get(
+					$confirm[$term] = $api->get(
 						'accounts/1/users',
 						array(
 							'search_term' => $term,
@@ -110,7 +110,7 @@ switch ($step) {
 			} elseif ($step == STEP_ENROLL) {
 				$count = 0;
 				foreach ($_REQUEST['users'] as $user) {
-					$enrollment = $canvasManagement->api->post(
+					$enrollment = $api->post(
 						"/courses/{$_REQUEST['course']}/enrollments",
 						array(
 							'enrollment[user_id]' => $user['id'],

@@ -24,17 +24,7 @@ function explodeCommaAndNewlines($str) {
 	return $list;
 }
 
-try {
-	$canvasManagement = CanvasManagement::getInstance();
-} catch (CanvasManagement_Exception $e) {
-	if ($e->getCode() === CanvasManagement_Exception::INVALID_USER) {
-		$smarty->assign('content', '<h1>' . $toolProvider->user->fullname . '</h1><p>Only root-level account administrators may access this panel.</p>');
-		$smarty->display();
-		exit;
-	} else {
-		throw $e;
-	}
-}
+$api = new CanvasPest($_SESSION['apiUrl'], $_SESSION['apiToken']);
 
 $smarty->assign('navbarActive', basename(dirname($_SERVER['REQUEST_URI'])));
 $smarty->assign('formAction', $_SERVER['PHP_SELF']);
