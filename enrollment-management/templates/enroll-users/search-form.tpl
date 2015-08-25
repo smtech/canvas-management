@@ -1,4 +1,5 @@
 {extends file="form.tpl"}
+
 {block name="form-content"}
 
 	<div class="form-group">
@@ -15,10 +16,6 @@
 		</div>
 	</div>
 
-	<div class="form-group">
-		<div class="col-sm-offset-2 col-sm-10">
-			<button type="submit" class="btn btn-default">Confirm</button>
-		</div>	
-	</div>
+	{assign var="formButton" value="Search"}
 
 {/block}

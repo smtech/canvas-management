@@ -8,6 +8,7 @@
 		<p><strong>Caveat emptor:</strong> Courses are created with automatically-generated, intentionally-unique SIS IDs, which means that you can <i>quickly</i> create <i>a lot</i> of courses with the same name if you're not careful.</p>
 	</div>
 	
+	{assign var="formFileUpload" value=true}
 	{include file="create-courses/form.tpl"}
 </div>
 

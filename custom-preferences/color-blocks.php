@@ -2,8 +2,6 @@
 
 require_once('common.inc.php');
 
-$smarty->assign('name', 'Color Blocks');
-
 use smtech\StMarksColors as sm;
 
 define('ACADEMICS_SUBACCOUNT', 132);

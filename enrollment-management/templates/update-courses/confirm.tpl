@@ -6,6 +6,6 @@
 	<p>Review the changes listed below before updating.</p>
 </div>
 
-{include file="batch-update-courses/confirm-form.tpl"}
+{include file="update-courses/confirm-form.tpl"}
 
 {/block}

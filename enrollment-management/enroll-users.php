@@ -2,8 +2,6 @@
 
 require_once('common.inc.php');
 
-$smarty->assign('name', 'Enroll Users');
-
 $MANUALLY_CREATED_COURSES_ACCOUNT = 96;
 $DEFAULT_TERM = 195;
 define('CACHE_LIFETIME', 20 * 60); // 20 minutes

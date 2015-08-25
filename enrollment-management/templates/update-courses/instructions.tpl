@@ -4,6 +4,10 @@
 
 <div class="container">
 	<p>Upload a CSV file of courses to be updated in the format described below. Columns left blank will not be affected by the batch update.</p>
+
+	{assign var="formFileUpload" value="true"}
+	{include file="update-courses/upload-form.tpl"}
+
 	<table class="table table-bordered table-hover">
 		<thead>
 			<tr>
@@ -65,7 +69,5 @@
 	<pre>old_course_id, course_id, short_name, long_name, account_id, term_id
 2015-summer-AR-46A-1-Putnam, 2015-2016-ar-46a-1-blue, Advanced Art History (Blue), Advanced Art History (Blue), 112, 2015-2016-full-year
 2015-summer-EN-45F-1-Eslick, 2015-2016-en-45f-1-brown, "Cold War, Cool Culture (Brown)", "Cold War, Cool Culture (Brown)", 119, 2015-2015-semester-fall</pre>
-
-{include file="batch-update-courses/upload-form.tpl"}
 
 {/block}

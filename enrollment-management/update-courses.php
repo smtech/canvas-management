@@ -4,35 +4,14 @@ require_once('common.inc.php');
 
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_CONFIRM',2);
-define('STEP_BATCH', 3);
+define('STEP_UPDATE', 3);
 
 $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 
 switch ($step) {
 	case STEP_CONFIRM:
-		$courses = array();
-		if(!empty($_FILES['csv']['tmp_name'])) {
-			$csv = fopen($_FILES['csv']['tmp_name'], 'r');
-			$fields = fgetcsv($csv);
-			$smarty->assign('fields', $fields);
-			while($row = fgetcsv($csv)) {
-				$course = array();
-				foreach ($fields as $i => $field) {
-					if (isset($row[$i])) {
-						$course[$field] = $row[$i];
-					}
-				}
-				$courses[] = $course;
-			}
-			fclose($csv);
-		} else {
-			$step = STEP_INSTRUCTIONS;
-			$smarty->addMessage(
-				'File upload',
-				'is required for batch updating to work.',
-				NotificationMessage::ERROR
-			);
-		}
+	
+		$courses = loadCsvToArray('csv');
 		
 		if (empty($courses)) {
 			$step = STEP_INSTRUCTIONS;
@@ -42,17 +21,18 @@ switch ($step) {
 				NotificationMessage::WARNING
 			);
 		}
+
 		if ($step == STEP_CONFIRM) {
 			$smarty->assign('courses', $courses);
-			$smarty->assign('formHidden', array('step' => STEP_BATCH));
+			$smarty->assign('formHidden', array('step' => STEP_UPDATE));
 			$smarty->display(basename(__FILE__, '.php') . '/confirm.tpl');
 			break;
 		}
 		
-		/* flows into STEP_BATCH */
+		/* flows into STEP_UPDATE */
 	
-	case STEP_BATCH:
-		if ($step == STEP_BATCH) {
+	case STEP_UPDATE:
+		if ($step == STEP_UPDATE) {
 			$links = "";
 			foreach($_REQUEST['courses'] as $course) {
 				if (isset($course['batch-include']) && $course['batch-include'] == 'include') {

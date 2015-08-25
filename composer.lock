@@ -270,12 +270,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "643e6784e8d07154e88eff1ea43b2cd66a6051ae"
+                "reference": "3ba86e8d913583ea59d9b5980d2f08dae2a778a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/643e6784e8d07154e88eff1ea43b2cd66a6051ae",
-                "reference": "643e6784e8d07154e88eff1ea43b2cd66a6051ae",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/3ba86e8d913583ea59d9b5980d2f08dae2a778a5",
+                "reference": "3ba86e8d913583ea59d9b5980d2f08dae2a778a5",
                 "shasum": ""
             },
             "require": {
@@ -317,7 +317,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-08-06 19:42:20"
+            "time": "2015-08-23 17:58:27"
         },
         {
             "name": "smtech/canvaspest",
@@ -425,12 +425,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smtech/stmarkssmarty.git",
-                "reference": "79d3c375efdd2f318bbab12292ee90f00c3a5652"
+                "reference": "d9e7829ba0d017f67b42c4d97fadafd6a3ba1153"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smtech/stmarkssmarty/zipball/79d3c375efdd2f318bbab12292ee90f00c3a5652",
-                "reference": "79d3c375efdd2f318bbab12292ee90f00c3a5652",
+                "url": "https://api.github.com/repos/smtech/stmarkssmarty/zipball/d9e7829ba0d017f67b42c4d97fadafd6a3ba1153",
+                "reference": "d9e7829ba0d017f67b42c4d97fadafd6a3ba1153",
                 "shasum": ""
             },
             "require": {
@@ -454,7 +454,7 @@
                 }
             ],
             "description": "A standard Smarty install for St. Mark's projects",
-            "time": "2015-08-22 02:01:32"
+            "time": "2015-08-25 01:21:05"
         },
         {
             "name": "spvsoftwareproducts/LTI_Tool_Provider",

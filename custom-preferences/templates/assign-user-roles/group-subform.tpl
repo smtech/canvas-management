@@ -2,10 +2,6 @@
 
 {block name="form-content"}
 
-	<div class="form-group">
-		<button type="submit" class="btn btn-default">Assign</button>
-	</div>
-	
 	{foreach $usersGroup as $id => $user}
 	
 	<div class="form-group">
@@ -39,8 +35,6 @@
 		</tr>
 	{/foreach}
 
-	<div class="form-group">
-		<button type="submit" class="btn btn-default">Assign</button>
-	</div>
-
+	{assign var="formButton" value="Assign"}
+	
 {/block}

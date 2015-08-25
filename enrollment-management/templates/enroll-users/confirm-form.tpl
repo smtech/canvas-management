@@ -31,7 +31,7 @@
 		{counter start=0 assign="i" print=false}
 		{foreach $confirm as $term => $search}
 			<div class="form-group">
-				<label for="user-{$i}-name" class="control-label col-sm-2">{$term}</label>
+				<label for="user-{$i}-name" class="control-label col-sm-{$formLabelWidth}">{$term}</label>
 				<input type="hidden" name="users[{$i}][term]" value="{$term}" />
 				<div class="col-sm-3">
 					<select id="user-{$i}-name" name="users[{$i}][id]" class="form-control selectpicker">
@@ -41,7 +41,7 @@
 					</select>
 				</div>
 				<label for="user-{$i}-role" class="sr-only">Role</label>
-				<div class="col-sm-2">
+				<div class="col-sm-{$formLabelWidth}">
 					<select id="user-{$i}-role" name="users[{$i}][role]" class="form-control selectpicker">
 						{foreach $roles as $enrollment => $role}
 							<option value="{$enrollment}">{$role}</option>
@@ -58,12 +58,6 @@
 		{/foreach}
 	</div>
 
-	<div class="form-group">
-		<div class="col-sm-offset-2 col-sm-10">
-			<button type="button" class="btn btn-default" onclick="history.back();"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Edit</button>
-			<button type="submit" class="btn btn-primary">Enroll</button>
-		</div>
-	</div>
-
+	{assign var="formButton" value="Enroll"}
 
 {/block}

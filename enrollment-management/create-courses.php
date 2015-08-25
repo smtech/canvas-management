@@ -2,8 +2,6 @@
 
 require_once('common.inc.php');
 
-$smarty->assign('name', 'Create Courses');
-
 $MANUALLY_CREATED_COURSES_ACCOUNT = 96;
 $DEFAULT_TERM = 195;
 define('CACHE_LIFETIME', 7 * 24 * 60 * 60); // 1 week
@@ -95,21 +93,11 @@ switch ($step) {
 			$source = array('course' => $source);
 		}
 		
-		if(!empty($_FILES['csv']['tmp_name'])) {
-			$csv = fopen($_FILES['csv']['tmp_name'], 'r');
-			$fields = fgetcsv($csv);
-			while($row = fgetcsv($csv)) {
-				$course = array();
-				foreach ($fields as $i => $field) {
-					if (isset($row[$i])) {
-						$course[$field] = $row[$i];
-					}
-				}
-				$courses[] = $course;
-			}
-			fclose($csv);
+		$csv = loadCsvToArray('csv');
+		if ($csv) {
+			$courses = array_merge($courses, $csv);
 		}
-				
+						
 		if (!empty($courses)) {
 			foreach($courses as $course) {
 				/* build parameter list */
@@ -152,38 +140,46 @@ switch ($step) {
 				}
 				
 				/* create course */
-				$course = $api->post(
-					"accounts/$_account/courses",
-					array(
-						'course' => $params
-					)
-				);
-				
-				if ($templated) {
-					/* duplicate course settings */
-					$api->put("/courses/{$course['id']}", $source);
-					
-					// TODO  nice to figure out navigation settings copy
-					
-					/* duplicate course content */
-					$migration = $api->post(
-						"courses/{$course['id']}/content_migrations",
+				try {
+					$course = $api->post(
+						"accounts/$_account/courses",
 						array(
-							'migration_type' => 'course_copy_importer',
-							'settings[source_course_id]' => $template
+							'course' => $params
 						)
 					);
 					
+					if ($templated) {
+						/* duplicate course settings */
+						$api->put("/courses/{$course['id']}", $source);
+						
+						// TODO  nice to figure out navigation settings copy
+						
+						/* duplicate course content */
+						$migration = $api->post(
+							"courses/{$course['id']}/content_migrations",
+							array(
+								'migration_type' => 'course_copy_importer',
+								'settings[source_course_id]' => $template
+							)
+						);
+						
+						$smarty->addMessage(
+							"<a target=\"_parent\" href=\"{$metadata['CANVAS_INSTANCE_URL']}/courses/{$course['id']}\">{$course['name']}</a>",
+							"has been created as a clone of <a target=\"_parent\" href=\"{$metadata['CANVAS_INSTANCE_URL']}/courses/$sourceId\">$sourceName</a>. Course content is being <a target=\"_parent\" href=\"{$metadata['CANVAS_INSTANCE_URL']}/courses/{$course['id']}/content_migrations\">migrated</a> right now.",
+							NotificationMessage::GOOD
+						);
+					} else {
+						$smarty->addMessage(
+							"<a target=\"_parent\" href=\"{$metadata['CANVAS_INSTANCE_URL']}/courses/{$course['id']}\">{$course['name']}</a>",
+							"has been created.",
+							NotificationMessage::GOOD
+						);
+					}
+				} catch (Exception $e) {
 					$smarty->addMessage(
-						"<a target=\"_parent\" href=\"{$metadata['CANVAS_INSTANCE_URL']}/courses/{$course['id']}\">{$course['name']}</a>",
-						"has been created as a clone of <a target=\"_parent\" href=\"{$metadata['CANVAS_INSTANCE_URL']}/courses/$sourceId\">$sourceName</a>. Course content is being <a target=\"_parent\" href=\"{$metadata['CANVAS_INSTANCE_URL']}/courses/{$course['id']}/content_migrations\">migrated</a> right now.",
-						NotificationMessage::GOOD
-					);
-				} else {
-					$smarty->addMessage(
-						"<a target=\"_parent\" href=\"{$metadata['CANVAS_INSTANCE_URL']}/courses/{$course['id']}\">{$course['name']}</a>",
-						"has been created.",
-						NotificationMessage::GOOD
+						'Error ' . $e->getCode(),
+						$e->getMessage(),
+						NotificationMessage::ERROR
 					);
 				}
 			}
@@ -199,25 +195,8 @@ switch ($step) {
 	
 	case STEP_INSTRUCTIONS:
 	default:
-		$accounts = $cache->getCache('accounts');
-		if ($accounts === false) {
-			$accounts = $api->get('accounts/1/sub_accounts', array('recursive' => 'true'));
-			$cache->setCache('accounts', $accounts, CACHE_LIFETIME);
-		}
-		$smarty->assign('accounts', $accounts);
-		
-		$terms = $cache->getCache('terms');
-		if ($terms === false) {
-			$_terms = $api->get(
-				'accounts/1/terms',
-				array(
-					'workflow_state' => 'active'
-				)
-			);
-			$terms = $_terms['enrollment_terms'];
-			$cache->setCache('terms', $terms, CACHE_LIFETIME);
-		}
-		$smarty->assign('terms', $terms);
+		$smarty->assign('accounts', getAccountList());
+		$smarty->assign('terms', getTermList());
 		
 		$smarty->assign('formHidden', array('step' => STEP_RESULT));
 		$smarty->display(basename(__FILE__, '.php') . '/instructions.tpl');
