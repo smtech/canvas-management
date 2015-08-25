@@ -2,6 +2,8 @@
 	
 require_once('common.inc.php');
 
+use Battis\DataUtilities;
+
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_CONFIRM',2);
 define('STEP_UPDATE', 3);
@@ -11,7 +13,7 @@ $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 switch ($step) {
 	case STEP_CONFIRM:
 	
-		$courses = loadCsvToArray('csv');
+		$courses = DataUtilities::loadCsvToArray('csv');
 		
 		if (empty($courses)) {
 			$step = STEP_INSTRUCTIONS;

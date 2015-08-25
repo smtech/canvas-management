@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "19b650fb72b923c36b5c49eba96e17d5",
+    "hash": "1fc6ca395d434b3445cd04f44763a2da",
     "packages": [
         {
             "name": "battis/appmetadata",
@@ -38,6 +38,39 @@
             ],
             "description": "An object to store app metadata backed by a MySQL table",
             "time": "2015-08-17 19:58:28"
+        },
+        {
+            "name": "battis/data-utilities",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/battis/data-utilities.git",
+                "reference": "8fe57b1a15c99abcc985f28c0d1bb0bcc05819c1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/battis/data-utilities/zipball/8fe57b1a15c99abcc985f28c0d1bb0bcc05819c1",
+                "reference": "8fe57b1a15c99abcc985f28c0d1bb0bcc05819c1",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Battis\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Seth Battis",
+                    "email": "sethbattis@stmarksschool.org"
+                }
+            ],
+            "description": "A handful of useful helper functions to process data",
+            "time": "2015-08-25 18:27:30"
         },
         {
             "name": "battis/educoder-pest-fork",
@@ -425,17 +458,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smtech/stmarkssmarty.git",
-                "reference": "d9e7829ba0d017f67b42c4d97fadafd6a3ba1153"
+                "reference": "cef2109b65926dd1ba1bc0e06b05c4e9d02e7434"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smtech/stmarkssmarty/zipball/d9e7829ba0d017f67b42c4d97fadafd6a3ba1153",
-                "reference": "d9e7829ba0d017f67b42c4d97fadafd6a3ba1153",
+                "url": "https://api.github.com/repos/smtech/stmarkssmarty/zipball/cef2109b65926dd1ba1bc0e06b05c4e9d02e7434",
+                "reference": "cef2109b65926dd1ba1bc0e06b05c4e9d02e7434",
                 "shasum": ""
             },
             "require": {
                 "smarty/smarty": "3.1.*",
                 "smtech/stmarks-colors": "dev-master"
+            },
+            "suggest": {
+                "battis/appmetadata": "MySQL-backed globals array for app metadata storage",
+                "eternicode/bootstrap-datepicker": "The full Bootstrap Datepicker package for local install"
             },
             "type": "library",
             "autoload": {
@@ -454,7 +491,7 @@
                 }
             ],
             "description": "A standard Smarty install for St. Mark's projects",
-            "time": "2015-08-25 01:21:05"
+            "time": "2015-08-25 15:54:52"
         },
         {
             "name": "spvsoftwareproducts/LTI_Tool_Provider",
@@ -478,7 +515,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "smtech/stmarkssmarty": 20
+        "smtech/stmarkssmarty": 20,
+        "battis/data-utilities": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

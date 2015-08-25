@@ -2,6 +2,8 @@
 	
 require_once('common.inc.php');
 
+use Battis\DataUtilities;
+
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_NORMALIZE', 2);
 
@@ -10,7 +12,7 @@ $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 switch ($step) {
 	case STEP_NORMALIZE:
 	
-		$sections = loadCsvToArray('csv');
+		$sections = DataUtilities::loadCsvToArray('csv');
 		$account = (empty($_REQUEST['account']) ? false : $_REQUEST['account']);
 		$term = (empty($_REQUEST['term']) ? false : $_REQUEST['term']);
 		

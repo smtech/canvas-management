@@ -2,6 +2,8 @@
 
 require_once('common.inc.php');
 
+use Battis\DataUtilities;
+
 $MANUALLY_CREATED_COURSES_ACCOUNT = 96;
 $DEFAULT_TERM = 195;
 define('CACHE_LIFETIME', 7 * 24 * 60 * 60); // 1 week
@@ -93,7 +95,7 @@ switch ($step) {
 			$source = array('course' => $source);
 		}
 		
-		$csv = loadCsvToArray('csv');
+		$csv = DataUtilities::loadCsvToArray('csv');
 		if ($csv) {
 			$courses = array_merge($courses, $csv);
 		}
