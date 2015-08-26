@@ -27,6 +27,27 @@ function explodeCommaAndNewlines($str) {
 }
 
 /**
+ * Explode a string
+ *
+ * Explode into trimmed lines
+ *
+ * @param string $str
+ *
+ * @return string[]
+ **/
+function explodeNewLines($str) {
+	$list = array();
+	$lines = explode("\n", $str);
+	foreach($lines as $line) {
+		$trimmed = trim($line);
+		if (!empty($trimmed)) {
+			$list[] = $trimmed;
+		}
+	}
+	return $list;
+}
+
+/**
  * Get a listing of all accounts organized for presentation in a select picker
  *
  * @return array
@@ -73,6 +94,5 @@ function getTermList() {
 $api = new CanvasPest($_SESSION['apiUrl'], $_SESSION['apiToken']);
 
 $smarty->assign('navbarActive', basename(dirname($_SERVER['REQUEST_URI'])));
-$smarty->assign('formAction', $_SERVER['PHP_SELF']);
 
 ?>

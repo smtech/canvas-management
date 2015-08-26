@@ -29,6 +29,7 @@ $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 switch ($step) {
 	case STEP_RESULT:
 	
+		// TODO use explodeNewLines()
 		$courses = array();
 		$courseNames = explode("\n", $_REQUEST['courses']);
 		foreach($courseNames as $name) {
