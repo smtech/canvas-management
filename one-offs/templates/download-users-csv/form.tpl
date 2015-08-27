@@ -4,6 +4,4 @@
 
 	{include file="select-account.tpl"}
 	
-	{assign var="formButton" value="Punch it, Chewie!"}
-
 {/block}

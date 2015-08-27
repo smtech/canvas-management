@@ -2,6 +2,4 @@
 
 {block name="form-content"}
 
-	{assign var="formButton" value="Punch it, Chewie!"}
-
 {/block}
