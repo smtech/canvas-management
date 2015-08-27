@@ -9,7 +9,6 @@ $customPrefs = new mysqli(
 	(string) $secrets->mysql->customprefs->database
 );
 
-$smarty->assign('category', 'Custom Preferences');
 $smarty->addTemplateDir(__DIR__ . '/templates', basename(__DIR__));
 
 ?>

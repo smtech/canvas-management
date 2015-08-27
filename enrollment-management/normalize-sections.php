@@ -62,37 +62,33 @@ switch ($step) {
 							if (!empty($links)) {
 								$links .= ', ';
 							}
-							$links .= "<a target=\"_parent\" href=\"{$metadata['CANVAS_INSTANCE_URL']}/courses/{$course['id']}/sections/{$response['id']}\">{$response['name']}</a>";
+							$links .= "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/sections/{$response['id']}\">{$response['name']}</a>";
 							
 						/* too many sections to (easily) normalize */
 						} else {
 							$smarty->addMessage(
 								'Multiple Sections',
-								"<a target=\"_parent\" href=\"{$metadata['CANVAS_INSTANCE_URL']}/courses/{$course['id']}/settings\">{$course['name']}</a> has more than one section, which means that standard singleton-section normalization does not apply.",
+								"<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/settings\">{$course['name']}</a> has more than one section, which means that standard singleton-section normalization does not apply.",
 								NotificationMessage::WARNING
 							);
 						}
 					} catch (Exception $e) {
-						$smarty->addMessage(
-							'Error ' . $e->getCode(),
-							"<p>Course '{$course['name']}' / Section {$section['section_id']}</p>" . $e->getMessage(),
-							NotificationMessage::ERROR
-					);
+						exceptionErrorMessage($e);
+					}
 				}
+				$smarty->addMessage(
+					'Sections Normalized',
+					'The following singleton course sections have been normalized to match their parent course title: ' . $links,
+					NotificationMessage::GOOD
+				);
+			} else {
+				$smarty->addMessage(
+					'Missing Constraint',
+					'You must either upload a list of courses and sections, or select an account and/or term within which to normalize sections.',
+					NotificationMessage::ERROR
+				);
 			}
-			$smarty->addMessage(
-				'Sections Normalized',
-				'The following singleton course sections have been normalized to match their parent course title: ' . $links,
-				NotificationMessage::GOOD
-			);
-		} else {
-			$smarty->addMessage(
-				'Missing Constraint',
-				'You must either upload a list of courses and sections, or select an account and/or term within which to normalize sections.',
-				NotificationMessage::ERROR
-			);
 		}
-	}
 		
 		/* flow into STEP_INSTRUCTIONS */
 	

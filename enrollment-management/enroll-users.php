@@ -118,13 +118,13 @@ switch ($step) {
 						)
 					);
 					if (!empty($enrollment['id'])) {
-						$counter++;
+						$count++;
 					}
 				}
 				
 				$smarty->addMessage(
 					'Success',
-					"<a target=\"_top\" href=\"{$metadata['CANVAS_INSTANCE_URL']}/courses/{$_REQUEST['course']}/users\">$counter users enrolled</a>",
+					"<a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$_REQUEST['course']}/users\">$count users enrolled</a>",
 					NotificationMessage::GOOD
 				);
 				

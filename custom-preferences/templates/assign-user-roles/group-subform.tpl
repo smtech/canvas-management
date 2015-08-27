@@ -6,7 +6,7 @@
 	
 	<div class="form-group">
 		<input type="hidden" name="users[{$id}][dirty]" value="0" id="user-{$id}-changed" />
-		<label for="input1" class="control-label col-sm-4" style="text-align: left;"><a href="{$metadata['CANVAS_INSTANCE_URL']}/accounts/1/users/{}$id}">{$user['user']['sortable_name']}</a></label>
+		<label for="input1" class="control-label col-sm-4" style="text-align: left;"><a href="{$smarty.session.canvasInstanceUrl}/accounts/1/users/{}$id}">{$user['user']['sortable_name']}</a></label>
 		<div class="col-sm-2">
 			<select name="users[{$id}][role]" class="form-control" onchange="document.getElementById('user-{$id}-changed').value = 1;">
 				{if empty($user['custom-prefs'])}

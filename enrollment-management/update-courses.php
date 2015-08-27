@@ -73,13 +73,9 @@ switch ($step) {
 						if (!empty($links)) {
 							$links .= ", ";
 						}
-						$links .= "<a target=\"_parent\" href=\"{$metadata['CANVAS_INSTANCE_URL']}/courses/{$response['id']}/settings\">{$response['name']}</a>";
+						$links .= "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$response['id']}/settings\">{$response['name']}</a>";
 					} catch (Exception $e) {
-						$smarty->addMessage(
-							'Error',
-							"Problem at <code>old_course_id</code> = {$course['old_course_id']}. [Error " . $e->getcode() . '] '. $e->getMessage(),
-							NotificationMessage::ERROR
-						);
+						exceptionErrorMessage($e);
 					}
 					
 				}

@@ -3,9 +3,7 @@
 {block name="form-content"}
 
 	{include file="select-account.tpl"}
-
-	{include file="select-term.tpl"}
-
-	{assign var="formButton" value="Assign Color Blocks"}
+	
+	{assign var="formButton" value="Punch it, Chewie!"}
 
 {/block}

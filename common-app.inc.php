@@ -91,6 +91,24 @@ function getTermList() {
 	return $terms;
 }
 
+/**
+ * A standard format for an error message due to an exception
+ *
+ * @param \Exception $e
+ *
+ * @return void
+ **/
+function exceptionErrorMessage($e) {
+	global $smarty; // FIXME grown-ups don't code like this
+	global $api; // FIXME grown-ups don't code like this
+	$smarty->addMessage(
+		'Error ' . $e->getCode(),
+		'<p>Last API Request</p><pre>' . print_r($api->last_request, true) . '</pre><p>Error Message</p><pre>' . $e->getMessage() .'</pre>',
+		NotificationMessage::ERROR
+	);
+}
+
+$_SESSION['canvasInstanceUrl'] = 'https://' . $_SESSION['toolProvider']->user->getResourceLink()->settings['custom_canvas_api_domain'];
 $api = new CanvasPest($_SESSION['apiUrl'], $_SESSION['apiToken']);
 
 $smarty->assign('navbarActive', basename(dirname($_SERVER['REQUEST_URI'])));
