@@ -2,7 +2,7 @@
 
 {block name="subcontent"}
 
-{assign var="csv" value=$csv|default:false}
+	{assign var="csv" value=$csv|default:false}
 
 	<div class="container">
 		<div class="readable-width">
