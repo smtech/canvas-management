@@ -3,6 +3,7 @@
 require_once('common.inc.php');
 
 use smtech\StMarksColors as sm;
+use Battis\HiearchicalSimpleCache as HierarchicalSimpleCache;
 
 $cache = new Battis\HiearchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
 
@@ -36,6 +37,13 @@ switch ($step) {
 		} else {
 			$affected = array();
 			$unaffected = array();
+			
+			$parentCourses = $cache->getCache('parent courses');
+			if (!$parentCourses) $parentCourses = array();
+			
+			$colorAssignments = $cache->getcache('color assignments');
+			if (!$colorAssignments) $colorAssignments = array();
+			
 			try {
 				$courses = $api->get(
 					"accounts/$account/courses",
@@ -50,14 +58,14 @@ switch ($step) {
 					/* ...and figure out their _original_ course SIS ID... */
 					$sections = $api->get("courses/{$course['id']}/sections");
 					foreach($sections as $section) {
-						$sis_course_id = $cache->getCache($section['sis_section_id']);
+						$sis_course_id = (isset($parentCourses[$section['section_sis_id']]) ? $parentCourses[$section['sis_section_id']] : false);
 						if ($sis_course_id === false) {
 							$parentCourse = $course;
 							if (!empty($section['nonxlist_course_id'])) {
 								$parentCourse = $api->get("courses/{$section['nonxlist_course_id']}");
 							}
 							$sis_course_id = $parentCourse['sis_course_id'];
-							$cache->setCache($section['sis_section_id'], $sis_course_id);
+							$parentCourses[$section['sis_section_id']] = $sis_course_id;
 						}
 						
 						/* ...figure out the proper block color... */
@@ -67,13 +75,14 @@ switch ($step) {
 							/* ...and set it for all enrolled users. */
 							$enrollments = $api->get("sections/{$section['id']}/enrollments", array('state' => 'active'));
 							foreach($enrollments as $enrollment) {
-								if ($enrollment['user']['name'] !== 'Test Student') {
+								if ($enrollment['user']['name'] !== 'Test Student' && !isset($colorAssignments[$enrollment['user']['id']][$course['id']])) {
 									$response = $api->put(
 										"users/{$enrollment['user']['id']}/colors/course_{$course['id']}",
 										array(
 											'hexcode' => $color
 										)
 									);
+									$colorAssignments[$enrollment['user']['id']][$course['id']] = $response['hexcode'];
 								}
 							}
 							$affected[] = "<a href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/sections/{$section['id']}\">{$section['name']} <span style=\"color: {$response['hexcode']};\"><span class=\"glyphicon glyphicon-calendar\"></span></span></a>";
@@ -86,6 +95,9 @@ switch ($step) {
 			} catch (Exception $e) {
 				exceptionErrorMessage($e);
 			}
+			
+			$cache->setCache('parent courses', $parentCourses, HierarchicalSimpleCache::IMMORTAL_LIFETIME);
+			$cache->setCache('color assignments', $colorAssignments, HierarchicalSimpleCache::IMMORTAL_LIFETIME);
 			
 			$smarty->addMessage(
 				count($affected) . ' Color Blocks Assigned',
