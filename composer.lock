@@ -303,12 +303,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "31a7162fbaebf5639a4c673ab41b9f1df7be27b3"
+                "reference": "bfcffb009aa8ead7e77290115d5c9d652588b3e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/31a7162fbaebf5639a4c673ab41b9f1df7be27b3",
-                "reference": "31a7162fbaebf5639a4c673ab41b9f1df7be27b3",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/bfcffb009aa8ead7e77290115d5c9d652588b3e4",
+                "reference": "bfcffb009aa8ead7e77290115d5c9d652588b3e4",
                 "shasum": ""
             },
             "require": {
@@ -350,7 +350,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-08-27 17:26:49"
+            "time": "2015-09-01 00:52:09"
         },
         {
             "name": "smtech/canvaspest",

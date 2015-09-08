@@ -29,7 +29,10 @@ switch ($step) {
 			'faculty',
 			'staff',
 			'student',
-			'no-menu'
+			'advisor',
+			'no-menu',
+			'alum',
+			'departed'
 		);
 		
 		if ($step == STEP_RESULT) {
@@ -94,10 +97,24 @@ switch ($step) {
 							`id` = '{$user['id']}'
 				")) {
 					if ($row = $response->fetch_assoc()) {
-						$assignedUsers[$user['id']]['custom-prefs'] = $row;
-						$assignedUsers[$user['id']]['user'] = $user;
+						$row['groups'] = unserialize($row['groups']);
+						if (!empty($row['groups'])) {
+							$groupResponse = $customPrefs->query("
+								SELECT *
+									FROM `groups`
+									WHERE
+										`id` = '" . implode("' OR `id` = '", $row['groups']) . "'
+							");
+							$groups = array();
+							while ($groupRow = $groupResponse->fetch_assoc()) {
+								$groups[$groupRow['id']] = $groupRow;
+							}
+							$row['groups'] = $groups;
+						}
+						$assignedUsers[$row['role']][$user['id']]['custom-prefs'] = $row;
+						$assignedUsers[$row['role']][$user['id']]['user'] = $user;
 					} else {
-						$unassignedUsers[$user['id']]['user'] = $user;
+						$unassignedUsers[0][$user['id']]['user'] = $user;
 					}
 				}
 			}

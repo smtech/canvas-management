@@ -5,6 +5,7 @@
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" id="custom-prefs-dropdown">Custom Preferences <span class="caret"></span></a>
 		<ul class="dropdown-menu">
 			<li><a href="{$metadata['APP_URL']}/custom-preferences/assign-user-roles.php">Assign User Roles</a></li>
+			<li><a href="{$metadata['APP_URL']}/custom-preferences/apply-enrollment-rules.php">Apply Enrollment Rules</a></li>
 			<li><a href="{$metadata['APP_URL']}/custom-preferences/color-blocks.php">Color Blocks</a></li>
 		</ul>
 	</li>

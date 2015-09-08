@@ -25,6 +25,7 @@ switch ($step) {
 		}
 
 		if ($step == STEP_CONFIRM) {
+			$smarty->assign('fields', array_keys($courses[0]));
 			$smarty->assign('courses', $courses);
 			$smarty->assign('formHidden', array('step' => STEP_UPDATE));
 			$smarty->display(basename(__FILE__, '.php') . '/confirm.tpl');

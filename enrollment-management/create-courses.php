@@ -70,30 +70,34 @@ switch ($step) {
 			$templated = true;
 			$template = (is_int($_REQUEST['template']) ? $_REQUEST['template'] : "sis_course_id:{$_REQUEST['template']}");
 		
-			/* pull course settings as completely as possible */		
-			$source = $api->get("courses/$template/settings");
-			$source = array_merge(
-				$source->getArrayCopy(),
-				$api->get("courses/$template")->getArrayCopy());
-
-			/* save ID and name to create a nice link later */
-			$sourceId = $source['id'];
-			$sourceName = $source['name'];
-
-			/* clear settings that are provided form entry */
-			unset($source['id']);
-			unset($source['sis_course_id']);
-			unset($source['integration_id']);
-			unset($source['name']);
-			unset($source['course_code']);
-			unset($source['account_id']);
-			unset($source['enrollment_term_id']);
-			unset($source['start_at']);
-			unset($source['end_at']);
-			unset($source['enrollments']);
-			
-			/* why nest this, I mean... really? */
-			$source = array('course' => $source);
+			/* pull course settings as completely as possible */
+			try {
+				$source = $api->get("courses/$template/settings");
+				$source = array_merge(
+					$source->getArrayCopy(),
+					$api->get("courses/$template")->getArrayCopy());
+	
+				/* save ID and name to create a nice link later */
+				$sourceId = $source['id'];
+				$sourceName = $source['name'];
+	
+				/* clear settings that are provided form entry */
+				unset($source['id']);
+				unset($source['sis_course_id']);
+				unset($source['integration_id']);
+				unset($source['name']);
+				unset($source['course_code']);
+				unset($source['account_id']);
+				unset($source['enrollment_term_id']);
+				unset($source['start_at']);
+				unset($source['end_at']);
+				unset($source['enrollments']);
+				
+				/* why nest this, I mean... really? */
+				$source = array('course' => $source);
+			} catch (Exception $e) {
+				exceptionErrorMessage($e);
+			}
 		}
 		
 		$csv = DataUtilities::loadCsvToArray('csv');

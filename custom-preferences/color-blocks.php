@@ -58,7 +58,7 @@ switch ($step) {
 					/* ...and figure out their _original_ course SIS ID... */
 					$sections = $api->get("courses/{$course['id']}/sections");
 					foreach($sections as $section) {
-						$sis_course_id = (isset($parentCourses[$section['section_sis_id']]) ? $parentCourses[$section['sis_section_id']] : false);
+						$sis_course_id = (isset($parentCourses[$section['sis_section_id']]) ? $parentCourses[$section['sis_section_id']] : false);
 						if ($sis_course_id === false) {
 							$parentCourse = $course;
 							if (!empty($section['nonxlist_course_id'])) {
