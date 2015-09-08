@@ -15,6 +15,14 @@ define('STEP_ENROLL', 3);
 
 $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 
+$smarty->assign('role', (empty($_REQUEST['role']) ? 218 /* Student */ : $_REQUEST['role']));
+
+$roles = $cache->getCache('roles');
+if ($roles === false) {
+	$roles = $api->get('accounts/1/roles'); // TODO handle specific accounts
+	$cache->setCache('roles', $roles);
+}
+
 switch ($step) {
 	case STEP_CONFIRM:
 		
@@ -67,13 +75,7 @@ switch ($step) {
 			
 			$smarty->assign('courses', $courses);
 			$smarty->assign('confirm', $confirm);
-			$smarty->assign('roles', array(
-				'StudentEnrollment' => 'Student',
-				'TeacherEnrollment' => 'Teacher',
-				'TaEnrollment' => 'TA',
-				'ObserverEnrollment' => 'Observer',
-				'DesignerEnrollment' => 'Designer'
-			));
+			$smarty->assign('roles', $api->get('accounts/1/roles')); // TODO make this account-specific
 			$smarty->assign('formHidden', array('step' => STEP_ENROLL));
 			$smarty->display(basename(__FILE__, '.php') . '/confirm.tpl');
 			break;		
@@ -86,7 +88,7 @@ switch ($step) {
 			$step = STEP_INSTRUCTIONS;
 		}
 		
-		/* flow into STEP_ENROLL (and STEP_INSTRUCTIONS */
+		/* flow into STEP_ENROLL (and STEP_INSTRUCTIONS) */
 	
 	case STEP_ENROLL:
 		if ($step == STEP_ENROLL) {
@@ -112,7 +114,7 @@ switch ($step) {
 						"/courses/{$_REQUEST['course']}/enrollments",
 						array(
 							'enrollment[user_id]' => $user['id'],
-							'enrollment[type]' => $user['role'],
+							'enrollment[role_id]' => $user['role'],
 							'enrollment[enrollment_state]' => 'active',
 							'enrollment[notify]' => (empty($user['notify']) ? 'false' : $user['notify'])
 						)
@@ -140,6 +142,8 @@ switch ($step) {
 		if (!empty($_REQUEST['course'])) {
 			$smarty->assign('course', $_REQUEST['course']);
 		}
+		
+		$smarty->assign('roles', $roles);
 		$smarty->assign('formHidden', array('step' => STEP_CONFIRM));
 		$smarty->display(basename(__FILE__, '.php') . '/instructions.tpl');
 }

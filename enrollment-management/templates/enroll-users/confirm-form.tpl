@@ -43,8 +43,8 @@
 				<label for="user-{$i}-role" class="sr-only">Role</label>
 				<div class="col-sm-{$formLabelWidth}">
 					<select id="user-{$i}-role" name="users[{$i}][role]" class="form-control selectpicker">
-						{foreach $roles as $enrollment => $role}
-							<option value="{$enrollment}">{$role}</option>
+						{foreach $roles as $r}
+							<option value="{$r['id']}" {if $r['id'] == $role}selected="selected"{/if}>{$r['label']}</option>
 						{/foreach}
 					</select>
 				</div>
