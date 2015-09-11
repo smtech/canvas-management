@@ -68,6 +68,7 @@ switch ($step) {
 					);
 					break;
 				}
+				$advisorLastName = substr($advisor['sortable_name'], 0, strpos($advisor['sortable_name'], ','));
 			
 				/* look at all the student enrollments... */
 				$advisees = $api->get("courses/{$advisory['id']}/users",
@@ -82,12 +83,11 @@ switch ($step) {
 										
 					/* generate what the advisor account info should be */
 					$observer['sis_user_id'] = "{$advisee['sis_user_id']}-advisor";
-					$observer['last_name'] = substr($advisor['sortable_name'], 0, strpos($advisor['sortable_name'], ','));
 					$observer['login'] = strtolower('advisor' . substr($advisee['login_id'], 0, strpos($advisee['login_id'], '@')));
 					$observer['password'] = $pwgen->generate();
-					$observer['name'] = "{$advisee['name']} ({$observer['last_name']} Advisor)";
-					$observer['sortable_name'] = "{$advisee['sortable_name']} ({$observer['last_name']} Advisor)";
-					$observer['short_name'] = "{$advisee['short_name']} ({$observer['last_name']} Advisor)";
+					$observer['name'] = "{$advisee['name']} ($advisorLastName Advisor)";
+					$observer['sortable_name'] = "{$advisee['sortable_name']} ($advisorLastName Advisor)";
+					$observer['short_name'] = "{$advisee['short_name']} ($advisorLastName Advisor)";
 					
 					
 					/* this email format works for Google Apps domains -- it's the advisor's email address with a tag that identifies the email as relating to the advisee */
@@ -106,7 +106,7 @@ switch ($step) {
 					if ($existing) {
 	
 						/* update name */
-						$advisor = $api->put("users/{$existing['id']}",
+						$api->put("users/{$existing['id']}",
 							array(
 								'user[name]' => $observer['name'],
 								'user[short_name]' => $observer['short_name'],
