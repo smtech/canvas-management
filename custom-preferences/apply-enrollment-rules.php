@@ -89,6 +89,7 @@ switch ($step) {
 				/* get the list of current enrollments for the course the rule refers to */
 				$enrolled = 0;
 				$deleted = 0;
+				$current = 0;
 				$courseExists = true;
 				try {
 					$course = $api->get("courses/$courseId");
@@ -104,16 +105,23 @@ switch ($step) {
 				
 				if ($courseExists) {
 					/* walk through the current enrollments and... */
+					$potentialDuplicates = array();
 					foreach ($enrollments as $enrollment) {
 						
 						/* ignore observers -- they should all be assigned by API to track specific users */
 						if ($enrollment['type'] != 'ObserverEnrollment') {
+							
 							/* ...clear users already enrolled... */
-							if (isset($courses[$rule['course']][$enrollment['user']['id']])) {
-								unset($courses[$rule['course']][$enrollment['user']['id']]);
+							if (isset($enrollees[$enrollment['user']['id']])) {
+								unset($enrollees[$enrollment['user']['id']]);
+								
+								/* make a note of this user in potential duplicates, in case they have
+								   multiple enrollments -- leave 'em all! */
+								$potentialDuplicates[$enrollment['user']['id']] = true;
+								$current++;
 								
 							/* ...and purge users who should not be enrolled */
-							} else {
+							} elseif (!isset($potentialDuplicates[$enrollment['user']['id']])) {
 								$api->delete(
 									"courses/$courseId/enrollments/{$enrollment['id']}",
 									array(
@@ -147,7 +155,7 @@ switch ($step) {
 					}
 					$smarty->addMessage(
 						$course['name'],
-						"After applying enrollment rules, <a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/$courseId/users\">$enrolled new users were enrolled in this course</a> and $deleted users were removed."
+						"After applying enrollment rules, <a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/$courseId/users\">$enrolled new users were enrolled in this course</a>, $current users were unchanged, and $deleted users were removed."
 					);
 				}
 			}

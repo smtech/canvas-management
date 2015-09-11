@@ -103,7 +103,7 @@ function exceptionErrorMessage($e) {
 	global $api; // FIXME grown-ups don't code like this
 	$smarty->addMessage(
 		'Error ' . $e->getCode(),
-		'<p>Last API Request</p><pre>' . print_r($api->last_request, true) . '</pre><p>Error Message</p><pre>' . $e->getMessage() .'</pre>',
+		'<p>Last API Request</p><pre>' . print_r($api->last_request, true) . '</pre><p>Last Headers</p><pre>' . print_r($api->last_headers, true) . '</pre><p>Last Response</p><pre>' . print_r($api->last_response,true) . '</pre><p>Error Message</p><pre>' . $e->getMessage() .'</pre>',
 		NotificationMessage::ERROR
 	);
 }
