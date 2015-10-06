@@ -29,6 +29,7 @@
 			<li><a href="{$metadata['APP_URL']}/one-offs/fix-section-sis-ids.php">Fix Section SIS IDs</a></li>
 			<li><a href="{$metadata['APP_URL']}/one-offs/download-users-csv.php">Download Users.csv</a></li>
 			<li><a href="{$metadata['APP_URL']}/advisor-dashboard/create-advisor-observers.php">Create Advisor-Observers</a></li>
+			<li><a href="{$metadata['APP_URL']}/one-offs/publish-courses.php">Publish Courses</a></li>
 		</ul>
 	</li>
 </ul>
