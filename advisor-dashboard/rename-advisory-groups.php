@@ -38,12 +38,16 @@ switch ($step) {
 						)
 					);
 					$sections = $api->get("courses/{$course['id']}/sections");
-					$api->put(
-						"sections/{$sections[0]['id']}",
-						array(
-							'course_section[name]' => $courseName
-						)
-					);
+					foreach($sections as $section) {
+						if ($section['name'] == $course['name']) {
+							$api->put(
+								"sections/{$sections[0]['id']}",
+								array(
+									'course_section[name]' => $courseName
+								)
+							);
+						}
+					}
 					$updated++;
 				} else {
 					$unchanged++;
