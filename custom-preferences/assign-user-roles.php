@@ -15,7 +15,7 @@ switch ($step) {
 	case STEP_LISTING:
 	case STEP_RESULT:
 
-		$users = $cache->getCache('users');
+		$users = false; //$cache->getCache('users');
 		if ($users === false) {
 			$users = array();
 			$response = $api->get('/accounts/1/users');
