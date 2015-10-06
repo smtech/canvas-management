@@ -70,7 +70,7 @@ switch ($step) {
 						
 						/* ...figure out the proper block color... */
 						if (preg_match("/($colors)/i", $sis_course_id, $match)) {
-							$color = sm::get($match[1])->value();
+							$color = sm::get($match[1])->dark()->value();
 							
 							/* ...and set it for all enrolled users. */
 							$enrollments = $api->get("sections/{$section['id']}/enrollments", array('state' => 'active'));
