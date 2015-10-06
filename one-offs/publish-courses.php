@@ -9,25 +9,29 @@ $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 
 switch($step) {
 	case STEP_PUBLISH:
-		$courses = $api->get(
-			"accounts/{$_REQUEST['account']}/courses",
-			array(
-				'enrollment_term_id' => $_REQUEST['term'],
-				'published' => 'false'
-			)
-		);
-		
-		$list = array();
-		foreach ($courses as $course) {
-			$api->put(
-				"courses/{$course['id']}",
+		try {
+			$courses = $api->get(
+				"accounts/{$_REQUEST['account']}/courses",
 				array(
-					'offer' => 'true'
+					'enrollment_term_id' => $_REQUEST['term'],
+					'published' => 'false'
 				)
 			);
-			$list[] = "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}\">{$course['name']}</a>";
+			
+			$list = array();
+			foreach ($courses as $course) {
+				$api->put(
+					"courses/{$course['id']}",
+					array(
+						'offer' => 'true'
+					)
+				);
+				$list[] = "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}\">{$course['name']}</a>";
+			}
+			$smarty->addMessage($courses->count(). ' courses published', implode(', ', $list), NotificationMessage::GOOD);
+		} catch (Exception $e) {
+			exceptionErrorMessage($e);
 		}
-		$smarty->addMessage($courses->count(). ' courses published', implode(', ', $list), NotificationMessage::GOOD);
 	
 	case STEP_INSTRUCTIONS:
 	default:
