@@ -1,4 +1,4 @@
-{assign var="formLabelWidth" value=$formLabelWdith|default: 2}
+{assign var="formLabelWidth" value=$formLabelWidth|default: 2}
 {assign var="accounts" value=$accounts|default: null}
 {block name="select-account"}
 

@@ -4,7 +4,7 @@
 
 	<div class="form-group">
 		<label for="users" class="control-label col-sm-{$formLabelWidth}">Users</label>
-		<div class="col-sm-{12 - $formLabelWdith}">
+		<div class="col-sm-{12 - $formLabelWidth}">
 			<textarea name="users" id="users" class="form-control" placeholder="Comma-separated and/or one user search term per line" autofocus="autofocus" rows="5">{$users|default: ""}</textarea>
 		</div>
 	</div>
