@@ -58,7 +58,11 @@ function getAccountList() {
 	
 	$accounts = $cache->getCache('accounts');
 	if ($accounts === false) {
-		$accounts = $api->get('accounts/1/sub_accounts', array('recursive' => 'true'));
+		$accountsResponse = $api->get('accounts/1/sub_accounts', array('recursive' => 'true'));
+		$accounts = array();
+		foreach ($accountsResponse as $account) {
+			$accounts[$account['id']] = $account;
+		}
 		$cache->setCache('accounts', $accounts, 7 * 24 * 60 * 60);
 	}
 	return $accounts;
@@ -83,7 +87,11 @@ function getTermList() {
 				'workflow_state' => 'active'
 			)
 		);
-		$terms = $_terms['enrollment_terms'];
+		$termsResponse = $_terms['enrollment_terms'];
+		$terms = array();
+		foreach ($termsResponse as $term) {
+			$terms[$term['id']] = $term;
+		}
 		$cache->setCache('terms', $terms, 7 * 24 * 60 * 60);
 	}
 	return $terms;

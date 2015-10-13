@@ -36,18 +36,28 @@ switch ($step) {
 			);
 			$step = STEP_INSTRUCTIONS;
 		} else {
-			$courses = $cache->getCache("courses/{$_REQUEST['course']}");
-			if ($courses === false) {
+			$sections = $cache->getCache("courses/{$_REQUEST['course']}");
+			if ($sections === false) {
+				$section = array();
 				$courses = $api->get(
 					'accounts/1/courses',
 					array(
 						'search_term' => $_REQUEST['course']
 					)
 				);
-				$cache->setCache("courses/{$_REQUEST['course']}", $courses, CACHE_LIFETIME);
+				foreach($courses as $course) {
+					$courseSections = $api->get("courses/{$course['id']}/sections");
+					foreach ($courseSections as $section) {
+						$sections[] = array(
+							'course' => $course,
+							'section' => $section
+						);
+					}
+				}
+				$cache->setCache("courses/{$_REQUEST['course']}", $sections, CACHE_LIFETIME);
 			}
 			
-			if ($courses->count() == 0) {
+			if (count($sections) == 0) {
 				$smarty->addMessage(
 					'No Courses',
 					"matched your search term '{$_REQUEST['course']}'.",
@@ -73,7 +83,8 @@ switch ($step) {
 				}
 			}	
 			
-			$smarty->assign('courses', $courses);
+			$smarty->assign('sections', $sections);
+			$smarty->assign('terms', getTermList());
 			$smarty->assign('confirm', $confirm);
 			$smarty->assign('roles', $api->get('accounts/1/roles')); // TODO make this account-specific
 			$smarty->assign('formHidden', array('step' => STEP_ENROLL));
@@ -92,9 +103,9 @@ switch ($step) {
 	
 	case STEP_ENROLL:
 		if ($step == STEP_ENROLL) {
-			if (empty($_REQUEST['course'])) {
+			if (empty($_REQUEST['section'])) {
 				$smarty->addMessage(
-					'Course',
+					'Section',
 					'missing from enrollment request.',
 					NotificationMessage::ERROR
 				);
@@ -111,7 +122,7 @@ switch ($step) {
 				$count = 0;
 				foreach ($_REQUEST['users'] as $user) {
 					$enrollment = $api->post(
-						"/courses/{$_REQUEST['course']}/enrollments",
+						"/sections/{$_REQUEST['section']}/enrollments",
 						array(
 							'enrollment[user_id]' => $user['id'],
 							'enrollment[role_id]' => $user['role'],
@@ -124,9 +135,10 @@ switch ($step) {
 					}
 				}
 				
+				// FIXME no longer have the course ID… link is broken
 				$smarty->addMessage(
 					'Success',
-					"<a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$_REQUEST['course']}/users\">$count users enrolled</a>",
+					"<a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$_REQUEST['section']}/users\">$count users enrolled</a>",
 					NotificationMessage::GOOD
 				);
 				

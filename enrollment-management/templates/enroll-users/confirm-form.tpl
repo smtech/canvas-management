@@ -7,16 +7,16 @@
 			<h3 class="panel-title">Course</h3>
 		</div>
 		<div class="form-group">
-			<label for="course" class="control-label col-sm-2">Course</label>
+			<label for="section" class="control-label col-sm-2">Section</label>
 			<div class="col-sm-3">
-				<select id="course" name="course" class="form-control">
+				<select id="section" name="section" class="form-control">
 					<option value="" disabled="disabled" selected="selected">Choose the desired course</option>
 					<option disabled="disabled"></option>
-					{foreach $courses as $course}
-						<optgroup>
-							<option value="{$course['id']}">{$course['name']}</option>
-							<option disabled="disabled">{$course['term']['name']}</option>
-							<option disabled="disabled">{$course['sis_course_id']}</option>
+					{foreach $sections as $section}
+						<optgroup label="{$section['course']['name']}">
+							<option value="{$section['section']['id']}">{$section['section']['name']}</option>
+							<option disabled="disabled">{if !empty($section['section']['sis_section_id'])}{$section['section']['sis_section_id']}{else}No SIS ID{/if}</option>
+							<option disabled="disabled">{$terms[$section['course']['enrollment_term_id']]['name']}</option>
 						</optgroup>
 					{/foreach}
 				</select>
