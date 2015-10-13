@@ -95,8 +95,8 @@ switch ($step) {
 				exceptionErrorMessage($e);
 			}
 			
-			$cache->setCache('parent courses', $parentCourses, HierarchicalSimpleCache::IMMORTAL_LIFETIME);
-			$cache->setCache('color assignments', $colorAssignments, HierarchicalSimpleCache::IMMORTAL_LIFETIME);
+			$cache->setCache('parent courses', $parentCourses, \Battis\HierarchicalSimpleCache::IMMORTAL_LIFETIME);
+			$cache->setCache('color assignments', $colorAssignments, \Battis\HierarchicalSimpleCache::IMMORTAL_LIFETIME);
 			
 			$smarty->addMessage(
 				count($affected) . ' Color Blocks Assigned',
