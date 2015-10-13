@@ -4,20 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ed7f254c65e63d33d2314418ca5dedef",
+    "hash": "1fc6ca395d434b3445cd04f44763a2da",
+    "content-hash": "918a3b32e82d817b59ce0dbd5f8a8f98",
     "packages": [
         {
             "name": "battis/appmetadata",
-            "version": "v1.1.1",
+            "version": "v1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/battis/appmetadata.git",
-                "reference": "99d3cbd11d615e94355f409de88240752e906ee7"
+                "reference": "9326536ba3492660f22ba955c68643b26bceb057"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/battis/appmetadata/zipball/99d3cbd11d615e94355f409de88240752e906ee7",
-                "reference": "99d3cbd11d615e94355f409de88240752e906ee7",
+                "url": "https://api.github.com/repos/battis/appmetadata/zipball/9326536ba3492660f22ba955c68643b26bceb057",
+                "reference": "9326536ba3492660f22ba955c68643b26bceb057",
                 "shasum": ""
             },
             "type": "library",
@@ -37,7 +38,7 @@
                 }
             ],
             "description": "An object to store app metadata backed by a MySQL table",
-            "time": "2015-08-17 19:58:28"
+            "time": "2015-10-05 16:46:06"
         },
         {
             "name": "battis/data-utilities",
@@ -45,12 +46,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/battis/data-utilities.git",
-                "reference": "14f3d457ebc7b661c4c42596d0567dc85bab9e2a"
+                "reference": "2675320d7b9099c0689a6db9e2262ea70d40742f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/battis/data-utilities/zipball/14f3d457ebc7b661c4c42596d0567dc85bab9e2a",
-                "reference": "14f3d457ebc7b661c4c42596d0567dc85bab9e2a",
+                "url": "https://api.github.com/repos/battis/data-utilities/zipball/2675320d7b9099c0689a6db9e2262ea70d40742f",
+                "reference": "2675320d7b9099c0689a6db9e2262ea70d40742f",
                 "shasum": ""
             },
             "type": "library",
@@ -70,7 +71,7 @@
                 }
             ],
             "description": "A handful of useful helper functions to process data",
-            "time": "2015-08-27 20:31:48"
+            "time": "2015-10-11 14:54:59"
         },
         {
             "name": "battis/educoder-pest-fork",
@@ -116,16 +117,16 @@
         },
         {
             "name": "battis/simplecache",
-            "version": "v1.1",
+            "version": "v1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/battis/simplecache.git",
-                "reference": "0cb75651240fe0d3037ad8557f6a4fbc35bc8e71"
+                "reference": "2116d33def68ebf3d2a2ad4afd2970077115d801"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/battis/simplecache/zipball/0cb75651240fe0d3037ad8557f6a4fbc35bc8e71",
-                "reference": "0cb75651240fe0d3037ad8557f6a4fbc35bc8e71",
+                "url": "https://api.github.com/repos/battis/simplecache/zipball/2116d33def68ebf3d2a2ad4afd2970077115d801",
+                "reference": "2116d33def68ebf3d2a2ad4afd2970077115d801",
                 "shasum": ""
             },
             "type": "library",
@@ -145,7 +146,7 @@
                 }
             ],
             "description": "Manage a simple cache backed by a MySQL database",
-            "time": "2015-08-13 19:32:36"
+            "time": "2015-10-05 15:13:09"
         },
         {
             "name": "educoder/pest",
@@ -298,61 +299,17 @@
             "time": "2015-02-10 20:07:52"
         },
         {
-            "name": "roderik/pwgen-php",
-            "version": "0.1.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/roderik/pwgen-php.git",
-                "reference": "f17e1edbf9e1364ff1094f479173fd48e8eced13"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/roderik/pwgen-php/zipball/f17e1edbf9e1364ff1094f479173fd48e8eced13",
-                "reference": "f17e1edbf9e1364ff1094f479173fd48e8eced13",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "PWGen": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL"
-            ],
-            "authors": [
-                {
-                    "name": "Theodore Ts'o",
-                    "email": "tytso@alum.mit.edu"
-                },
-                {
-                    "name": "Superwayne",
-                    "email": "superwayne@superwayne.org"
-                }
-            ],
-            "description": "pwgen-php is a simple PHP class which aims to clone the GNU pwgen functionality.",
-            "keywords": [
-                "generator",
-                "password"
-            ],
-            "time": "2015-06-06 09:21:47"
-        },
-        {
             "name": "smarty/smarty",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "bfcffb009aa8ead7e77290115d5c9d652588b3e4"
+                "reference": "788566cf70752584e804185b0f39dc4446aabbc6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/bfcffb009aa8ead7e77290115d5c9d652588b3e4",
-                "reference": "bfcffb009aa8ead7e77290115d5c9d652588b3e4",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/788566cf70752584e804185b0f39dc4446aabbc6",
+                "reference": "788566cf70752584e804185b0f39dc4446aabbc6",
                 "shasum": ""
             },
             "require": {
@@ -394,7 +351,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-09-01 00:52:09"
+            "time": "2015-10-08 17:53:25"
         },
         {
             "name": "smtech/canvaspest",
@@ -502,12 +459,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smtech/stmarkssmarty.git",
-                "reference": "71e3cc71a1f81c2b8bdb298b53bc183728c66af9"
+                "reference": "82f6127917cc48eb1bc9caa534fa8025ffa8ba53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smtech/stmarkssmarty/zipball/71e3cc71a1f81c2b8bdb298b53bc183728c66af9",
-                "reference": "71e3cc71a1f81c2b8bdb298b53bc183728c66af9",
+                "url": "https://api.github.com/repos/smtech/stmarkssmarty/zipball/82f6127917cc48eb1bc9caa534fa8025ffa8ba53",
+                "reference": "82f6127917cc48eb1bc9caa534fa8025ffa8ba53",
                 "shasum": ""
             },
             "require": {
@@ -536,7 +493,7 @@
                 }
             ],
             "description": "A standard Smarty install for St. Mark's projects",
-            "time": "2015-08-26 19:31:34"
+            "time": "2015-10-11 14:49:12"
         },
         {
             "name": "spvsoftwareproducts/LTI_Tool_Provider",

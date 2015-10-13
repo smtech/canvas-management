@@ -30,8 +30,7 @@
 		"spvsoftwareproducts/LTI_Tool_Provider": "~2.5",
 		"pear/log": "~1.12",
 		"battis/simplecache": "~1.0",
-		"battis/data-utilities": "dev-master",
-		"roderik/pwgen-php": "~0.1"
+		"battis/data-utilities": "dev-master"
 	},
 	"autoload": {
 		"classmap": [""]
