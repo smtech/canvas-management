@@ -2,8 +2,6 @@
 
 require_once('common.inc.php');
 
-use Battis\HiearchicalSimpleCache as HierarchicalSimpleCache;
-
 function blank($row, $key) {
 	if (empty($row[$key])) {
 		return '';
@@ -12,7 +10,7 @@ function blank($row, $key) {
 	}
 }
 
-$cache = new HierarchicalSimpleCache($sql, basename(__FILE__, '.php'));
+$cache = new \Battis\HierarchicalSimpleCache($sql, basename(__FILE__, '.php'));
 
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_CSV', 2);

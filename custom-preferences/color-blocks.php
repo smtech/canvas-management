@@ -3,9 +3,8 @@
 require_once('common.inc.php');
 
 use smtech\StMarksColors as sm;
-use Battis\HiearchicalSimpleCache as HierarchicalSimpleCache;
 
-$cache = new Battis\HiearchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
+$cache = new \Battis\HierarchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
 
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_RESULT', 2);

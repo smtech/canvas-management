@@ -7,7 +7,7 @@ $DEFAULT_TERM = 195;
 define('CACHE_LIFETIME', 20 * 60); // 20 minutes
 define('LONG_CACHE_LIFETIME', 7 * 24 * 60 * 60); // 1 week
 
-$cache = new Battis\HiearchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
+$cache = new Battis\HierarchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
 
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_CONFIRM', 2);

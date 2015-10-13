@@ -1,7 +1,5 @@
 <?php
 
-use Battis\HiearchicalSimpleCache as HierarchicalSimpleCache;
-
 /**
  * Explode a string
  *
@@ -56,7 +54,7 @@ function getAccountList() {
 	global $sql; // FIXME grown-ups don't code like this
 	global $api; // FIXME grown-ups don't code like this
 		
-	$cache = new HierarchicalSimpleCache($sql, basename(__FILE__, '.php'));
+	$cache = new \Battis\HierarchicalSimpleCache($sql, basename(__FILE__, '.php'));
 	
 	$accounts = $cache->getCache('accounts');
 	if ($accounts === false) {
@@ -75,7 +73,7 @@ function getTermList() {
 	global $sql; // FIXME grown-ups don't code like this
 	global $api; // FIXME grown-ups don't code like this
 		
-	$cache = new HierarchicalSimpleCache($sql, basename(__FILE__, '.php'));
+	$cache = new \Battis\HierarchicalSimpleCache($sql, basename(__FILE__, '.php'));
 	
 	$terms = $cache->getCache('terms');
 	if ($terms === false) {

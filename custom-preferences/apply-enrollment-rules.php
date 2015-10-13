@@ -2,7 +2,7 @@
 	
 require_once('common.inc.php');
 
-$cache = new Battis\HiearchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
+$cache = new \Battis\HierarchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
 $cache->setLifetime(60*60);
 
 define('ENROLL', true);

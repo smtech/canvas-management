@@ -19,7 +19,7 @@ function generateSisId($name) {
 	return strtolower(preg_replace('/[^a-z0-9\-]+/i', '-', $_REQUEST['prefix'] . $name . $_REQUEST['suffix']) . (empty($_REQUEST['unique']) ? '' : '.' . md5(time())));
 }
 
-$cache = new Battis\HiearchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
+$cache = new Battis\HierarchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
 
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_RESULT', 2);
