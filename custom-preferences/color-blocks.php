@@ -4,7 +4,8 @@ require_once('common.inc.php');
 
 use smtech\StMarksColors as sm;
 
-$cache = new \Battis\HierarchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
+$cache = new \Battis\HierarchicalSimpleCache($sql, basename(__DIR__));
+$cache->pushKey(basename(__FILE__, '.php'));
 
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_RESULT', 2);
@@ -40,7 +41,7 @@ switch ($step) {
 			$parentCourses = $cache->getCache('parent courses');
 			if (!$parentCourses) $parentCourses = array();
 			
-			$colorAssignments = $cache->getcache('color assignments');
+			$colorAssignments = $cache->getCache('color assignments');
 			if (!$colorAssignments) $colorAssignments = array();
 			
 			try {
@@ -73,6 +74,7 @@ switch ($step) {
 							
 							/* ...and set it for all enrolled users. */
 							$enrollments = $api->get("sections/{$section['id']}/enrollments", array('state' => 'active'));
+							$users = 0;
 							foreach($enrollments as $enrollment) {
 								if ($enrollment['user']['name'] !== 'Test Student' && !isset($colorAssignments[$enrollment['user']['id']][$course['id']])) {
 									$response = $api->put(
@@ -82,11 +84,17 @@ switch ($step) {
 										)
 									);
 									$colorAssignments[$enrollment['user']['id']][$course['id']] = $response['hexcode'];
+									$users++;
 								}
 							}
-							$affected[] = "<a href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/sections/{$section['id']}\">{$section['name']} <span style=\"color: {$response['hexcode']};\"><span class=\"glyphicon glyphicon-calendar\"></span></span></a>";
+							$notification = "<a href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/sections/{$section['id']}\">{$section['name']}</a> <span style=\"color: #$color;\"><span class=\"glyphicon glyphicon-calendar\"></span></span> ($users / " . $enrollments->count() . " users)";
+							if ($users > 0) {
+								$affected[] = $notification;
+							} else {
+								$unaffected[] = $notification;
+							}
 						} else {
-							$unaffected[] = "<a href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/sections/{$section['id']}\">{$section['name']}</a>";
+							$unaffected[] = "<a href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/sections/{$section['id']}\">{$section['name']}</a> (Not assigned to a color block)";
 						}
 			
 					}
@@ -100,8 +108,8 @@ switch ($step) {
 			
 			$smarty->addMessage(
 				count($affected) . ' Color Blocks Assigned',
-				'<dl><dt>No changes made to&hellip;</dt><dd><ol><li>' . implode('</li><li>', $unaffected) . '</li></ol></dd>' .
-				'<dt>Colors assigned for&hellip;</dt><dd><ol><li>' . implode('</li><li>', $affected) . '</li></ol></dd></dl>',
+				'<dl>' . (count($unaffected) > 0 ? '<dt>No changes made to&#8230;</dt><dd><ol><li>' . implode('</li><li>', $unaffected) . '</li></ol></dd>' : '') .
+				(count($affected) > 0 ? '<dt>Colors assigned for&#8230;</dt><dd><ol><li>' . implode('</li><li>', $affected) . '</li></ol></dd>' : '') . '</dl>',
 				NotificationMessage::GOOD
 			);
 		}
