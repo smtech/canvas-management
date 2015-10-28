@@ -14,8 +14,9 @@
 					<option disabled="disabled"></option>
 					{foreach $sections as $section}
 						<optgroup label="{$section['course']['name']}">
+							<option disabled="disabled">{if !empty($section['course']['sis_course_id'])}{$section['course']['sis_course_id']}{else}No Course SIS ID{/if}</option>
 							<option value="{$section['section']['id']}">{$section['section']['name']}</option>
-							<option disabled="disabled">{if !empty($section['section']['sis_section_id'])}{$section['section']['sis_section_id']}{else}No SIS ID{/if}</option>
+							<option disabled="disabled">{if !empty($section['section']['sis_section_id'])}{$section['section']['sis_section_id']}{else}No Section SIS ID{/if}</option>
 							<option disabled="disabled">{$terms[$section['course']['enrollment_term_id']]['name']}</option>
 						</optgroup>
 					{/foreach}

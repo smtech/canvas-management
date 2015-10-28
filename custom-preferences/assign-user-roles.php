@@ -2,7 +2,8 @@
 
 require_once('common.inc.php');
 
-$cache = new \Battis\HierarchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
+$cache = new \Battis\HierarchicalSimpleCache($sql, basename(__DIR__));
+$cache->pushKey(basename(__FILE__, '.php'));
 $cache->setLifetime(60*60);
 
 define('STEP_INSTRUCTIONS', 1);
@@ -15,7 +16,7 @@ switch ($step) {
 	case STEP_LISTING:
 	case STEP_RESULT:
 
-		$users = false; //$cache->getCache('users');
+		$users = $cache->getCache('users');
 		if ($users === false) {
 			$users = array();
 			$response = $api->get('/accounts/1/users');

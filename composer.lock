@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "battis/appmetadata",
-            "version": "v1.2",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/battis/appmetadata.git",
-                "reference": "9326536ba3492660f22ba955c68643b26bceb057"
+                "reference": "a97bdc20627008ed165b638737b618a0d6f606c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/battis/appmetadata/zipball/9326536ba3492660f22ba955c68643b26bceb057",
-                "reference": "9326536ba3492660f22ba955c68643b26bceb057",
+                "url": "https://api.github.com/repos/battis/appmetadata/zipball/a97bdc20627008ed165b638737b618a0d6f606c2",
+                "reference": "a97bdc20627008ed165b638737b618a0d6f606c2",
                 "shasum": ""
             },
             "type": "library",
@@ -38,7 +38,7 @@
                 }
             ],
             "description": "An object to store app metadata backed by a MySQL table",
-            "time": "2015-10-05 16:46:06"
+            "time": "2015-10-22 20:25:29"
         },
         {
             "name": "battis/data-utilities",
@@ -304,12 +304,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "b26ba9ce522a054f9cd2f13b3ee651adf3240af4"
+                "reference": "862b23fe520b1a7b93cc7784770b56d9114bbbd7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/b26ba9ce522a054f9cd2f13b3ee651adf3240af4",
-                "reference": "b26ba9ce522a054f9cd2f13b3ee651adf3240af4",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/862b23fe520b1a7b93cc7784770b56d9114bbbd7",
+                "reference": "862b23fe520b1a7b93cc7784770b56d9114bbbd7",
                 "shasum": ""
             },
             "require": {
@@ -351,7 +351,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-10-21 02:32:27"
+            "time": "2015-10-26 00:27:06"
         },
         {
             "name": "smtech/canvaspest",
