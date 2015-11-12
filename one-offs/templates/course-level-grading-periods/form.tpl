@@ -25,6 +25,7 @@
 					<div class="input-group date">
 						<input type="text" class="form-control" name="period[start_date]" id="period-start_date" value="{$period['start_date']}" /><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 					</div>
+					<p class="help-block">The grading period will start at 12:00am on this date.</p>
 				</div>
 			</div>
 
@@ -34,6 +35,7 @@
 					<div class="input-group date">
 						<input type="text" class="form-control" name="period[end_date]" id="period-end_date" value="{$period['end_date']}" /><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 					</div>
+					<p class="help-block">The grading period will end at 12:00am on this date (so you probably want to pick the day <em>after</em> the grading period ends).</p>
 				</div>
 			</div>
 			
