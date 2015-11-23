@@ -37,7 +37,7 @@ switch ($step) {
 			$step = STEP_INSTRUCTIONS;
 		} else {
 			$sections = $cache->getCache("courses/{$_REQUEST['course']}");
-			if ($sections === false) {
+			if (empty($sections)) {
 				$section = array();
 				$courses = $api->get(
 					'accounts/1/courses',
@@ -47,17 +47,22 @@ switch ($step) {
 				);
 				foreach($courses as $course) {
 					$courseSections = $api->get("courses/{$course['id']}/sections");
-					foreach ($courseSections as $section) {
-						$sections[] = array(
-							'course' => $course,
-							'section' => $section
-						);
+					if ($courseSections->count() == 0) {
+						/* we have only the "magic" default section */
+						$sections[] = array('course' => $course);
+					} else {
+						foreach ($courseSections as $section) {
+							$sections[] = array(
+								'course' => $course,
+								'section' => $section
+							);
+						}
 					}
 				}
 				$cache->setCache("courses/{$_REQUEST['course']}", $sections, CACHE_LIFETIME);
 			}
 			
-			if (count($sections) == 0) {
+			if (empty($sections)) {
 				$smarty->addMessage(
 					'No Courses',
 					"matched your search term '{$_REQUEST['course']}'.",
@@ -67,49 +72,57 @@ switch ($step) {
 			}
 		}
 		
-		if (!empty($users) && $step == STEP_CONFIRM) {
-			$confirm = array();
-			foreach($users as $term) {
-				$confirm[$term] = $cache->getCache("users/$term");
-				if ($confirm[$term] === false) {
-					$confirm[$term] = $api->get(
-						'accounts/1/users',
-						array(
-							'search_term' => $term,
-							'include' => array('term')
-						)
-					);
-					$cache->setCache("users/$term", $confirm[$term], CACHE_LIFETIME);
-				}
-			}	
-			
-			$smarty->assign('sections', $sections);
-			$smarty->assign('terms', getTermList());
-			$smarty->assign('confirm', $confirm);
-			$smarty->assign('roles', $api->get('accounts/1/roles')); // TODO make this account-specific
-			$smarty->assign('formHidden', array('step' => STEP_ENROLL));
-			$smarty->display(basename(__FILE__, '.php') . '/confirm.tpl');
-			break;		
-		} else {
-			$smarty->addMessage(
-				'Users',
-				'were not selected, so no enrollments can happen.',
-				NotificationMessage::ERROR
-			);
-			$step = STEP_INSTRUCTIONS;
+		if ($step == STEP_CONFIRM) {
+			if (!empty($users)) {
+				$confirm = array();
+				foreach($users as $term) {
+					$confirm[$term] = $cache->getCache("users/$term");
+					if ($confirm[$term] === false) {
+						$confirm[$term] = $api->get(
+							'accounts/1/users',
+							array(
+								'search_term' => $term,
+								'include' => array('term')
+							)
+						);
+						$cache->setCache("users/$term", $confirm[$term], CACHE_LIFETIME);
+					}
+				}	
+				
+				$smarty->assign('sections', $sections);
+				$smarty->assign('terms', getTermList());
+				$smarty->assign('confirm', $confirm);
+				$smarty->assign('roles', $api->get('accounts/1/roles')); // TODO make this account-specific
+				$smarty->assign('formHidden', array('step' => STEP_ENROLL));
+				$smarty->display(basename(__FILE__, '.php') . '/confirm.tpl');
+				break;		
+			} else {
+				$smarty->addMessage(
+					'Users',
+					'were not selected, so no enrollments can happen.',
+					NotificationMessage::ERROR
+				);
+				$step = STEP_INSTRUCTIONS;
+			}
 		}
 		
 		/* flow into STEP_ENROLL (and STEP_INSTRUCTIONS) */
 	
 	case STEP_ENROLL:
 		if ($step == STEP_ENROLL) {
+			$courseEnrollment = false;
+			html_var_dump($_REQUEST);
 			if (empty($_REQUEST['section'])) {
-				$smarty->addMessage(
-					'Section',
-					'missing from enrollment request.',
-					NotificationMessage::ERROR
-				);
-				$step = STEP_INSTRUCTIONS;
+				if (!empty($_REQUEST['course'])) {
+					$courseEnrollment = true;
+				} else {
+					$smarty->addMessage(
+						'Course or Section',
+						'Missing from enrollment request.',
+						NotificationMessage::ERROR
+					);
+					$step = STEP_INSTRUCTIONS;
+				}
 			}
 			
 			if (empty($_REQUEST['users'])) {
@@ -122,7 +135,11 @@ switch ($step) {
 				$count = 0;
 				foreach ($_REQUEST['users'] as $user) {
 					$enrollment = $api->post(
-						"/sections/{$_REQUEST['section']}/enrollments",
+						(
+							$courseEnrollment ?
+							"/courses/{$_REQUEST['course']}/enrollments" :
+							"/sections/{$_REQUEST['section']}/enrollments"
+						),
 						array(
 							'enrollment[user_id]' => $user['id'],
 							'enrollment[role_id]' => $user['role'],
@@ -132,13 +149,20 @@ switch ($step) {
 					);
 					if (!empty($enrollment['id'])) {
 						$count++;
-					}
+					} // FIXME should really list errors, no?
+				}
+				
+				if ($courseEnrollment) {
+					$course = $_REQUEST['course'];
+				} else {
+					$section = $api->get("sections/{$_REQUEST['section']}");
+					$course = $section['course_id'];
 				}
 				
 				// FIXME no longer have the course ID… link is broken
 				$smarty->addMessage(
 					'Success',
-					"<a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$_REQUEST['section']}/users\">$count users enrolled</a>",
+					"<a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/$course/users\">$count users enrolled</a>",
 					NotificationMessage::GOOD
 				);
 				

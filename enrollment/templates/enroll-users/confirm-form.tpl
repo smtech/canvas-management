@@ -6,21 +6,43 @@
 		<div class="panel-heading">
 			<h3 class="panel-title">Course</h3>
 		</div>
-		<div class="form-group">
-			<label for="section" class="control-label col-sm-2">Section</label>
-			<div class="col-sm-3">
-				<select id="section" name="section" class="form-control">
-					<option value="" disabled="disabled" selected="selected">Choose the desired course</option>
-					<option disabled="disabled"></option>
-					{foreach $sections as $section}
-						<optgroup label="{$section['course']['name']}">
-							<option disabled="disabled">{if !empty($section['course']['sis_course_id'])}{$section['course']['sis_course_id']}{else}No Course SIS ID{/if}</option>
-							<option value="{$section['section']['id']}">{$section['section']['name']}</option>
-							<option disabled="disabled">{if !empty($section['section']['sis_section_id'])}{$section['section']['sis_section_id']}{else}No Section SIS ID{/if}</option>
-							<option disabled="disabled">{$terms[$section['course']['enrollment_term_id']]['name']}</option>
-						</optgroup>
-					{/foreach}
-				</select>
+		<div class="panel-body>">
+			<div class="form-group">
+				<label for="course" class="control-label col-sm-{$formLabelWidth}">Course</label>
+				<div class="col-sm-6">
+					<select id="course" name="course" class="form-control">
+						<option value="" disabled="disabled" selected="selected">Choose the desired course</option>
+						<option disabled="disabled"></option>
+						{foreach $sections as $section}
+							{if empty($sections['section'])}
+								<optgroup label="{$section['course']['name']}">
+									<option disabled="disabled">{if !empty($section['course']['sis_course_id'])}{$section['course']['sis_course_id']}{else}No Course SIS ID{/if}</option>
+									<option value="{$section['course']['id']}">{$section['course']['name']} (Default Section)</option>
+								</optgroup>
+							{/if}
+						{/foreach}
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="section" class="control-label col-sm-{$formLabelWidth}">Section</label>
+				<div class="col-sm-6">
+					<select id="section" name="section" class="form-control">
+						<option value="" disabled="disabled" selected="selected">Choose the desired course</option>
+						<option disabled="disabled"></option>
+						{foreach $sections as $section}
+							{if !empty($section['section'])}
+								<optgroup label="{$section['course']['name']}">
+									<option disabled="disabled">{if !empty($section['course']['sis_course_id'])}{$section['course']['sis_course_id']}{else}No Course SIS ID{/if}</option>
+									<option value="{$section['section']['id']}">{$section['section']['name']}</option>
+									<option disabled="disabled">{if !empty($section['section']['sis_section_id'])}{$section['section']['sis_section_id']}{else}No Section SIS ID{/if}</option>
+									<option disabled="disabled">{$terms[$section['course']['enrollment_term_id']]['name']}</option>
+								</optgroup>
+							{/if}
+						{/foreach}
+					</select>
+					<p class="help-block">If selected, will take precedence over the course selection.</p>
+				</div>
 			</div>
 		</div>
 	</div>
