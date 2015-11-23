@@ -1,3 +1,4 @@
+{assign var="__DIR__" value=$smarty.current_dir}
 {extends file="subpage.tpl"}
 
 {block name="subcontent"}
@@ -7,7 +8,7 @@
 		<p>Enroll users with a bit more power than usual.</p>
 	</div>
 	
-	{include file="enroll-users/search-form.tpl"}
+	{include file="$__DIR__/search-form.tpl"}
 </div>
 
 {/block}

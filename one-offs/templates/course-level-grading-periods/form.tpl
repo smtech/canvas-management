@@ -42,6 +42,6 @@
 		</div>
 	</div>
 	
-	{assign var="formButton" value="So mote it be"}
+	{assign var="formButton" value="Apply"}
 	
 {/block}

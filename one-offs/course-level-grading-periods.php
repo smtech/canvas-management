@@ -59,6 +59,7 @@ switch ($step) {
 			$end = new DateTime($_REQUEST['period']['end_date']);
 
 			$applied = array();
+			$failed = array();
 			try {
 				$courses = $api->get(
 					"accounts/{$_REQUEST['account']}/courses",
@@ -66,29 +67,51 @@ switch ($step) {
 						'enrollment_term_id' => $_REQUEST['term']
 					)
 				);
-				
-				foreach ($courses as $course) {
-					$result = $api->post(
-						"courses/{$course['id']}/grading_periods",
-						array(
-							'grading_periods[]' => array(
-								'title' => $_REQUEST['period']['title'],
-								'start_date' => $start->format(DATE_W3C),
-								'end_date' => $end->format(DATE_W3C)
-							)
-						)
-					);
-					$applied[] = "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/grading_standards\">{$course['name']}</a>";
-				}
 			} catch (Exception $e) {
-				exceptionErrorMessage($e);
+				$smarty->addMessage(
+					'Courses',
+					'There was an error getting the course list to update.',
+					NotificationMessage::ERROR
+				);
+				$step = STEP_INSTRUCTIONS;
 			}
-			
-			$smarty->addMessage(
-				'Applied grading period to ' . count($applied) . ' courses',
-				implode(', ', $applied),
-				NotificationMessage::GOOD
-			);
+
+			if ($step == STEP_APPLY) {
+				foreach ($courses as $course) {
+					try {
+						$result = $api->post(
+							"courses/{$course['id']}/grading_periods",
+							array(
+								'grading_periods[]' => array(
+									'title' => $_REQUEST['period']['title'],
+									'start_date' => $start->format(DATE_W3C),
+									'end_date' => $end->format(DATE_W3C)
+								)
+							)
+						);
+						$applied[] = "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/grading_standards\">{$course['name']}</a>";
+					} catch (Exception $e) {
+						$failed[] = "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/grading_standards\">{$course['name']}</a>";
+
+					}
+				}
+				
+				if (count($applied) > 0) {
+					$smarty->addMessage(
+						'Applied grading period to ' . count($applied) . ' courses',
+						implode(', ', $applied),
+						NotificationMessage::GOOD
+					);
+				}
+				
+				if (count($failed) > 0) {
+					$smarty->addMessage(
+						'Could not apply grading period to ' . count($failed) . ' courses',
+						implode(', ', $failed),
+						NotificationMessage::WARNING
+					);
+				}
+			}				
 		}
 		
 		/* flows into STEP_INSTRUCTIONS */	

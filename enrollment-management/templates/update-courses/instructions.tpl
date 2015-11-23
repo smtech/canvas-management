@@ -1,3 +1,4 @@
+{assign var="__DIR__" value=$smarty.current_dir}
 {extends file="subpage.tpl"}
 
 {block name="subcontent"}
@@ -6,7 +7,7 @@
 	<p>Upload a CSV file of courses to be updated in the format described below. Columns left blank will not be affected by the batch update.</p>
 
 	{assign var="formFileUpload" value="true"}
-	{include file="update-courses/upload-form.tpl"}
+	{include file="$__DIR__/upload-form.tpl"}
 
 	<table class="table table-bordered table-hover">
 		<thead>

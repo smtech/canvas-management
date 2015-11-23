@@ -1,3 +1,4 @@
+{assign var="__DIR__" value=$smarty.current_dir}
 {extends file="subpage.tpl"}
 
 {block name="subcontent"}
@@ -11,6 +12,6 @@
 	</div>
 	
 	{assign var="formFileUpload" value="true"}
-	{include file="normalize-sections/form.tpl"}
+	{include file="$__DIR__/form.tpl"}
 
 {/block}
