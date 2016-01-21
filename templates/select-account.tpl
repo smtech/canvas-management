@@ -8,8 +8,8 @@
 			<select id="account" name="account" class="form-control">
 				<option value="" disabled="disabled" selected="selected">Select an account</option>
 				<option disabled="disabled"></option>
-				{foreach $accounts as $account}
-					<option value="{$account['id']}">{$account['name']}</option>
+				{foreach $accounts as $_account}
+					<option value="{$_account['id']}"{if $account == $_account['id']} selected{/if}>{$_account['name']}</option>
 				{/foreach}
 			</select>
 		</div>

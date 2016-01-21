@@ -8,8 +8,8 @@
 			<select id="term" name="term" class="form-control selectpicker">
 				<option value="" disabled="disabled" selected="selected">Select a term</option>
 				<option disabled="disabled"></option>
-				{foreach $terms as $term}
-					<option value="{$term['id']}">{$term['name']}</option>
+				{foreach $terms as $_term}
+					<option value="{$_term['id']}"{if $term == $_term['id']} selected{/if}>{$_term['name']}</option>
 				{/foreach}
 			</select>
 		</div>

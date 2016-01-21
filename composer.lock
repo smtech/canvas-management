@@ -117,16 +117,16 @@
         },
         {
             "name": "battis/simplecache",
-            "version": "v1.2",
+            "version": "v1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/battis/simplecache.git",
-                "reference": "2116d33def68ebf3d2a2ad4afd2970077115d801"
+                "reference": "5298aed74cd3911675b2bec147c346ed25261210"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/battis/simplecache/zipball/2116d33def68ebf3d2a2ad4afd2970077115d801",
-                "reference": "2116d33def68ebf3d2a2ad4afd2970077115d801",
+                "url": "https://api.github.com/repos/battis/simplecache/zipball/5298aed74cd3911675b2bec147c346ed25261210",
+                "reference": "5298aed74cd3911675b2bec147c346ed25261210",
                 "shasum": ""
             },
             "type": "library",
@@ -146,7 +146,7 @@
                 }
             ],
             "description": "Manage a simple cache backed by a MySQL database",
-            "time": "2015-10-05 15:13:09"
+            "time": "2015-12-17 02:04:27"
         },
         {
             "name": "educoder/pest",
@@ -304,12 +304,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "862b23fe520b1a7b93cc7784770b56d9114bbbd7"
+                "reference": "dd0f4c7c36c349931684723323220889eca635a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/862b23fe520b1a7b93cc7784770b56d9114bbbd7",
-                "reference": "862b23fe520b1a7b93cc7784770b56d9114bbbd7",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/dd0f4c7c36c349931684723323220889eca635a3",
+                "reference": "dd0f4c7c36c349931684723323220889eca635a3",
                 "shasum": ""
             },
             "require": {
@@ -351,7 +351,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-10-26 00:27:06"
+            "time": "2016-01-02 16:58:58"
         },
         {
             "name": "smtech/canvaspest",
@@ -459,12 +459,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smtech/stmarkssmarty.git",
-                "reference": "a61aaf87d94e1c2994deae56dbbf893b9b8b9694"
+                "reference": "2940435c1d5f28e13ff38bdda07e05a01b20291d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smtech/stmarkssmarty/zipball/a61aaf87d94e1c2994deae56dbbf893b9b8b9694",
-                "reference": "a61aaf87d94e1c2994deae56dbbf893b9b8b9694",
+                "url": "https://api.github.com/repos/smtech/stmarkssmarty/zipball/2940435c1d5f28e13ff38bdda07e05a01b20291d",
+                "reference": "2940435c1d5f28e13ff38bdda07e05a01b20291d",
                 "shasum": ""
             },
             "require": {
@@ -493,7 +493,7 @@
                 }
             ],
             "description": "A standard Smarty install for St. Mark's projects",
-            "time": "2015-10-21 15:51:54"
+            "time": "2015-12-04 02:16:30"
         },
         {
             "name": "spvsoftwareproducts/LTI_Tool_Provider",
