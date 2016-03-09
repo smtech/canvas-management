@@ -49,6 +49,7 @@
 			<li><a href="{$metadata['APP_URL']}/one-offs/fix-section-sis-ids.php">Fix Section SIS IDs</a></li>
 			<li><a href="{$metadata['APP_URL']}/one-offs/download-users-csv.php">Download Users.csv</a></li>
 			<li><a href="{$metadata['APP_URL']}/one-offs/archive-inbox.php">Archive Inbox</a></li>
+			<li><a href="{$metadata['APP_URL']}/one-offs/set-course-color.php">Set Course Color</a></li>
 		</ul>
 	</li>
 </ul>
