@@ -41,6 +41,46 @@
             "time": "2015-10-22 20:25:29"
         },
         {
+            "name": "battis/bootstrapsmarty",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/battis/bootstrapsmarty.git",
+                "reference": "154e80cfac8f0aae07d47998a13f2669424d59b9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/battis/bootstrapsmarty/zipball/154e80cfac8f0aae07d47998a13f2669424d59b9",
+                "reference": "154e80cfac8f0aae07d47998a13f2669424d59b9",
+                "shasum": ""
+            },
+            "require": {
+                "battis/data-utilities": "dev-master",
+                "smarty/smarty": "3.1.*"
+            },
+            "suggest": {
+                "eternicode/bootstrap-datepicker": "The full Bootstrap Datepicker package for local install"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Battis\\BootstrapSmarty\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Seth Battis",
+                    "email": "seth@battis.net"
+                }
+            ],
+            "description": "A wrapper for Smarty to set (and maintain) defaults within a Bootstrap UI environment",
+            "time": "2016-03-14 19:27:42"
+        },
+        {
             "name": "battis/data-utilities",
             "version": "dev-master",
             "source": {
@@ -262,12 +302,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "00be382842657a0b0031a508b4da71641dde26d1"
+                "reference": "ff6a8521bb588187eefa2695c3959fe101d22c18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/00be382842657a0b0031a508b4da71641dde26d1",
-                "reference": "00be382842657a0b0031a508b4da71641dde26d1",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/ff6a8521bb588187eefa2695c3959fe101d22c18",
+                "reference": "ff6a8521bb588187eefa2695c3959fe101d22c18",
                 "shasum": ""
             },
             "require": {
@@ -309,7 +349,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2016-03-09 03:03:37"
+            "time": "2016-03-11 02:36:43"
         },
         {
             "name": "smtech/canvaspest",
@@ -417,28 +457,26 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smtech/stmarkssmarty.git",
-                "reference": "2940435c1d5f28e13ff38bdda07e05a01b20291d"
+                "reference": "5ced8fea4d771491d74408637cd263e6a1dacf63"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smtech/stmarkssmarty/zipball/2940435c1d5f28e13ff38bdda07e05a01b20291d",
-                "reference": "2940435c1d5f28e13ff38bdda07e05a01b20291d",
+                "url": "https://api.github.com/repos/smtech/stmarkssmarty/zipball/5ced8fea4d771491d74408637cd263e6a1dacf63",
+                "reference": "5ced8fea4d771491d74408637cd263e6a1dacf63",
                 "shasum": ""
             },
             "require": {
-                "battis/data-utilities": "dev-master",
-                "smarty/smarty": "3.1.*",
+                "battis/bootstrapsmarty": "dev-develop",
                 "smtech/stmarks-colors": "dev-master"
             },
             "suggest": {
-                "battis/appmetadata": "MySQL-backed globals array for app metadata storage",
-                "eternicode/bootstrap-datepicker": "The full Bootstrap Datepicker package for local install"
+                "battis/appmetadata": "MySQL-backed globals array for app metadata storage"
             },
             "type": "library",
             "autoload": {
-                "classmap": [
-                    ""
-                ]
+                "psr-4": {
+                    "smtech\\StMarksSmarty\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -451,7 +489,7 @@
                 }
             ],
             "description": "A standard Smarty install for St. Mark's projects",
-            "time": "2015-12-04 02:16:30"
+            "time": "2016-03-14 18:54:34"
         },
         {
             "name": "spvsoftwareproducts/LTI_Tool_Provider",
