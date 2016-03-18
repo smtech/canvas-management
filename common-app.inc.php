@@ -1,6 +1,7 @@
 <?php
 
 use Battis\BootstrapSmarty\NotificationMessage;
+use smtech\CanvasPest\CanvasPest;
 
 /**
  * Explode a string

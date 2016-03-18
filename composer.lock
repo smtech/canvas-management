@@ -632,16 +632,16 @@
         },
         {
             "name": "smtech/canvaspest",
-            "version": "v1.1.2",
+            "version": "v1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smtech/canvaspest.git",
-                "reference": "3493f08235360e7807735fadbadc12c416648064"
+                "reference": "388949ed7bf3b6acb915024add0d6916c009feeb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smtech/canvaspest/zipball/3493f08235360e7807735fadbadc12c416648064",
-                "reference": "3493f08235360e7807735fadbadc12c416648064",
+                "url": "https://api.github.com/repos/smtech/canvaspest/zipball/388949ed7bf3b6acb915024add0d6916c009feeb",
+                "reference": "388949ed7bf3b6acb915024add0d6916c009feeb",
                 "shasum": ""
             },
             "require": {
@@ -649,9 +649,9 @@
             },
             "type": "library",
             "autoload": {
-                "classmap": [
-                    ""
-                ]
+                "psr-4": {
+                    "smtech\\CanvasPest\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -664,7 +664,7 @@
                 }
             ],
             "description": "An extension of Pest to make RESTful queries to the Instructure Canvas API",
-            "time": "2016-03-16 15:01:54"
+            "time": "2016-03-18 02:21:36"
         },
         {
             "name": "smtech/oauth-negotiator",
