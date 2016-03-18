@@ -7,7 +7,9 @@
 		<span class="col-sm-4">
 			<select id="course" name="course" class="form-control">
 				{foreach $courses as $course}
-					<option value="{$course['id']}">{$course['name']}</option>
+					<optgroup label="{$course['name']}">
+						<option value="{$course['id']}">{$course['term']['name']}</option>
+					</optgroup>
 				{/foreach}
 			</select>
 		</span>

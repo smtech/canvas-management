@@ -64,9 +64,11 @@ switch ($step) {
 			} else {
 				try {
 					$courses = $api->get(
+						// FIXME don't hard code account numbers... yeesh
 						'accounts/1/courses',
 						array(
-							'search_term' => $_REQUEST['course']
+							'search_term' => $_REQUEST['course'],
+							'include[]' => 'term'
 						)
 					);
 					$smarty->assign('courses', $courses);
