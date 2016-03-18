@@ -2,6 +2,10 @@
 	
 require_once 'common.inc.php';
 
+use smtech\StMarksSmarty\StMarksSmarty;
+
+$smarty->enable(StMarksSmarty::MODULE_COLORPICKER);
+
 define("STEP_INSTRUCTIONS", 1);
 define("STEP_CONFIRM", 2);
 define("STEP_SET_COLOR", 3);

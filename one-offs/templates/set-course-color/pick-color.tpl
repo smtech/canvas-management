@@ -13,12 +13,14 @@
 		</span>
 	</div>
 	
-	<!-- TODO https://mjolnic.com/bootstrap-colorpicker/ -->
 	<div class="form-group">
 		<label for="color" class="control-label col-sm-{$formLabelWidth}">Color</label>
-		<span class="col-sm-4">
-			<input type="text" id="color" name="color" class="form-control" placeholder="Pick a color" />
-		</span>
+		<div class="col-sm-4">
+			<div class="input-group color">
+				<input type="text" id="color" name="color" class="form-control" placeholder="Pick a color" />
+				<span class="input-group-addon"><i></i></span>
+			</div>
+		</div>
 	</div>
 	
 	{assign var="formButton" value="Set Color"}

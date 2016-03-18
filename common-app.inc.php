@@ -1,5 +1,7 @@
 <?php
 
+use Battis\BootstrapSmarty\NotificationMessage;
+
 /**
  * Explode a string
  *
