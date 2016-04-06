@@ -2,6 +2,8 @@
 
 require_once('common.inc.php');
 
+use Battis\BootstrapSmarty\NotificationMessage;
+
 function blank($row, $key) {
 	if (empty($row[$key])) {
 		return '';

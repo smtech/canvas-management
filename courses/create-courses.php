@@ -3,6 +3,7 @@
 require_once('common.inc.php');
 
 use Battis\DataUtilities;
+use Battis\BootstrapSmarty\NotificationMessage;
 
 $MANUALLY_CREATED_COURSES_ACCOUNT = 96;
 $DEFAULT_TERM = 195;

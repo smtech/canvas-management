@@ -2,6 +2,8 @@
 	
 require_once('common.inc.php');
 
+use Battis\BootstrapSmarty\NotificationMessage;
+
 $cache = new \Battis\HierarchicalSimpleCache($sql, basename(__DIR__) . '/' . basename(__FILE__, '.php'));
 $cache->setLifetime(60*60);
 

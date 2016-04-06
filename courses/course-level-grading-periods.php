@@ -2,6 +2,8 @@
 
 require_once('common.inc.php');
 
+use Battis\BootstrapSmarty\NotificationMessage;
+
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_APPLY', 2);
 

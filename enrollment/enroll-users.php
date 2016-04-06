@@ -2,6 +2,8 @@
 
 require_once('common.inc.php');
 
+use Battis\BootstrapSmarty\NotificationMessage;
+
 $MANUALLY_CREATED_COURSES_ACCOUNT = 96;
 $DEFAULT_TERM = 195;
 define('CACHE_LIFETIME', 20 * 60); // 20 minutes

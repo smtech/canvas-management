@@ -3,6 +3,7 @@
 require_once('common.inc.php');
 
 use Battis\DataUtilities;
+use Battis\BootstrapSmarty\NotificationMessage;
 
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_CONFIRM',2);

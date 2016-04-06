@@ -2,6 +2,8 @@
 	
 require_once('common.inc.php');
 
+use Battis\BootstrapSmarty\NotificationMessage;
+
 $smarty->enable(StMarksSmarty::MODULE_DATEPICKER);
 
 define('STEP_INSTRUCTIONS', 1);

@@ -3,6 +3,7 @@
 require_once 'common.inc.php';
 
 use smtech\StMarksSmarty\StMarksSmarty;
+use Battis\BootstrapSmarty\NotificationMessage;
 
 $smarty->enable(StMarksSmarty::MODULE_COLORPICKER);
 
