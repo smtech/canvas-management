@@ -1,6 +1,7 @@
 # authentication credentials
 .htpasswd
 secrets.xml
+deployment-config.json
 
 # dynamically-loaded and/or caches
 /logs/*.log
