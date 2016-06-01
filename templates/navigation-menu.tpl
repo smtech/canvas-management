@@ -22,6 +22,7 @@
 		</a>
 		<ul class="dropdown-menu">
 			<li><a href="{$metadata['APP_URL']}/enrollment/enroll-users.php">Enroll Users</a></li>
+			<li><a href="{$metadata['APP_URL']}/enrollment/delete-enrollments.php">Delete Enrollments</a></li>
 			<li><a href="{$metadata['APP_URL']}/enrollment/download-enrollments.php">Download Enrollments</a></li>
 		</ul>
 	</li>
