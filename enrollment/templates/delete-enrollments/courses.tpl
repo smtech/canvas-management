@@ -17,8 +17,10 @@
 		<label for="role" class="control-label col-sm-{$formLabelWidth}">Role</label>
 		<span class="col-sm-{12 - $formLabelWidth}">
 			<select id="role" name="role" class="form-control">
+				<option value="">All Roles</option>
+				<option value="" disabled="disabled"><hr/></option>
 				{foreach $roles as $role}
-					<option value="{$role['role']}">{$role['label']}</option>
+					<option value="{$role['role']}">{$role['label']}s Only</option>
 				{/foreach}
 			</select>
 		</span>

@@ -13,19 +13,25 @@ $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 switch ($step) {
 	case STEP_DELETE:
 		try {
+			$params = (empty($_REQUEST['role']) ? [] : ['role' => [$_REQUEST['role']]]);
 			$enrollments = $api->get(
 				"courses/{$_REQUEST['course']}/enrollments",
-				['role' => [$_REQUEST['role']]]
+				$params
+				
 			);
+			$users = [];
 			foreach ($enrollments as $enrollment) {
 				$api->delete(
 					"courses/{$_REQUEST['course']}/enrollments/{$enrollment['id']}",
 					['task' => 'delete']
 				);
+				$users[] = "<a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/accounts/1/users/{$enrollment['user']['id']}\">{$enrollment['user']['name']}</a>";
 			}
+			$course = $api->get("accounts/1/courses/{$_REQUEST['course']}");
+			$smarty->assign('course', $course['sis_course_id']);
 			$smarty->addMessage(
 				$enrollments->count() . ' enrollments deleted',
-				'Check <a target="_top" href="' . $_SESSION['canvasInstanceUrl'] . '/courses/' . $_REQUEST['course'] . '/users">course roster</a>.',
+				(empty($_REQUEST['role']) ? '' : "{$_REQUEST['role']}s ") . implode(', ', $users) . " deleted from <a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/users\">{$course['name']}</a>.",
 				NotificationMessage::SUCCESS
 			);
 		} catch (Exception $e) {
