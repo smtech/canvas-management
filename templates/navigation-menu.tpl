@@ -13,6 +13,7 @@
 			<li><a href="{$metadata['APP_URL']}/courses/course-level-grading-periods.php">Course-level Grading Periods</a></li>
 			<li><a href="{$metadata['APP_URL']}/courses/normalize-sections.php">Normalize Sections</a></li>
 			<li><a href="{$metadata['APP_URL']}/courses/publish-courses.php">Publish Courses</a></li>
+			<li><a href="{$metadata['APP_URL']}/courses/reset-favorites.php">Reset Favorites</a></li>
 		</ul>
 	</li>
 
