@@ -25,6 +25,19 @@
 			</select>
 		</span>
 	</div>
+	
+	<div class="form-group">
+		<label for="state" class="control-label col-sm-{$formLabelWidth}">State</label>
+		<span class="col-sm-{12 - $formLabelWidth}">
+			<select id="state" name="state" class="form-control">
+				<option value="">Active and Invited Only</option>
+				<option value="" disabled="disabled"><hr/></option>
+				{foreach $states as $state}
+					<option value="{$state}">{ucwords(str_replace('_', ' ', $state))} Only</option>
+				{/foreach}
+			</select>
+		</span>
+	</div>
 
 	{assign var="formButton" value="Delete Enrollments"}
 

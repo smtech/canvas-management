@@ -42,16 +42,16 @@
         },
         {
             "name": "battis/bootstrapsmarty",
-            "version": "v1.1",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/battis/bootstrapsmarty.git",
-                "reference": "4f5d8088c0950588dcea68247c9996da3776af67"
+                "reference": "56e99f92619ad057c9fa956df39fb22e6e825266"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/battis/bootstrapsmarty/zipball/4f5d8088c0950588dcea68247c9996da3776af67",
-                "reference": "4f5d8088c0950588dcea68247c9996da3776af67",
+                "url": "https://api.github.com/repos/battis/bootstrapsmarty/zipball/56e99f92619ad057c9fa956df39fb22e6e825266",
+                "reference": "56e99f92619ad057c9fa956df39fb22e6e825266",
                 "shasum": ""
             },
             "require": {
@@ -61,6 +61,9 @@
                 "bower-asset/xaguilars-bootstrap-colorpicker": "dev-master",
                 "fxp/composer-asset-plugin": "^1.1",
                 "smarty/smarty": "3.1.*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~5.0"
             },
             "type": "library",
             "autoload": {
@@ -79,7 +82,7 @@
                 }
             ],
             "description": "A wrapper for Smarty to set (and maintain) defaults within a Bootstrap UI environment",
-            "time": "2016-03-17 19:04:07"
+            "time": "2016-03-31 01:34:39"
         },
         {
             "name": "battis/data-utilities",
@@ -87,13 +90,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/battis/data-utilities.git",
-                "reference": "6b98088af200389f394e40e5667987d4b8751d98"
+                "reference": "1de361ebe4e180a17d36a59b199f0abd02503c9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/battis/data-utilities/zipball/6b98088af200389f394e40e5667987d4b8751d98",
-                "reference": "6b98088af200389f394e40e5667987d4b8751d98",
+                "url": "https://api.github.com/repos/battis/data-utilities/zipball/1de361ebe4e180a17d36a59b199f0abd02503c9f",
+                "reference": "1de361ebe4e180a17d36a59b199f0abd02503c9f",
                 "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~5.0"
             },
             "type": "library",
             "autoload": {
@@ -112,7 +118,7 @@
                 }
             ],
             "description": "A handful of useful helper functions to process data",
-            "time": "2016-03-16 14:17:11"
+            "time": "2016-03-31 01:33:03"
         },
         {
             "name": "battis/educoder-pest-fork",
@@ -120,12 +126,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/battis/pest.git",
-                "reference": "b12e9056465e2894bd698eede139a03b91723545"
+                "reference": "ee99df2b7e276195d3ab06738f2af3f44f3ed054"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/battis/pest/zipball/b12e9056465e2894bd698eede139a03b91723545",
-                "reference": "b12e9056465e2894bd698eede139a03b91723545",
+                "url": "https://api.github.com/repos/battis/pest/zipball/ee99df2b7e276195d3ab06738f2af3f44f3ed054",
+                "reference": "ee99df2b7e276195d3ab06738f2af3f44f3ed054",
                 "shasum": ""
             },
             "require": {
@@ -154,7 +160,7 @@
             ],
             "description": "A proper REST client for PHP.",
             "homepage": "https://github.com/educoder/pest",
-            "time": "2016-02-15 19:52:14"
+            "time": "2016-03-23 15:38:23"
         },
         {
             "name": "battis/simplecache",
@@ -417,12 +423,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/francoispluchino/composer-asset-plugin.git",
-                "reference": "bae7a15712e9339a2439aeca3b7c5ecf65b087d1"
+                "reference": "7f3338b433ca21ae8e8f56d4b5a82f0146242dce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/francoispluchino/composer-asset-plugin/zipball/bae7a15712e9339a2439aeca3b7c5ecf65b087d1",
-                "reference": "bae7a15712e9339a2439aeca3b7c5ecf65b087d1",
+                "url": "https://api.github.com/repos/francoispluchino/composer-asset-plugin/zipball/7f3338b433ca21ae8e8f56d4b5a82f0146242dce",
+                "reference": "7f3338b433ca21ae8e8f56d4b5a82f0146242dce",
                 "shasum": ""
             },
             "require": {
@@ -430,13 +436,13 @@
                 "php": ">=5.3.3"
             },
             "require-dev": {
-                "composer/composer": "~1.0@dev"
+                "composer/composer": "^1.0.0"
             },
             "type": "composer-plugin",
             "extra": {
                 "class": "Fxp\\Composer\\AssetPlugin\\FxpAssetPlugin",
                 "branch-alias": {
-                    "dev-master": "1.1-dev"
+                    "dev-master": "1.2-dev"
                 }
             },
             "autoload": {
@@ -465,20 +471,20 @@
                 "npm",
                 "package"
             ],
-            "time": "2016-02-25 16:35:08"
+            "time": "2016-05-28 15:47:37"
         },
         {
             "name": "pear/log",
-            "version": "1.12.9",
+            "version": "1.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/Log.git",
-                "reference": "81b5109b6d3689c85118429c6e3ddd99ad90e9b0"
+                "reference": "c4be9ded2353c7c231d4c35cc3da75b209453803"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/Log/zipball/81b5109b6d3689c85118429c6e3ddd99ad90e9b0",
-                "reference": "81b5109b6d3689c85118429c6e3ddd99ad90e9b0",
+                "url": "https://api.github.com/repos/pear/Log/zipball/c4be9ded2353c7c231d4c35cc3da75b209453803",
+                "reference": "c4be9ded2353c7c231d4c35cc3da75b209453803",
                 "shasum": ""
             },
             "require": {
@@ -518,7 +524,7 @@
                 "log",
                 "logging"
             ],
-            "time": "2015-06-14 21:18:47"
+            "time": "2016-04-16 00:49:33"
         },
         {
             "name": "pear/pear_exception",
@@ -581,12 +587,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "ff6a8521bb588187eefa2695c3959fe101d22c18"
+                "reference": "b46a9a8dbd610323cb04c4a567405147d12dc570"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/ff6a8521bb588187eefa2695c3959fe101d22c18",
-                "reference": "ff6a8521bb588187eefa2695c3959fe101d22c18",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/b46a9a8dbd610323cb04c4a567405147d12dc570",
+                "reference": "b46a9a8dbd610323cb04c4a567405147d12dc570",
                 "shasum": ""
             },
             "require": {
@@ -628,20 +634,20 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2016-03-11 02:36:43"
+            "time": "2016-05-28 01:33:32"
         },
         {
             "name": "smtech/canvaspest",
-            "version": "v1.1.3",
+            "version": "v1.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smtech/canvaspest.git",
-                "reference": "388949ed7bf3b6acb915024add0d6916c009feeb"
+                "reference": "d9b48fb1e368bbaccfd305c5fe49c07da1519f39"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smtech/canvaspest/zipball/388949ed7bf3b6acb915024add0d6916c009feeb",
-                "reference": "388949ed7bf3b6acb915024add0d6916c009feeb",
+                "url": "https://api.github.com/repos/smtech/canvaspest/zipball/d9b48fb1e368bbaccfd305c5fe49c07da1519f39",
+                "reference": "d9b48fb1e368bbaccfd305c5fe49c07da1519f39",
                 "shasum": ""
             },
             "require": {
@@ -664,7 +670,7 @@
                 }
             ],
             "description": "An extension of Pest to make RESTful queries to the Instructure Canvas API",
-            "time": "2016-03-18 02:21:36"
+            "time": "2016-06-10 13:35:42"
         },
         {
             "name": "smtech/oauth-negotiator",

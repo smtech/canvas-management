@@ -13,7 +13,14 @@ $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 switch ($step) {
 	case STEP_DELETE:
 		try {
-			$params = (empty($_REQUEST['role']) ? [] : ['role' => [$_REQUEST['role']]]);
+			$params = [];
+			if (!empty($_REQUEST['role'])) {
+				$params['role'] = [$_REQUEST['role']];
+			}
+			if (!empty($_REQUEST['state'])) {
+				$params['state'] = [$_REQUEST['state']];
+			}
+			
 			$enrollments = $api->get(
 				"courses/{$_REQUEST['course']}/enrollments",
 				$params
@@ -21,9 +28,11 @@ switch ($step) {
 			);
 			$users = [];
 			foreach ($enrollments as $enrollment) {
-				$api->delete(
+				$response = $api->delete(
 					"courses/{$_REQUEST['course']}/enrollments/{$enrollment['id']}",
-					['task' => 'delete']
+					[
+						'task' => 'delete'
+					]
 				);
 				$users[] = "<a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/accounts/1/users/{$enrollment['user']['id']}\">{$enrollment['user']['name']}</a>";
 			}
@@ -51,8 +60,9 @@ switch ($step) {
 					]
 				);
 				$roles = $api->get('/accounts/1/roles');
-				$smarty->assign('courses', $courses);
 				$smarty->assign('roles', $roles);
+				$smarty->assign('states', ['active', 'invited', 'creation_pending', 'deleted', 'rejected', 'completed', 'inactive']);
+				$smarty->assign('courses', $courses);
 				$smarty->assign('formHidden', ['step' => STEP_DELETE]);
 				$smarty->display(basename(__FILE__, '.php') . '/confirm.tpl');
 				break;
