@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/vendor/autoload.php');
+require_once __DIR__ . '/vendor/autoload.php';
 
 define('SECRETS_FILE', __DIR__ . '/secrets.xml');
 define('SCHEMA_FILE', __DIR__ . '/admin/schema-app.sql');
@@ -170,9 +170,9 @@ if ($ready && php_sapi_name() != 'cli') {
 	if ($ready) {
 		$smarty->addStylesheet($metadata['APP_URL'] . '/css/canvas-api-via-lti.css', 'starter-canvas-api-via-lti');
 		$smarty->addStylesheet($metadata['APP_URL'] . '/css/app.css');
-		
-		if (!midLaunch() || !defined('IGNORE_LTI')) {
-			require_once(__DIR__ . '/common-app.inc.php');
+
+		if (!midLaunch() || defined('IGNORE_LTI')) {
+			require_once __DIR__ . '/common-app.inc.php';
 		}
 	}
 }
