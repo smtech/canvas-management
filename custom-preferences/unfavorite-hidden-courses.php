@@ -1,6 +1,6 @@
 <?php
-	
-require_once "common.inc.php";
+
+require_once 'common.inc.php';
 
 use Battis\BootstrapSmarty\NotificationMessage;
 
@@ -11,7 +11,7 @@ $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 
 switch ($step) {
 	case STEP_UNFAVORITE:
-	
+
 		if (empty($_REQUEST['account'])) {
 			$smarty->addMessage(
 				'No account selected',
@@ -19,7 +19,7 @@ switch ($step) {
 				NotificationMessage::WARNING
 			);
 		} else {
-			
+
 			/* get the list of hidden courses from custom preferences */
 			$response = $customPrefs->query(
 				"SELECT *
@@ -31,7 +31,7 @@ switch ($step) {
 			while ($row = $response->fetch_assoc()) {
 				$hiddenCourses[] = $row['id'];
 			}
-			
+
 			/* walk through all users in the account */
 			try {
 				$users = $api->get("accounts/{$_REQUEST['account']}/users");
@@ -42,7 +42,7 @@ switch ($step) {
 							'as_user_id' => $user['id']
 						)
 					);
-					
+
 					/* walk through favorites and set non-hidden and unset hidden courses */
 					foreach ($favorites as $favorite) {
 						if (in_array($favorite['id'], $hiddenCourses)) {
@@ -63,7 +63,7 @@ switch ($step) {
 						}
 					}
 				}
-				
+
 				$smarty->addMessage(
 					'Hidden courses unfavorited',
 					$users->count() . ' users were affected by this action.'
@@ -72,11 +72,11 @@ switch ($step) {
 				exceptionErrorMessage($e);
 			}
 		}
-	
+
 		/* flows into STEP_INSTRUCTIONS */
-		
+
 	case STEP_INSTRUCTIONS:
-	
+
 		if (!empty($_REQUEST['account'])) {
 			$smarty->assign('account', $_REQUEST['account']);
 		}

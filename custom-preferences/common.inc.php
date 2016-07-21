@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../common.inc.php');
+require_once __DIR__ . '/../common.inc.php';
 
 $customPrefs = new mysqli(
 	(string) $secrets->mysql->customprefs->host,

@@ -1,6 +1,6 @@
 <?php
 
-require_once('common.inc.php');
+require_once __DIR__ . '/common.inc.php';
 
 use Battis\DataUtilities;
 use Battis\BootstrapSmarty\NotificationMessage;
@@ -29,7 +29,7 @@ $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 
 switch ($step) {
 	case STEP_RESULT:
-	
+
 		// TODO use explodeNewLines()
 		$courses = array();
 		$courseNames = explode("\n", $_REQUEST['courses']);
@@ -38,7 +38,7 @@ switch ($step) {
 				$courses[]['long_name'] = $name;
 			}
 		}
-		
+
 		if (empty($_REQUEST['account'])) {
 			$smarty->addMessage(
 				'Account',
@@ -49,7 +49,7 @@ switch ($step) {
 		} else {
 			$account = $_REQUEST['account'];
 		}
-		
+
 		if (empty($_REQUEST['term'])) {
 			$smarty->addMessage(
 				'Term',
@@ -60,7 +60,7 @@ switch ($step) {
 		} else {
 			$term = $_REQUEST['term'];
 		}
-		
+
 		$templated = false;
 		if (empty($_REQUEST['template'])) {
 			$smarty->addMessage(
@@ -70,18 +70,18 @@ switch ($step) {
 		} else {
 			$templated = true;
 			$template = (is_int($_REQUEST['template']) ? $_REQUEST['template'] : "sis_course_id:{$_REQUEST['template']}");
-		
+
 			/* pull course settings as completely as possible */
 			try {
 				$source = $api->get("courses/$template/settings");
 				$source = array_merge(
 					$source->getArrayCopy(),
 					$api->get("courses/$template")->getArrayCopy());
-	
+
 				/* save ID and name to create a nice link later */
 				$sourceId = $source['id'];
 				$sourceName = $source['name'];
-	
+
 				/* clear settings that are provided form entry */
 				unset($source['id']);
 				unset($source['sis_course_id']);
@@ -93,60 +93,60 @@ switch ($step) {
 				unset($source['start_at']);
 				unset($source['end_at']);
 				unset($source['enrollments']);
-				
+
 				/* why nest this, I mean... really? */
 				$source = array('course' => $source);
 			} catch (Exception $e) {
 				exceptionErrorMessage($e);
 			}
 		}
-		
+
 		$csv = DataUtilities::loadCsvToArray('csv');
 		if ($csv) {
 			$courses = array_merge($courses, $csv);
 		}
-						
+
 		if (!empty($courses)) {
 			foreach($courses as $course) {
 				/* build parameter list */
 				$params = array();
-				
+
 				if (!empty($course['course_id'])) {
 					$params['sis_course_id'] = $course['course_id'];
 				} else {
 					$params['sis_course_id'] = generateSisId((empty($course['course_id']) ? $course['long_name'] : $course['course_id']));
 				}
-				
+
 				if (!empty($course['long_name'])) {
 					$params['name'] = $course['long_name'];
 				}
-				
+
 				if (!empty($course['short_name'])) {
 					$params['course_code'] = $course['short_name'];
 				} elseif (!empty($params['name'])) {
 					$params['course_code'] = $params['name'];
 				}
-				
+
 				if (!empty($course['account_id'])) {
 					$_account = "sis_account_id:{$course['account_id']}";
 				} else {
 					$_account = $account;
 				}
-				
+
 				if (!empty($course['term_id'])) {
 					$params['term_id'] = "sis_term_id:{$course['term_id']}";
 				} elseif (!empty($term)) {
 					$params['term_id'] = $term;
 				}
-				
+
 				if (!empty($course['start_at'])) {
 					$params['start_at'] = $course['start_at'];
 				}
-				
+
 				if (!empty($course['end_at'])) {
 					$params['end_at'] = $course['end_at'];
 				}
-				
+
 				/* create course */
 				try {
 					$course = $api->post(
@@ -155,13 +155,13 @@ switch ($step) {
 							'course' => $params
 						)
 					);
-					
+
 					if ($templated) {
 						/* duplicate course settings */
 						$api->put("/courses/{$course['id']}", $source);
-						
+
 						// TODO  nice to figure out navigation settings copy
-						
+
 						/* duplicate course content */
 						$migration = $api->post(
 							"courses/{$course['id']}/content_migrations",
@@ -170,7 +170,7 @@ switch ($step) {
 								'settings[source_course_id]' => $template
 							)
 						);
-						
+
 						$smarty->addMessage(
 							"<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}\">{$course['name']}</a>",
 							"has been created as a clone of <a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/$sourceId\">$sourceName</a>. Course content is being <a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/content_migrations\">migrated</a> right now.",
@@ -194,16 +194,16 @@ switch ($step) {
 				NotificationMessage::ERROR
 			);
 		}
-		
+
 		/* flow into STEP_INSTRUCTIONS */
-	
+
 	case STEP_INSTRUCTIONS:
 	default:
 		$smarty->assign('accounts', getAccountList());
 		$smarty->assign('terms', getTermList());
-		
+
 		$smarty->assign('formHidden', array('step' => STEP_RESULT));
 		$smarty->display(basename(__FILE__, '.php') . '/instructions.tpl');
 }
-	
+
 ?>

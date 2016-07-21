@@ -3,6 +3,7 @@
 require_once('common.inc.php');
 
 use Battis\BootstrapSmarty\NotificationMessage;
+use smtech\StMarksSmarty\StMarksSmarty;
 
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_APPLY', 2);
@@ -19,7 +20,7 @@ switch ($step) {
 			);
 			$step = STEP_INSTRUCTIONS;
 		}
-		
+
 		if (empty($_REQUEST['term'])) {
 			$smarty->addMessage(
 				'Term required',
@@ -28,7 +29,7 @@ switch ($step) {
 			);
 			$step = STEP_INSTRUCTIONS;
 		}
-		
+
 		if (empty($_REQUEST['period']['title'])) {
 			$smarty->addMessage(
 				'Grading period title required',
@@ -37,7 +38,7 @@ switch ($step) {
 			);
 			$step = STEP_INSTRUCTIONS;
 		}
-		
+
 		if (empty($_REQUEST['period']['start_date'])) {
 			$smarty->addMessage(
 				'Start date required',
@@ -46,7 +47,7 @@ switch ($step) {
 			);
 			$step = STEP_INSTRUCTIONS;
 		}
-		
+
 		if (empty($_REQUEST['period']['end_date'])) {
 			$smarty->addMessage(
 				'End date required',
@@ -55,7 +56,7 @@ switch ($step) {
 			);
 			$step = STEP_INSTRUCTIONS;
 		}
-		
+
 		if ($step == STEP_APPLY) {
 			$start = new DateTime($_REQUEST['period']['start_date']);
 			$end = new DateTime($_REQUEST['period']['end_date']);
@@ -97,7 +98,7 @@ switch ($step) {
 
 					}
 				}
-				
+
 				if (count($applied) > 0) {
 					$smarty->addMessage(
 						'Applied grading period to ' . count($applied) . ' courses',
@@ -105,7 +106,7 @@ switch ($step) {
 						NotificationMessage::GOOD
 					);
 				}
-				
+
 				if (count($failed) > 0) {
 					$smarty->addMessage(
 						'Could not apply grading period to ' . count($failed) . ' courses',
@@ -113,11 +114,11 @@ switch ($step) {
 						NotificationMessage::WARNING
 					);
 				}
-			}				
+			}
 		}
-		
-		/* flows into STEP_INSTRUCTIONS */	
-	
+
+		/* flows into STEP_INSTRUCTIONS */
+
 	case STEP_INSTRUCTIONS:
 	default:
 		if (!empty($_REQUEST['period'])) {
@@ -129,5 +130,5 @@ switch ($step) {
 		$smarty->assign('formHidden', array('step' => STEP_APPLY));
 		$smarty->display(basename(__FILE__, '.php') . '/instructions.tpl');
 }
-	
+
 ?>
