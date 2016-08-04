@@ -34,8 +34,8 @@ switch ($step) {
 		$courses = array();
 		$courseNames = explode("\n", $_REQUEST['courses']);
 		foreach($courseNames as $name) {
-			if (!empty($name)) {
-				$courses[]['long_name'] = $name;
+			if (!empty(trim($name))) {
+				$courses[]['long_name'] = trim($name);
 			}
 		}
 
