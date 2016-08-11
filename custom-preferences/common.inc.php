@@ -2,13 +2,8 @@
 
 require_once __DIR__ . '/../common.inc.php';
 
-$customPrefs = new mysqli(
-	(string) $secrets->mysql->customprefs->host,
-	(string) $secrets->mysql->customprefs->username,
-	(string) $secrets->mysql->customprefs->password,
-	(string) $secrets->mysql->customprefs->database
-);
+use Battis\ConfigXML;
 
-$smarty->addTemplateDir(__DIR__ . '/templates', basename(__DIR__));
+$customprefs = (new ConfigXML(__DIR__ . '/config.xml'))->newInstanceOf(mysqli::class, '/config/mysql');
 
-?>
+$toolbox->smarty_prependTemplateDir(__DIR__ . '/templates', basename(__DIR__));

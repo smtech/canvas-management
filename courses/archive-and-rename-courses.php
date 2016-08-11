@@ -12,7 +12,7 @@ $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 switch ($step) {
     case STEP_CONCLUDE:
         /* calculate the proper term prefix/suffix */
-        $term = getTermList()[$_REQUEST['term']];
+        $term = $toolbox->getTermList()[$_REQUEST['term']];
         $isYear = strpos($term['sis_term_id'], 'year') !== false;
         preg_match(
             '/(\d{4,4}-\d{4,4}) ((St. Mark\'s Saturdays \((Fall|Winter|Spring)\))|' .
@@ -33,7 +33,7 @@ switch ($step) {
 
         try {
             /* get a list of all courses that match account/term and have enrollments */
-            $courses = $api->get("accounts/{$_REQUEST['account']}/courses", [
+            $courses = $toolbox->api_get("accounts/{$_REQUEST['account']}/courses", [
                 'enrollment_term_id' => $_REQUEST['term'],
                 'with_enrollments' => true,
                 'include' => ['teachers'],
@@ -71,9 +71,9 @@ switch ($step) {
                         (empty($suffixes) ? '' : " (" . implode(', ', $suffixes) . ")");
 
                     /* rename sections to match in single-section courses */
-                    foreach ($api->get("courses/{$course['id']}/sections") as $section) {
+                    foreach ($toolbox->api_get("courses/{$course['id']}/sections") as $section) {
                         if ($section['name'] == $course['name']) {
-                            $api->put("sections/{$section['id']}", [
+                            $toolbox->api_put("sections/{$section['id']}", [
                                 'course_section[name]' => $concludedName
                             ]);
                             $sectionsRenamed++;
@@ -81,7 +81,7 @@ switch ($step) {
                     }
 
                     /* rename course */
-                    $api->put("courses/{$course['id']}", [
+                    $toolbox->api_put("courses/{$course['id']}", [
                         /* also rename any courses named under previous regime that were missing teachers */
                         'course[name]' => $concludedName
                     ]);
@@ -89,10 +89,10 @@ switch ($step) {
                 }
             }
         } catch (Exception $e) {
-            exceptionErrorMessage($e);
+            $toolbox->exceptionErrorMessage($e);
         }
 
-        $smarty->addMessage(
+        $toolbox->smarty_addMessage(
             "{$term['name']} archived and renamed",
             "$coursesRenamed courses and $sectionsRenamed sections were renamed to match standard conventions. See " .
                     "<a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/accounts/{$_REQUEST['account']}" .
@@ -100,7 +100,7 @@ switch ($step) {
                     'list of affected courses</a>.',
             NotificationMessage::GOOD
         );
-        $smarty->assign([
+        $toolbox->smarty_assign([
             'account' => $_REQUEST['account'],
             'term' => $_REQUEST['term']
         ]);
@@ -108,12 +108,12 @@ switch ($step) {
         /* flows into STEP_INSTRUCTIONS */
     case STEP_INSTRUCTIONS:
     default:
-        $smarty->assign([
+        $toolbox->smarty_assign([
             'formHidden' => [
                 'step' => STEP_CONCLUDE
             ],
-            'accounts' => getAccountList(),
-            'terms' => getTermList()
+            'accounts' => $toolbox->getAccountList(),
+            'terms' => $toolbox->getTermList()
         ]);
-        $smarty->display(basename(__FILE__, '.php') . '/instructions.tpl');
+        $toolbox->smarty_display(basename(__FILE__, '.php') . '/instructions.tpl');
 }

@@ -1,5 +1,6 @@
 {assign var="formLabelWidth" value=$formLabelWidth|default: 2}
 {assign var="terms" value=$terms|default: null}
+{assign var="term" value=$term|default: null}
 {block name="select-term"}
 
 	<div class="form-group">

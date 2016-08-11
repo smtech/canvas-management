@@ -2,7 +2,7 @@
 {block name="content"}
 	<div class="container">
 		<div class="page-header">
-			<h1><img src="{$metadata['APP_URL']}/lti/icon.png" style="height: 1em; padding: 0px 0.25em 0.1em 0px; margin: 0px; " />St. Mark&rsquo;s Tools <small>Age quod agis cum ordinatrum</small></h1>
+			<h1><img src="{$APP_URL}/images/icon.png" style="height: 1em; padding: 0px 0.25em 0.1em 0px; margin: 0px; " />St. Mark&rsquo;s Tools <small>Age quod agis cum ordinatrum</small></h1>
 		</div>
 	</div>
 	<div class="container">
@@ -14,13 +14,13 @@
 			<div class="panel-body">
 				<h4>Courses</h4>
 				<p>Tools to facilitate the creation and maintenance of courses. Includes: batch creation from a template, batch SIS ID updates from CSV, batch update from a template, creation of course-level grading periods, normalization of section SIS IDs and names from CSV, and force-publication.</p>
-				
+
 				<h4>Enrollment</h4>
 				<p>Tools to facilitate user enrollment. Includes: batch enrollment by search.</p>
 				<p>Coming soon: multiple enrollment disambiguation, role re-assignment.</p>
 			</div>
 		</div>
-		
+
 		<div class="panel panel-default">
 			<div class="panel-body">
 				<h4>Custom Preferences <small>CanvasHack</small></h4>
@@ -28,7 +28,7 @@
 				<p>Coming soon: improved super-role management, group management, enrollment rules management.</p>
 			</div>
 		</div>
-		
+
 		<div class="panel panel-default">
 			<div class="panel-body">
 				<h4>One Offs</h4>

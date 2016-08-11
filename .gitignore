@@ -1,16 +1,5 @@
-# authentication credentials
 .htpasswd
-secrets.xml
-deployment-config.json
-
-# dynamically-loaded and/or caches
+config.xml
 /logs/*.log
 /vendor/
-/smarty/cache/*
-!/smarty/cache/README.md
-/smarty/templates_c/*
-!/smarty/templates_c/README.md
-/admin/.htaccess
-
-# file system
-.DS_*
+/phpdoc/
