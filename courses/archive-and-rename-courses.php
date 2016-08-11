@@ -46,40 +46,47 @@ switch ($step) {
                 }
                 $teachers = array_unique($teachers);
 
-                /* calculate archived course name to include term/teacher metadata */
-                $originalName = preg_replace('/^(\d{4,4}-\d{4,4} (\((Fall|Spring)\) )?)?(.*)$/', '$4', $course['name']);
-                $suffixes = [];
-                if (!empty($termSuffix)) {
-                    $suffixes[] = $termSuffix;
-                }
-                if (preg_match('/ \((Red|Orange|Yellow|Green|Blue|Plum|Brown)\)$/', $originalName)) {
-                    preg_match('/^(.*) \((Red|Orange|Yellow|Green|Blue|Plum|Brown)\)$/', $originalName, $match);
-                    $originalName = $match[1];
-                    $suffixes[] = $match[2];
-                }
-                if (!empty($teachers)) {
-                    $suffixes[] = implode(', ', $teachers);
-                }
-
-                $concludedName = "$termPrefix $originalName" .
-                    (empty($suffixes) ? '' : " (" . implode(', ', $suffixes) . ")");
-
-                /* rename sections to match in single-section courses */
-                foreach ($api->get("courses/{$course['id']}/sections") as $section) {
-                    if ($section['name'] == $course['name']) {
-                        $api->put("sections/{$section['id']}", [
-                            'course_section[name]' => $concludedName
-                        ]);
-                        $sectionsRenamed++;
+                /* only rename if the teacher's names aren't already in the name */
+                if (strpos($course['name'], implode(', ', $teachers)) === false) {
+                    /* calculate archived course name to include term/teacher metadata */
+                    $originalName = preg_replace(
+                        '/^(\d{4,4}-\d{4,4} (\((Fall|Spring)\) )?)?(.*)$/',
+                        '$4',
+                        $course['name']
+                    );
+                    $suffixes = [];
+                    if (!empty($termSuffix)) {
+                        $suffixes[] = $termSuffix;
                     }
-                }
+                    if (preg_match('/ \((Red|Orange|Yellow|Green|Blue|Plum|Brown)\)$/', $originalName)) {
+                        preg_match('/^(.*) \((Red|Orange|Yellow|Green|Blue|Plum|Brown)\)$/', $originalName, $match);
+                        $originalName = $match[1];
+                        $suffixes[] = $match[2];
+                    }
+                    if (!empty($teachers)) {
+                        $suffixes[] = implode(', ', $teachers);
+                    }
 
-                /* rename course */
-                $api->put("courses/{$course['id']}", [
-                    /* also rename any courses named under previous regime that were missing teachers */
-                    'course[name]' => $concludedName
-                ]);
-                $coursesRenamed++;
+                    $concludedName = "$termPrefix $originalName" .
+                        (empty($suffixes) ? '' : " (" . implode(', ', $suffixes) . ")");
+
+                    /* rename sections to match in single-section courses */
+                    foreach ($api->get("courses/{$course['id']}/sections") as $section) {
+                        if ($section['name'] == $course['name']) {
+                            $api->put("sections/{$section['id']}", [
+                                'course_section[name]' => $concludedName
+                            ]);
+                            $sectionsRenamed++;
+                        }
+                    }
+
+                    /* rename course */
+                    $api->put("courses/{$course['id']}", [
+                        /* also rename any courses named under previous regime that were missing teachers */
+                        'course[name]' => $concludedName
+                    ]);
+                    $coursesRenamed++;
+                }
             }
         } catch (Exception $e) {
             exceptionErrorMessage($e);
