@@ -11,7 +11,6 @@
             <li><a href="{$metadata['APP_URL']}/courses/create-courses.php">Create Courses</a></li>
             <li><a href="{$metadata['APP_URL']}/courses/update-courses.php">Update Courses</a></li>
             <li><a href="{$metadata['APP_URL']}/courses/template-courses.php">Template Courses</a></li>
-            <li><a href="{$metadata['APP_URL']}/courses/course-level-grading-periods.php">Course-level Grading Periods</a></li>
             <li><a href="{$metadata['APP_URL']}/courses/normalize-sections.php">Normalize Sections</a></li>
             <li><a href="{$metadata['APP_URL']}/courses/publish-courses.php">Publish Courses</a></li>
             <li><a href="{$metadata['APP_URL']}/courses/reset-favorites.php">Reset Favorites</a></li>
