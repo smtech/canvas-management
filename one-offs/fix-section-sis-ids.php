@@ -43,9 +43,9 @@ switch ($step) {
                             );
 
                             $fixed++;
-                            $affected[] = "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/sections/{$section['id']}\">{$section['name']}</a> ({$section['sis_section_id']} &rarr; {$new['sis_section_id']})";
+                            $affected[] = "<a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}/sections/{$section['id']}\">{$section['name']}</a> ({$section['sis_section_id']} &rarr; {$new['sis_section_id']})";
                         } else {
-                            $ignored[] = "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/sections{$section['id']}\">{$section['name']}</a> ({$section['sis_section_id']})";
+                            $ignored[] = "<a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}/sections{$section['id']}\">{$section['name']}</a> ({$section['sis_section_id']})";
                         }
                     }
                 }

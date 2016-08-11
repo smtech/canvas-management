@@ -28,7 +28,7 @@ switch ($step) {
                         'offer' => 'true'
                     )
                 );
-                $list[] = "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}\">{$course['name']}</a>";
+                $list[] = "<a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}\">{$course['name']}</a>";
             }
             $toolbox->smarty_addMessage($courses->count(). ' courses published', implode(', ', $list), NotificationMessage::GOOD);
         } catch (Exception $e) {

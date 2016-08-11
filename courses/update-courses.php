@@ -73,7 +73,7 @@ switch ($step) {
                         if (!empty($links)) {
                             $links .= ", ";
                         }
-                        $links .= "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$response['id']}/settings\">{$response['name']}</a>";
+                        $links .= "<a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$response['id']}/settings\">{$response['name']}</a>";
                     } catch (Exception $e) {
                         $toolbox->exceptionErrorMessage($e);
                     }

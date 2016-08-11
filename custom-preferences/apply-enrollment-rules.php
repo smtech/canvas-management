@@ -149,14 +149,14 @@ switch ($step) {
                         } catch (Exception $e) {
                             $toolbox->smarty_addMessage(
                                 "User ID $userId",
-                                "There was an error enrolling User ID $userId in <a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/$courseId/users\">{$course['name']}</a>. This user may have a mis-assigned role or no longer exist in this instance.",
+                                "There was an error enrolling User ID $userId in <a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/$courseId/users\">{$course['name']}</a>. This user may have a mis-assigned role or no longer exist in this instance.",
                                 NotificationMessage::ERROR
                             );
                         }
                     }
                     $toolbox->smarty_addMessage(
                         $course['name'],
-                        "After applying enrollment rules, <a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/$courseId/users\">$enrolled new users were enrolled in this course</a>, $current users were unchanged, and $deleted users were removed."
+                        "After applying enrollment rules, <a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/$courseId/users\">$enrolled new users were enrolled in this course</a>, $current users were unchanged, and $deleted users were removed."
                     );
                 }
             }

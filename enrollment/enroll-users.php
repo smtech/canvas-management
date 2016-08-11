@@ -173,7 +173,7 @@ switch ($step) {
                     // FIXME no longer have the course ID… link is broken
                     $toolbox->smarty_addMessage(
                         'Success',
-                        "<a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/$course/users\">$count users enrolled</a>",
+                        "<a target=\"_top\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/$course/users\">$count users enrolled</a>",
                         NotificationMessage::GOOD
                     );
 

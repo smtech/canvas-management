@@ -41,7 +41,7 @@ switch ($step) {
         if (empty($_REQUEST['account'])) {
             $toolbox->smarty_addMessage(
                 'Account',
-                'was not selected, defaulting to the <a target=\"_parent\" href="' . $_SESSION['canvasInstanceUrl'] . '/accounts/' . $MANUALLY_CREATED_COURSES_ACCOUNT . '">Manually-Created Courses</a> account.',
+                'was not selected, defaulting to the <a target=\"_parent\" href="' . $_SESSION[CANVAS_INSTANCE_URL] . '/accounts/' . $MANUALLY_CREATED_COURSES_ACCOUNT . '">Manually-Created Courses</a> account.',
                 NotificationMessage::WARNING
             );
             $account = $MANUALLY_CREATED_COURSES_ACCOUNT;
@@ -172,13 +172,13 @@ switch ($step) {
                         );
 
                         $toolbox->smarty_addMessage(
-                            "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}\">{$course['name']}</a>",
-                            "has been created as a clone of <a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/$sourceId\">$sourceName</a>. Course content is being <a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/content_migrations\">migrated</a> right now.",
+                            "<a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}\">{$course['name']}</a>",
+                            "has been created as a clone of <a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/$sourceId\">$sourceName</a>. Course content is being <a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}/content_migrations\">migrated</a> right now.",
                             NotificationMessage::GOOD
                         );
                     } else {
                         $toolbox->smarty_addMessage(
-                            "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}\">{$course['name']}</a>",
+                            "<a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}\">{$course['name']}</a>",
                             "has been created.",
                             NotificationMessage::GOOD
                         );

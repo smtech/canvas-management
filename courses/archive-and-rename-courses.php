@@ -95,7 +95,7 @@ switch ($step) {
         $toolbox->smarty_addMessage(
             "{$term['name']} archived and renamed",
             "$coursesRenamed courses and $sectionsRenamed sections were renamed to match standard conventions. See " .
-                    "<a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/accounts/{$_REQUEST['account']}" .
+                    "<a target=\"_top\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/accounts/{$_REQUEST['account']}" .
                     "?enrollment_term_id={$_REQUEST['term']}&hide_enrollmentless_courses=1\">" .
                     'list of affected courses</a>.',
             NotificationMessage::GOOD

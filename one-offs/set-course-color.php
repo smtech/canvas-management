@@ -42,7 +42,7 @@ switch ($step) {
                     }
                     $toolbox->smarty_addMessage(
                         'Color updated',
-                        "Updated the course color to <span style=\"color: #$color; background: white; border-radius: .25em; padding: .1em;\">#$color &#9724;</span> for <a target=\"_top\" href=\"" . $_SESSION['canvasInstanceUrl'] . '/courses/' . $_REQUEST['course'] . '/users">' . $enrollments->count() . ' users</a>.'
+                        "Updated the course color to <span style=\"color: #$color; background: white; border-radius: .25em; padding: .1em;\">#$color &#9724;</span> for <a target=\"_top\" href=\"" . $_SESSION[CANVAS_INSTANCE_URL] . '/courses/' . $_REQUEST['course'] . '/users">' . $enrollments->count() . ' users</a>.'
                     );
                 } catch (Exception $e) {
                     $toolbox->exceptionErrorMessage($e);

@@ -33,13 +33,13 @@ switch ($step) {
                         'task' => 'delete'
                     ]
                 );
-                $users[] = "<a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/accounts/1/users/{$enrollment['user']['id']}\">{$enrollment['user']['name']}</a>";
+                $users[] = "<a target=\"_top\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/accounts/1/users/{$enrollment['user']['id']}\">{$enrollment['user']['name']}</a>";
             }
             $course = $toolbox->api_get("accounts/1/courses/{$_REQUEST['course']}");
             $toolbox->smarty_assign('course', $course['sis_course_id']);
             $toolbox->smarty_addMessage(
                 $enrollments->count() . ' enrollments deleted',
-                (empty($_REQUEST['role']) ? '' : "{$_REQUEST['role']}s ") . implode(', ', $users) . " deleted from <a target=\"_top\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/users\">{$course['name']}</a>.",
+                (empty($_REQUEST['role']) ? '' : "{$_REQUEST['role']}s ") . implode(', ', $users) . " deleted from <a target=\"_top\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}/users\">{$course['name']}</a>.",
                 NotificationMessage::SUCCESS
             );
         } catch (Exception $e) {

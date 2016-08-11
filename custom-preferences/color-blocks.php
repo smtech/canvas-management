@@ -93,14 +93,14 @@ switch ($step) {
                                     $users++;
                                 }
                             }
-                            $notification = "<a href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/sections/{$section['id']}\">{$section['name']}</a> <span style=\"color: #$color;\"><span class=\"glyphicon glyphicon-calendar\"></span></span> ($users / " . $enrollments->count() . " users)";
+                            $notification = "<a href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}/sections/{$section['id']}\">{$section['name']}</a> <span style=\"color: #$color;\"><span class=\"glyphicon glyphicon-calendar\"></span></span> ($users / " . $enrollments->count() . " users)";
                             if ($users > 0) {
                                 $affected[] = $notification;
                             } else {
                                 $unaffected[] = $notification;
                             }
                         } else {
-                            $unaffected[] = "<a href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/sections/{$section['id']}\">{$section['name']}</a> (Not assigned to a color block)";
+                            $unaffected[] = "<a href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}/sections/{$section['id']}\">{$section['name']}</a> (Not assigned to a color block)";
                         }
                     }
                 }

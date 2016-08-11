@@ -61,13 +61,13 @@ switch ($step) {
                             if (!empty($links)) {
                                 $links .= ', ';
                             }
-                            $links .= "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/sections/{$response['id']}\">{$response['name']}</a>";
+                            $links .= "<a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}/sections/{$response['id']}\">{$response['name']}</a>";
 
                         /* too many sections to (easily) normalize */
                         } else {
                             $toolbox->smarty_addMessage(
                                 'Multiple Sections',
-                                "<a target=\"_parent\" href=\"{$_SESSION['canvasInstanceUrl']}/courses/{$course['id']}/settings\">{$course['name']}</a> has more than one section, which means that standard singleton-section normalization does not apply.",
+                                "<a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}/settings\">{$course['name']}</a> has more than one section, which means that standard singleton-section normalization does not apply.",
                                 NotificationMessage::WARNING
                             );
                         }
