@@ -93,6 +93,10 @@ switch ($step) {
                     'list of affected courses</a>.',
             NotificationMessage::GOOD
         );
+        $smarty->assign([
+            'account' => $_REQUEST['account'],
+            'term' => $_REQUEST['term']
+        ]);
 
         /* flows into STEP_INSTRUCTIONS */
     case STEP_INSTRUCTIONS:
