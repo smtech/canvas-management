@@ -18,7 +18,8 @@ switch ($step) {
 
             /* build a list of all teachers in the selected terms */
             $teachers = [];
-            foreach (unserialize(urldecode($_REQUEST['terms_selected'])) as $term) {
+            $terms_selected = unserialize(urldecode($_REQUEST['terms_selected']));
+            foreach ($terms_selected as $term) {
                 $courses = $toolbox->api_get("accounts/{$_REQUEST['account']}/courses", [
                     'with_enrollments' => true,
                     'enrollment_type' => ['teacher'],
@@ -74,10 +75,11 @@ switch ($step) {
                 );
             }
 
+            /* carry previous selections over to the form view */
             $toolbox->smarty_assign([
                 'account' => $_REQUEST['account'],
                 'role' => $_REQUEST['role'],
-                'terms_selected' => $_REQUEST['terms_selected'],
+                'terms_selected' => $terms_selected,
                 'confirmation' => $_REQUEST['confirmation']
             ]);
         } catch (Exception $e) {

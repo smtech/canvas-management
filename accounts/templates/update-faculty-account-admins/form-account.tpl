@@ -1,3 +1,4 @@
+{assign var="terms_selected" value=$terms_selected|default: []}
 {extends file="form.tpl"}
 
 {block name="form-content"}
@@ -8,8 +9,8 @@
         <label class="control-label col-sm-{$formLabelWidth}">Terms</label>
         <span class="col-sm-{12 - $formLabelWidth}">
             {foreach $terms as $term}
-                <label class="checkbox-inline" for="term-{$term['id']}">
-                    <input type="checkbox" id="term-{$term['id']}" name="terms_selected[{$term['id']}]" value="{$term['id']}" /> {$term['name']}
+                <label class="checkbox-inline col-xs-3" for="term-{$term['id']}">
+                    <input type="checkbox" id="term-{$term['id']}" name="terms_selected[{$term['id']}]" value="{$term['id']}" {if in_array($term['id'], $terms_selected)}checked{/if} /> {$term['name']}
                 </label>
             {/foreach}
         </span>
