@@ -2,6 +2,16 @@
 <div class="container-fluid">
 <ul class="nav navbar-nav">
     <li {if $navbarActive == 'canvas-management'}class="active"{/if}}><a href="{$APP_URL}/">Home</a></li>
+
+    <li class="dropdown {if $navbarActive == 'accounts'}active{/if}">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            Accounts <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="{$APP_URL}/accounts/update-faculty-account-admins.php">Update Faculty Account Admins</a></li>
+        </ul>
+    </li>
+
     <li class="dropdown {if $navbarActive == 'courses'}active{/if}">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
             Courses <span class="caret"></span>
