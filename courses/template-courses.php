@@ -81,7 +81,7 @@ switch ($step) {
                         );
 
                         $toolbox->smarty_addMessage(
-                            "<a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}\">{$course['long_name']}</a>",
+                            "<a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}\">{$course['name']}</a>",
                             "has been templated as a clone of <a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/$sourceId\">$sourceName</a>. Course content is being <a target=\"_parent\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/{$course['id']}/content_migrations\">migrated</a> right now.",
                             NotificationMessage::GOOD
                         );
