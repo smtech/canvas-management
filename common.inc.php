@@ -8,7 +8,7 @@ use smtech\ReflexiveCanvasLTI\LTI\ToolProvider;
 use smtech\ReflexiveCanvasLTI\Exception\ConfigurationException;
 use Battis\DataUtilities;
 
-session_start();
+@session_start(); // TODO suppressing warnings is wrong
 
 /* prepare the toolbox */
 if (empty($_SESSION[Toolbox::class])) {
