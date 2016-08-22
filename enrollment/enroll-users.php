@@ -32,170 +32,170 @@ try {
 }
 
 switch ($step) {
-    case STEP_CONFIRM:
-        try {
-            $users = $toolbox->explodeCommaAndNewlines($_REQUEST['users']);
+        case STEP_CONFIRM:
+            try {
+                $users = $toolbox->explodeCommaAndNewlines($_REQUEST['users']);
 
-            if (empty($_REQUEST['course'])) {
-                $toolbox->smarty_addMessage(
-                    'Course',
-                    'was not selected, so no enrollments can happen',
-                    NotificationMessage::ERROR
-                );
-                $step = STEP_INSTRUCTIONS;
-            } else {
-                $sections = $toolbox->cache_get("courses/{$_REQUEST['course']}");
-                if (empty($sections)) {
-                    $section = array();
-                    $courses = $toolbox->api_get(
-                        'accounts/1/courses',
-                        array(
-                            'search_term' => $_REQUEST['course']
-                        )
-                    );
-                    foreach ($courses as $course) {
-                        $courseSections = $toolbox->api_get("courses/{$course['id']}/sections");
-                        if ($courseSections->count() == 0) {
-                            /* we have only the "magic" default section */
-                            $sections[] = array('course' => $course);
-                        } else {
-                            foreach ($courseSections as $section) {
-                                $sections[] = array(
-                                    'course' => $course,
-                                    'section' => $section
-                                );
-                            }
-                        }
-                    }
-                    $toolbox->cache_set("courses/{$_REQUEST['course']}", $sections, CACHE_LIFETIME);
-                }
-
-                if (empty($sections)) {
+                if (empty($_REQUEST['course'])) {
                     $toolbox->smarty_addMessage(
-                        'No Courses',
-                        "matched your search term '{$_REQUEST['course']}'.",
-                        NotificationMessage::WARNING
-                    );
-                    $step = STEP_INSTRUCTIONS;
-                }
-            }
-
-            if ($step == STEP_CONFIRM) {
-                if (!empty($users)) {
-                    $confirm = array();
-                    foreach ($users as $term) {
-                        $confirm[$term] = $toolbox->cache_get("users/$term");
-                        if ($confirm[$term] === false) {
-                            $confirm[$term] = $toolbox->api_get(
-                                'accounts/1/users',
-                                array(
-                                    'search_term' => $term,
-                                    'include[]' => 'term'
-                                )
-                            );
-                            $toolbox->cache_set("users/$term", $confirm[$term], CACHE_LIFETIME);
-                        }
-                    }
-
-                    $toolbox->smarty_assign('sections', $sections);
-                    $toolbox->smarty_assign('terms', $toolbox->getTermList());
-                    $toolbox->smarty_assign('confirm', $confirm);
-                    $toolbox->smarty_assign('roles', $toolbox->api_get('accounts/1/roles')); // TODO make this account-specific
-                    $toolbox->smarty_assign('formHidden', array('step' => STEP_ENROLL));
-                    $toolbox->smarty_display(basename(__FILE__, '.php') . '/confirm.tpl');
-                    break;
-                } else {
-                    $toolbox->smarty_addMessage(
-                        'Users',
-                        'were not selected, so no enrollments can happen.',
+                        'Course',
+                        'was not selected, so no enrollments can happen',
                         NotificationMessage::ERROR
                     );
                     $step = STEP_INSTRUCTIONS;
-                }
-            }
-        } catch (Pest_Exception $e) {
-            $toolbox->exceptionErrorMessage($e);
-        }
+                } else {
+                    $sections = $toolbox->cache_get("courses/{$_REQUEST['course']}");
+                    if (empty($sections)) {
+                        $section = array();
+                        $courses = $toolbox->api_get(
+                            'accounts/1/courses',
+                            array(
+                                'search_term' => $_REQUEST['course']
+                            )
+                        );
+                        foreach ($courses as $course) {
+                            $courseSections = $toolbox->api_get("courses/{$course['id']}/sections");
+                            if ($courseSections->count() == 0) {
+                                /* we have only the "magic" default section */
+                                $sections[] = array('course' => $course);
+                            } else {
+                                foreach ($courseSections as $section) {
+                                    $sections[] = array(
+                                        'course' => $course,
+                                        'section' => $section
+                                    );
+                                }
+                            }
+                        }
+                        $toolbox->cache_set("courses/{$_REQUEST['course']}", $sections, CACHE_LIFETIME);
+                    }
 
-        /* flow into STEP_ENROLL (and STEP_INSTRUCTIONS) */
-
-    case STEP_ENROLL:
-        try {
-            if ($step == STEP_ENROLL) {
-                $courseEnrollment = false;
-                if (empty($_REQUEST['section'])) {
-                    if (!empty($_REQUEST['course'])) {
-                        $courseEnrollment = true;
-                    } else {
+                    if (empty($sections)) {
                         $toolbox->smarty_addMessage(
-                            'Course or Section',
-                            'Missing from enrollment request.',
-                            NotificationMessage::ERROR
+                            'No Courses',
+                            "matched your search term '{$_REQUEST['course']}'.",
+                            NotificationMessage::WARNING
                         );
                         $step = STEP_INSTRUCTIONS;
                     }
                 }
 
-                if (empty($_REQUEST['users'])) {
-                    $toolbox->smarty_addMessage(
-                        'Users',
-                        'missing from enrollment request.',
-                        NotificationMessage::ERROR
-                    );
-                } elseif ($step == STEP_ENROLL) {
-                    $count = 0;
-                    foreach ($_REQUEST['users'] as $user) {
-                        $enrollment = $toolbox->api_post(
-                            (
-                                $courseEnrollment ?
-                                "/courses/{$_REQUEST['course']}/enrollments" :
-                                "/sections/{$_REQUEST['section']}/enrollments"
-                            ),
-                            array(
-                                'enrollment[user_id]' => $user['id'],
-                                'enrollment[role_id]' => $user['role'],
-                                'enrollment[enrollment_state]' => 'active',
-                                'enrollment[notify]' => (empty($user['notify']) ? 'false' : $user['notify'])
-                            )
-                        );
-                        if (!empty($enrollment['id'])) {
-                            $count++;
-                        } // FIXME should really list errors, no?
-                    }
+                if ($step == STEP_CONFIRM) {
+                    if (!empty($users)) {
+                        $confirm = array();
+                        foreach ($users as $term) {
+                            $confirm[$term] = $toolbox->cache_get("users/$term");
+                            if ($confirm[$term] === false) {
+                                $confirm[$term] = $toolbox->api_get(
+                                    'accounts/1/users',
+                                    array(
+                                        'search_term' => $term,
+                                        'include[]' => 'term'
+                                    )
+                                );
+                                $toolbox->cache_set("users/$term", $confirm[$term], CACHE_LIFETIME);
+                            }
+                        }
 
-                    if ($courseEnrollment) {
-                        $course = $_REQUEST['course'];
+                        $toolbox->smarty_assign('sections', $sections);
+                        $toolbox->smarty_assign('terms', $toolbox->getTermList());
+                        $toolbox->smarty_assign('confirm', $confirm);
+                        $toolbox->smarty_assign('roles', $toolbox->api_get('accounts/1/roles')); // TODO make this account-specific
+                        $toolbox->smarty_assign('formHidden', array('step' => STEP_ENROLL));
+                        $toolbox->smarty_display(basename(__FILE__, '.php') . '/confirm.tpl');
+                        break;
                     } else {
-                        $section = $toolbox->api_get("sections/{$_REQUEST['section']}");
-                        $course = $section['course_id'];
+                        $toolbox->smarty_addMessage(
+                            'Users',
+                            'were not selected, so no enrollments can happen.',
+                            NotificationMessage::ERROR
+                        );
+                        $step = STEP_INSTRUCTIONS;
+                    }
+                }
+            } catch (Pest_Exception $e) {
+                $toolbox->exceptionErrorMessage($e);
+            }
+
+            /* flow into STEP_ENROLL (and STEP_INSTRUCTIONS) */
+
+        case STEP_ENROLL:
+            try {
+                if ($step == STEP_ENROLL) {
+                    $courseEnrollment = false;
+                    if (empty($_REQUEST['section'])) {
+                        if (!empty($_REQUEST['course'])) {
+                            $courseEnrollment = true;
+                        } else {
+                            $toolbox->smarty_addMessage(
+                                'Course or Section',
+                                'Missing from enrollment request.',
+                                NotificationMessage::ERROR
+                            );
+                            $step = STEP_INSTRUCTIONS;
+                        }
                     }
 
-                    // FIXME no longer have the course ID… link is broken
-                    $toolbox->smarty_addMessage(
-                        'Success',
-                        "<a target=\"_top\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/$course/users\">$count users enrolled</a>",
-                        NotificationMessage::GOOD
-                    );
+                    if (empty($_REQUEST['users'])) {
+                        $toolbox->smarty_addMessage(
+                            'Users',
+                            'missing from enrollment request.',
+                            NotificationMessage::ERROR
+                        );
+                    } elseif ($step == STEP_ENROLL) {
+                        $count = 0;
+                        foreach ($_REQUEST['users'] as $user) {
+                            $enrollment = $toolbox->api_post(
+                                (
+                                    $courseEnrollment ?
+                                    "/courses/{$_REQUEST['course']}/enrollments" :
+                                    "/sections/{$_REQUEST['section']}/enrollments"
+                                ),
+                                array(
+                                    'enrollment[user_id]' => $user['id'],
+                                    'enrollment[role_id]' => $user['role'],
+                                    'enrollment[enrollment_state]' => 'active',
+                                    'enrollment[notify]' => (empty($user['notify']) ? 'false' : $user['notify'])
+                                )
+                            );
+                            if (!empty($enrollment['id'])) {
+                                $count++;
+                            } // FIXME should really list errors, no?
+                        }
 
-                    $_REQUEST = array();
+                        if ($courseEnrollment) {
+                            $course = $_REQUEST['course'];
+                        } else {
+                            $section = $toolbox->api_get("sections/{$_REQUEST['section']}");
+                            $course = $section['course_id'];
+                        }
+
+                        // FIXME no longer have the course ID… link is broken
+                        $toolbox->smarty_addMessage(
+                            'Success',
+                            "<a target=\"_top\" href=\"{$_SESSION[CANVAS_INSTANCE_URL]}/courses/$course/users\">$count users enrolled</a>",
+                            NotificationMessage::GOOD
+                        );
+
+                        $_REQUEST = array();
+                    }
                 }
+            } catch (Pest_Exception $e) {
+                $toolbox->exceptionErrorMessage($e);
             }
-        } catch (Pest_Exception $e) {
-            $toolbox->exceptionErrorMessage($e);
-        }
 
-        /* fall through to STEP_INSTRUCTION */
+            /* fall through to STEP_INSTRUCTION */
 
-    case STEP_INSTRUCTIONS:
-    default:
-        if (!empty($_REQUEST['users'])) {
-            $toolbox->smarty_assign('users', $_REQUEST['users']);
-        }
-        if (!empty($_REQUEST['course'])) {
-            $toolbox->smarty_assign('course', $_REQUEST['course']);
-        }
+        case STEP_INSTRUCTIONS:
+        default:
+            if (!empty($_REQUEST['users'])) {
+                $toolbox->smarty_assign('users', $_REQUEST['users']);
+            }
+            if (!empty($_REQUEST['course'])) {
+                $toolbox->smarty_assign('course', $_REQUEST['course']);
+            }
 
-        $toolbox->smarty_assign('roles', $roles);
-        $toolbox->smarty_assign('formHidden', array('step' => STEP_CONFIRM));
-        $toolbox->smarty_display(basename(__FILE__, '.php') . '/instructions.tpl');
+            $toolbox->smarty_assign('roles', $roles);
+            $toolbox->smarty_assign('formHidden', array('step' => STEP_CONFIRM));
+            $toolbox->smarty_display(basename(__FILE__, '.php') . '/instructions.tpl');
 }

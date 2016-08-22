@@ -50,7 +50,7 @@ switch ($step) {
                                 );
                             }
                         }
-                        $cache->setCache('enrollments', $data, 15*60);
+                        $cache->setCache('enrollments', $data, 15 * 60);
                     }
                     $toolbox->smarty_assign('account', $_REQUEST['account']);
                     $toolbox->smarty_assign('term', $_REQUEST['term']);

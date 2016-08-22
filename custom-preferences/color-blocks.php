@@ -61,8 +61,7 @@ switch ($step) {
                     $sections = $toolbox->api_get("courses/{$course['id']}/sections");
                     foreach ($sections as $section) {
                         $sis_course_id = (isset($parentCourses[$section['sis_section_id']]) ?
-                                $parentCourses[$section['sis_section_id']] :
-                                false
+                                $parentCourses[$section['sis_section_id']] : false
                             );
                         if ($sis_course_id === false) {
                             $parentCourse = $course;

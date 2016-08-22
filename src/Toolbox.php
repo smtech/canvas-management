@@ -4,7 +4,6 @@ namespace smtech\CanvasManagement;
 
 use Battis\BootstrapSmarty\NotificationMessage;
 use Battis\HierarchicalSimpleCache;
-
 use smtech\LTI\Configuration\Option;
 
 class Toolbox extends \smtech\StMarksReflexiveCanvasLTI\Toolbox
@@ -12,7 +11,7 @@ class Toolbox extends \smtech\StMarksReflexiveCanvasLTI\Toolbox
     /**
      * Configure course and account navigation placements
      *
-     * @return Generator
+     * @return \smtech\LTI\Configuration\Generator
      */
     public function getGenerator()
     {
@@ -136,7 +135,7 @@ class Toolbox extends \smtech\StMarksReflexiveCanvasLTI\Toolbox
                 print_r($this->getAPI()->last_request, true) .
                 '</pre><p>Last Headers</p><pre>' .
                 print_r($this->getAPI()->last_headers, true) .
-                '</pre><p>Error Message</p><pre>' . $e->getMessage() .'</pre>',
+                '</pre><p>Error Message</p><pre>' . $e->getMessage() . '</pre>',
             NotificationMessage::ERROR
         );
     }

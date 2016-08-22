@@ -5,7 +5,6 @@ require_once __DIR__ . '/constants.inc.php';
 
 use smtech\CanvasManagement\Toolbox;
 use smtech\ReflexiveCanvasLTI\LTI\ToolProvider;
-use smtech\ReflexiveCanvasLTI\Exception\ConfigurationException;
 use Battis\DataUtilities;
 
 @session_start(); // TODO suppressing warnings is wrong

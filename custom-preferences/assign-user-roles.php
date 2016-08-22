@@ -6,7 +6,7 @@ use Battis\BootstrapSmarty\NotificationMessage;
 
 $cache = new \Battis\HierarchicalSimpleCache($sql, basename(__DIR__));
 $cache->pushKey(basename(__FILE__, '.php'));
-$cache->setLifetime(60*60);
+$cache->setLifetime(60 * 60);
 
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_LISTING', 2);
