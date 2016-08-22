@@ -1,3 +1,5 @@
-# Canvas User Manager
+# Canvas Management
 
-An LTI to consolidate (and make easier to user) a bunch of scripts from [smtech/canvas-admin-scripts](https://github.com/smtech/canvas-admin-scripts) and to provide better capabilities for new-user provisioning.
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/smtech/canvas-management/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/smtech/canvas-management/?branch=master)
+
+Our suite of Canvas management tools
