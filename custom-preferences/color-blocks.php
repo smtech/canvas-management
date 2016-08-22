@@ -1,12 +1,11 @@
 <?php
 
-require_once('common.inc.php');
+require_once 'common.inc.php';
 
 use smtech\StMarksColors as sm;
 use Battis\BootstrapSmarty\NotificationMessage;
 
-$cache = new \Battis\HierarchicalSimpleCache($sql, basename(__DIR__));
-$cache->pushKey(basename(__FILE__, '.php'));
+$toolbox->cache_pushKey(basename(__FILE__, '.php'));
 
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_RESULT', 2);
@@ -22,7 +21,7 @@ switch ($step) {
         if (empty($_REQUEST['account'])) {
             $toolbox->smarty_addMessage(
                 'No Account',
-                'Defaulting to the main account. (This may may things a bit slower.)',
+                'Defaulting to the main account. (This may make things a bit slower.)',
                 NotificationMessage::WARNING
             );
         }
@@ -38,12 +37,12 @@ switch ($step) {
             $affected = array();
             $unaffected = array();
 
-            $parentCourses = $cache->getCache('parent courses');
+            $parentCourses = $toolbox->cache_get('parent courses');
             if (!$parentCourses) {
                 $parentCourses = [];
             }
 
-            $colorAssignments = $cache->getCache('color assignments');
+            $colorAssignments = $toolbox->cache_get('color assignments');
             if (!$colorAssignments) {
                 $colorAssignments = [];
             }
@@ -76,7 +75,7 @@ switch ($step) {
 
                         /* ...figure out the proper block color... */
                         if (preg_match("/($colors)/i", $sis_course_id, $match)) {
-                            $color = sm::get($match[1])->dark()->value();
+                            $color = sm::get(strtolower($match[1]))->dark()->value();
 
                             /* ...and set it for all enrolled users. */
                             $enrollments = $toolbox->api_get("sections/{$section['id']}/enrollments", array('state' => 'active'));
@@ -108,8 +107,8 @@ switch ($step) {
                 $toolbox->exceptionErrorMessage($e);
             }
 
-            $cache->setCache('parent courses', $parentCourses, \Battis\HierarchicalSimpleCache::IMMORTAL_LIFETIME);
-            $cache->setCache('color assignments', $colorAssignments, \Battis\HierarchicalSimpleCache::IMMORTAL_LIFETIME);
+            $toolbox->cache_set('parent courses', $parentCourses, \Battis\HierarchicalSimpleCache::IMMORTAL_LIFETIME);
+            $toolbox->cache_set('color assignments', $colorAssignments, \Battis\HierarchicalSimpleCache::IMMORTAL_LIFETIME);
 
             $toolbox->smarty_addMessage(
                 count($affected) . ' Color Blocks Assigned',
@@ -118,6 +117,10 @@ switch ($step) {
                 NotificationMessage::GOOD
             );
         }
+        $toolbox->smarty_assign([
+            'account' => $_REQUEST['account'],
+            'term' => $_REQUEST['term']
+        ]);
 
         /* flows into STEP_INSTRUCTIONS */
 
