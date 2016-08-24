@@ -4,9 +4,8 @@ require_once('common.inc.php');
 
 use Battis\BootstrapSmarty\NotificationMessage;
 
-$cache = new \Battis\HierarchicalSimpleCache($sql, basename(__DIR__));
-$cache->pushKey(basename(__FILE__, '.php'));
-$cache->setLifetime(60 * 60);
+$toolbox->cache_pushKey(basename(__FILE__, '.php'));
+$toolbox->getCache()->setLifetime(60 * 60);
 
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_LISTING', 2);
@@ -18,14 +17,14 @@ switch ($step) {
     case STEP_LISTING:
     case STEP_RESULT:
         try {
-            $users = $cache->getCache('users');
+            $users = $toolbox->cache_get('users');
             if ($users === false) {
                 $users = array();
                 $response = $toolbox->api_get('/accounts/1/users');
                 foreach ($response as $user) {
                     $users[$user['id']] = $user;
                 }
-                $cache->setCache('users', $users);
+                $toolbox->cache_set('users', $users);
             }
         } catch (Exception $e) {
             $toolbox->exceptionErrorMessage($e);
