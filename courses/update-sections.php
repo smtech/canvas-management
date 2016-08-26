@@ -10,6 +10,7 @@ define('STEP_CONFIRM', 2);
 define('STEP_UPDATE', 3);
 
 $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
+$ignoreCourseId = (empty($_REQUEST['ignore_course_id']) ? false : $_REQUEST['ignore_course_id']);
 
 switch ($step) {
     case STEP_CONFIRM:
@@ -30,7 +31,7 @@ switch ($step) {
                 'sections' => $sections,
                 'formHidden' => [
                     'step' => STEP_UPDATE,
-                    'ignore_course_id' => $_REQUEST['ignore_course_id']
+                    'ignore_course_id' => $ignoreCourseId
                 ]
             ]);
             $toolbox->smarty_display(basename(__FILE__, '.php') . '/confirm.tpl');
@@ -43,7 +44,6 @@ switch ($step) {
             $links = [];
             $crosslist = [];
             $crosslistFail = [];
-            $ignoreCourseId = (empty($_REQUEST['ignore_course_id']) ? false : $_REQUEST['ignore_course_id']);
             foreach ($_REQUEST['sections'] as $section) {
                 if (isset($section['batch-include']) && $section['batch-include'] == 'include') {
                     /* build parameter list */
@@ -98,14 +98,14 @@ switch ($step) {
                 $toolbox->smarty_addMessage(
                     'Update completed',
                     'The following sections have been updated: ' . implode(', ', $links),
-                    NotificationMessage::GOOD
+                    NotificationMessage::SUCCESS
                 );
             }
             if (!empty($crosslist)) {
                 $toolbox->smarty_addMessage(
                     'Crosslisting completed',
                     'The following sections have been crosslisted: ' . implode(', ', $crosslist),
-                    NotificationMessage::GOOD
+                    NotificationMessage::SUCCESS
                 );
             }
             if (!empty($crosslistFail)) {
