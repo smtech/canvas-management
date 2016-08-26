@@ -13,7 +13,7 @@ function blank($row, $key)
     }
 }
 
-$cache = new \Battis\HierarchicalSimpleCache($sql, basename(__FILE__, '.php'));
+$toolbox->cache_pushKey(basename(__FILE__, '.php'));
 
 define('STEP_INSTRUCTIONS', 1);
 define('STEP_CSV', 2);
@@ -32,7 +32,7 @@ switch ($step) {
                 );
             }
 
-            $data = $cache->getCache("$account/users");
+            $data = $toolbox->cache_get("$account/users");
             if ($data === false) {
                 $users = $toolbox->api_get("accounts/$account/users");
                 $data[] = array(
@@ -45,9 +45,9 @@ switch ($step) {
                         blank($user, 'sortable_name'), blank($user, 'short_name'), blank($user, 'email'), 'active'
                     );
                 }
-                $cache->setCache("$account/users", $data, 15 * 60);
+                $toolbox->cache_set("$account/users", $data, 15 * 60);
             }
-            $toolbox->smarty_assign('csv', basename(__FILE__, '.php') . "/$account/users");
+            $toolbox->smarty_assign('csv', $toolbox->getCache()->getHierarchicalKey("$account/users"));
             $toolbox->smarty_assign('filename', date('Y-m-d_H-i-s') . "_account-{$account}_users");
             $toolbox->smarty_addMessage(
                 'Ready for Download',

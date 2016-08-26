@@ -1,10 +1,10 @@
 <?php
 
-require_once('common.inc.php');
+require_once 'common.inc.php';
 
 use Battis\SimpleCache;
 
-$cache = new SimpleCache($sql);
+$cache = new SimpleCache($toolbox->getMySQL());
 
 // FIXME this is a gaping security hole, allowing anything in the cache to be dumped to CSV -- needs a nonce or something
 
