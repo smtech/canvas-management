@@ -12,18 +12,18 @@
 		</tr>
 	</thead>
 	<tbody>
-		{foreach $courses as $i => $course}
+		{foreach $sections as $i => $section}
 			<tr>
 				{foreach $fields as $field}
-					<td>
-						{$course[$field]}
-						<input name="courses[{$i}][{$field}]" value="{$course[$field]}" type="hidden" />
+					<td{if $formHidden['ignore_course_id'] && $field == 'course_id'} style="color: gray; text-decoration: line-through;"{/if}>
+						{$section[$field]}
+						<input name="sections[{$i}][{$field}]" value="{$section[$field]}" type="hidden" />
 					</td>
 				{/foreach}
 				<td>
 					<div class="checkbox">
-						<label for="course-{$i}-include">
-							<input type="checkbox" value="include" name="courses[{$i}][batch-include]" checked="checked" />
+						<label for="section-{$i}-include">
+							<input id="section-{$i}-include" type="checkbox" value="include" name="sections[{$i}][batch-include]" checked="checked" />
 							Include</label>
 					</div>
 				</td>

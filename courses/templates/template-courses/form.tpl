@@ -10,19 +10,19 @@
 
 	<div class="form-group">
 		<label for="template" class="control-label col-sm-{$formLabelWidth}">Template</label>
-		<div class="col-sm-10">
+		<div class="col-sm-{12 - $formLabelWidth}">
 			<input type="text" name="template" id="template" class="form-control" placeholder="Canvas or SIS ID (leave blank for none)" value="course-template"/>
 		</div>
 	</div>
-	
-	
+
+
 	<div class="form-group">
 		<label for="csv" class="control-label col-sm-{$formLabelWidth}">CSV File</label>
-		<div class="col-sm-4">
+		<div class="col-sm-{12 - $formLabelWidth}">
 			<input type="file" id="csv" name="csv" class="form-control" />
 		</div>
 	</div>
-	
+
 	{assign var="formButton" value="Search"}
 
 {/block}

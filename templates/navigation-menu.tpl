@@ -20,6 +20,7 @@
             <li><a href="{$APP_URL}/courses/archive-and-rename-courses.php">Archive and Rename Courses</a></li>
             <li><a href="{$APP_URL}/courses/create-courses.php">Create Courses</a></li>
             <li><a href="{$APP_URL}/courses/update-courses.php">Update Courses</a></li>
+            <li><a href="{$APP_URL}/courses/update-sections.php">Update Sections</a></li>
             <li><a href="{$APP_URL}/courses/template-courses.php">Template Courses</a></li>
             <li><a href="{$APP_URL}/courses/normalize-sections.php">Normalize Sections</a></li>
             <li><a href="{$APP_URL}/courses/publish-courses.php">Publish Courses</a></li>
