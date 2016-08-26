@@ -25,7 +25,7 @@ if (empty($_SESSION[CANVAS_INSTANCE_URL])) {
 }
 
 /* cache per-instance */
-$toolbox->cache_pushKey($_SESSION[CANVAS_INSTANCE_URL]);
+$toolbox->cache_pushKey(parse_url($_SESSION[CANVAS_INSTANCE_URL], PHP_URL_HOST));
 
 /* Configure smarty templating */
 /* FIXME this is sometimes superfluous overhead (e.g. action=config) */
