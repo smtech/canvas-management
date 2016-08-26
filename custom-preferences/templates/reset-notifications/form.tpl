@@ -1,8 +1,8 @@
 {extends file="form.tpl"}
 
-{block name="form-content.tpl"}
+{block name="form-content"}
 
-    {include file="select-accounts.tpl"}
+    {include file="select-account.tpl"}
 
     {assign var="formButton" value="Reset Notifications"}
 

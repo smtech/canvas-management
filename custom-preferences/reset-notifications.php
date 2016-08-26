@@ -14,28 +14,24 @@ switch ($step) {
         $counter = 0;
         try {
             foreach ($toolbox->api_get("accounts/{$_REQUEST['account']}/users") as $user) {
-                foreach ($toolbox->api_get("users/{$user['id']}/communication_channels") as $channel) {
-                    if ($channel['type'] == 'email' && preg_match('/.*@stmarksschool\.org$/', $channel['address'])) {
-                        $toolbox->api_put(
-                            "/users/self/communication_channels/{$channel['id']}/notification_preferences",
-                            [
-                                'communication_preferences' => [
-                                    'new_announcement' => 'immediately',
-                                    'conversation_message' => 'immediately',
-                                    'added_to_conversation' => 'immediately'
-                                ],
-                                'as_user_id' => $user['id']
-                            ]
-                        );
-                        $counter++;
-                    }
+                if (preg_match('/.*@stmarksschool.org$/i', $user['login_id'])) {
+                    $toolbox->api_put(
+                        "users/self/communication_channels/email/{$user['login_id']}/notification_preferences",
+                        [
+                            'as_user_id' => $user['id'],
+                            'notification_preferences[new_announcement][frequency]' => 'immediately',
+                            'notification_preferences[added_to_conversation][frequency]' => 'immediately',
+                            'notification_preferences[conversation_message][frequency]' => 'immediately'
+                        ]
+                    );
+                    $counter++;
                 }
             }
         } catch (Exception $e) {
             $toolbox->exceptionErrorMessage($e);
         }
         $toolbox->smarty_addMessage(
-            "$count Users' Notifications Reset",
+            "$counter Users' Notifications Reset",
             "Notifications for announcements and conversation messages have been set to be sent immediately to each user's St. Mark's email.",
             NotificationMessage::SUCCESS
         );
