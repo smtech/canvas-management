@@ -120,13 +120,17 @@ switch ($step) {
 
                             /* ...and purge users who should not be enrolled */
                             } elseif (!isset($potentialDuplicates[$enrollment['user']['id']])) {
-                                $toolbox->api_delete(
-                                    "courses/$courseId/enrollments/{$enrollment['id']}",
-                                    array(
-                                        'task' => 'delete'
-                                    )
-                                );
-                                $deleted++;
+                                if (empty($enrollment['id'])) {
+                                    $toolbox->smarty_addMessage('No enrollment to delete', '<pre>'. print_r($enrollment, true) . '</pre>', NotificationMessage::WARNING);
+                                } else {
+                                    $toolbox->api_delete(
+                                        "courses/$courseId/enrollments/{$enrollment['id']}",
+                                        array(
+                                            'task' => 'delete'
+                                        )
+                                    );
+                                    $deleted++;
+                                }
                             }
                         }
                     }
