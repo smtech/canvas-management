@@ -46,6 +46,7 @@
             <li><a href="{$APP_URL}/custom-preferences/assign-user-roles.php">Assign User Roles</a></li>
             <li><a href="{$APP_URL}/custom-preferences/apply-enrollment-rules.php">Apply Enrollment Rules</a></li>
             <li><a href="{$APP_URL}/custom-preferences/color-blocks.php">Color Blocks</a></li>
+            <li><a href="{$APP_URL}/custom-preferences/force-notifications.php">Force Notifications</a></li>
             <li><a href="{$APP_URL}/custom-preferences/reset-notifications.php">Reset Notifications</a></li>
             <li><a href="{$APP_URL}/custom-preferences/unfavorite-hidden-courses.php">Unfavorite Hidden Courses</a></li>
         </ul>
