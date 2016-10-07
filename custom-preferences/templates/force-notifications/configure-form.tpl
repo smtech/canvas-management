@@ -16,19 +16,24 @@
     {assign var="notificationCategory" value=false}
     {foreach $notifications as $notification}
         {if $notificationCategory != $notification['category']}
-            <h4>{$notification['category']}</h4>
+            {if $notificationCategory !== false}
+                 </div></div>
+            {/if}
+            <div class="panel panel-default"><div class="panel-heading"><p class="panel-title">{titleCase($notification['category'])}</p></div><div class="panel-body">
             {assign var="notificationCategory" value=$notification['category']}
         {/if}
-        <div class="form-group">
-            <label class="control-label col-sm-{$formLabelWidth}}">{$notification['notification']|capitalize}</label>
-            <span class="col-sm-6">
-                <select class="form-control" name="notification_preferences[{$notification['notification']}][frequency]">
-                    {foreach $frequencies as $frequency}
-                        <option value="{$frequency}" {if $frequency == 'never'} selected="selected"{/if}>{$frequency|capitalize}</option>
-                    {/foreach}
-                </select>
-            </span>
-        </div>
+        {if $notification['notification'] != 'confirm_sms_communication_channel'}
+            <div class="form-group">
+                <label class="control-label col-sm-6">{titleCase($notification['notification'])}</label>
+                <span class="col-sm-6">
+                    <select class="form-control" name="notification_preferences[{$notification['notification']}][frequency]">
+                        {foreach $frequencies as $frequency}
+                            <option value="{$frequency}" {if $frequency == 'never'} selected="selected"{/if}>{$frequency|capitalize}</option>
+                        {/foreach}
+                    </select>
+                </span>
+            </div>
+        {/if}
     {/foreach}
 
     {assign var="formButton" value="Force Notifications"}

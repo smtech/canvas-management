@@ -9,6 +9,6 @@
         </div>
     </div>
 
-    {include file="$__DIR__/form.tpl"}
+    {include file="$__DIR__/configure-form.tpl"}
 
 {/block}
