@@ -25,13 +25,17 @@
         {if $notification['notification'] != 'confirm_sms_communication_channel'}
             <div class="form-group">
                 <label class="control-label col-sm-6">{titleCase($notification['notification'])}</label>
-                <span class="col-sm-2">
+                <span class="col-sm-3">
                     <select class="form-control" name="notification_preferences[{$notification['notification']}][frequency]">
                         {foreach $frequencies as $frequency}
                             <option value="{$frequency}" {if $frequency == 'never'} selected="selected"{/if}>{$frequency|capitalize}</option>
                         {/foreach}
                     </select>
                 </span>
+                <label for="{$notification['notification']}" class="control-label col-sm-2">
+                    <input type="checkbox" id="{$notification['notification']}" name="notification_preferences[{$notification['notification']}][enabled]" />
+                    Include
+                </label>
             </div>
         {/if}
     {/foreach}

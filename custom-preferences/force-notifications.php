@@ -69,23 +69,31 @@ switch ($step) {
 
         if ($step == STEP_FORCE) {
             try {
+                $notificationPreferences = [];
+                foreach($_REQUEST['notification_preferences'] as $notification => $settings) {
+                    if (!empty($settings['enabled']) && $settings['enabled']) {
+                        $notificationPreferences[$notification]['frequency'] = $settings['frequency'];
+                    }
+                }
                 $affected = 0;
-                foreach ($toolbox->api_get("accounts/{$_REQUEST['account']}/users") as $user) {
-                    $response = $customPrefs->query("SELECT * FROM `users` WHERE `id` = '{$user['id']}' AND `role` = '{$_REQUEST['role']}'");
-                    if ($response && $response->num_rows > 0) {
-                        $communicationChannels = $toolbox->api_get("users/{$user['id']}/communication_channels");
-                        foreach ($communicationChannels as $channel) {
-                            // FIXME not great to hard code in our domain
-                            if ($channel['type'] == 'email' && preg_match('/.*@stmarksschool.org$/i', $channel['address'])) {
-                                $toolbox->api_put(
-                                    "users/self/communication_channels/{$channel['id']}/notification_preferences",
-                                    [
-                                        'notification_preferences' => $_REQUEST['notification_preferences'],
-                                        'as_user_id' => $user['id']
-                                    ]
-                                );
-                                $affected++;
-                                break;
+                if (!empty($notificationPreferences)) {
+                    foreach ($toolbox->api_get("accounts/{$_REQUEST['account']}/users") as $user) {
+                        $response = $customPrefs->query("SELECT * FROM `users` WHERE `id` = '{$user['id']}' AND `role` = '{$_REQUEST['role']}'");
+                        if ($response && $response->num_rows > 0) {
+                            $communicationChannels = $toolbox->api_get("users/{$user['id']}/communication_channels");
+                            foreach ($communicationChannels as $channel) {
+                                // FIXME not great to hard code in our domain
+                                if ($channel['type'] == 'email' && preg_match('/.*@stmarksschool.org$/i', $channel['address'])) {
+                                    $toolbox->api_put(
+                                        "users/self/communication_channels/{$channel['id']}/notification_preferences",
+                                        [
+                                            'notification_preferences' => $notificationPreferences,
+                                            'as_user_id' => $user['id']
+                                        ]
+                                    );
+                                    $affected++;
+                                    break;
+                                }
                             }
                         }
                     }
