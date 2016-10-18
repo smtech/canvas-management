@@ -49,6 +49,7 @@
             <li><a href="{$APP_URL}/custom-preferences/force-notifications.php">Force Notifications</a></li>
             <li><a href="{$APP_URL}/custom-preferences/reset-notifications.php">Reset Notifications</a></li>
             <li><a href="{$APP_URL}/custom-preferences/unfavorite-hidden-courses.php">Unfavorite Hidden Courses</a></li>
+            <li><a href="{$APP_URL}/custom-preferences/faculty-journal.php?start=2016-10-10&end=2016-10-21">Faculty Journal Report</a></li>
         </ul>
     </li>
 
