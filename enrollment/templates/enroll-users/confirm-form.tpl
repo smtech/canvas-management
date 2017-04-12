@@ -15,9 +15,9 @@
 						<option disabled="disabled"></option>
 						{foreach $sections as $section}
 							{if empty($sections['section'])}
-								<optgroup label="{$section['course']['name']}">
-									<option disabled="disabled">{if !empty($section['course']['sis_course_id'])}{$section['course']['sis_course_id']}{else}No Course SIS ID{/if}</option>
-									<option value="{$section['course']['id']}">{$section['course']['name']} (Default Section)</option>
+								<optgroup label="{$section['course']['name']}{if !empty($section['course']['sis_course_id'])} ({$section['course']['sis_course_id']}){/if}">
+                                    <option disabled="disabled">{$terms[$section['course']['enrollment_term_id']]['name']} / {$accounts[$section['course']['account_id']]['name']}</option>
+									<option value="{$section['course']['id']}">Default Section</option>
 								</optgroup>
 							{/if}
 						{/foreach}
@@ -32,11 +32,9 @@
 						<option disabled="disabled"></option>
 						{foreach $sections as $section}
 							{if !empty($section['section'])}
-								<optgroup label="{$section['course']['name']}">
-									<option disabled="disabled">{if !empty($section['course']['sis_course_id'])}{$section['course']['sis_course_id']}{else}No Course SIS ID{/if}</option>
-									<option value="{$section['section']['id']}">{$section['section']['name']}</option>
-									<option disabled="disabled">{if !empty($section['section']['sis_section_id'])}{$section['section']['sis_section_id']}{else}No Section SIS ID{/if}</option>
-									<option disabled="disabled">{$terms[$section['course']['enrollment_term_id']]['name']}</option>
+								<optgroup label="{$section['course']['name']}{if !empty($section['course']['sis_course_id'])} ({$section['course']['sis_course_id']}){/if}">
+                                    <option disabled="disabled">{$terms[$section['course']['enrollment_term_id']]['name']} / {$accounts[$section['course']['account_id']]['name']}</option>
+									<option value="{$section['section']['id']}">{$section['section']['name']}{if !empty($section['section']['sis_section_id'])} ({$section['section']['sis_section_id']}){/if}</option>
 								</optgroup>
 							{/if}
 						{/foreach}
