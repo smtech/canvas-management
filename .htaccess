@@ -1,5 +1,5 @@
 # Block access to things that should stay private
-<Files ~ "(.xml|.sql|.inc.php|.git*|.log|.tpl)">
+<Files ~ "(.xml|.sql|.inc.php|.git*|.log|.tpl|.sh)">
     Order allow,deny
     Deny from all
 </Files>
