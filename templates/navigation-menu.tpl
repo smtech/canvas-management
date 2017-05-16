@@ -62,6 +62,7 @@
             One Offs <span class="caret"></span>
         </a>
         <ul class="dropdown-menu pull-right">
+            <li><a href="{$APP_URL}/one-offs/fix-course-codes.php">Fix Course Codes</a></li>
             <li><a href="{$APP_URL}/one-offs/fix-section-sis-ids.php">Fix Section SIS IDs</a></li>
             <li><a href="{$APP_URL}/one-offs/download-users-csv.php">Download Users.csv</a></li>
             <li><a href="{$APP_URL}/one-offs/archive-inbox.php">Archive Inbox</a></li>
