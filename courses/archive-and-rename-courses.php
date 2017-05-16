@@ -5,12 +5,12 @@ require_once 'common.inc.php';
 use Battis\BootstrapSmarty\NotificationMessage;
 
 define('STEP_INSTRUCTIONS', 1);
-define('STEP_CONCLUDE', 2);
+define('STEP_RENAME', 2);
 
 $step = (empty($_REQUEST['step']) ? STEP_INSTRUCTIONS : $_REQUEST['step']);
 
 switch ($step) {
-    case STEP_CONCLUDE:
+    case STEP_RENAME:
         /* calculate the proper term prefix/suffix */
         $term = $toolbox->getTermList()[$_REQUEST['term']];
         $isYear = strpos($term['sis_term_id'], 'year') !== false;
@@ -83,7 +83,8 @@ switch ($step) {
                     /* rename course */
                     $toolbox->api_put("courses/{$course['id']}", [
                         /* also rename any courses named under previous regime that were missing teachers */
-                        'course[name]' => $concludedName
+                        'course[name]' => $concludedName,
+                        'course[course_code]' => $concludedName
                     ]);
                     $coursesRenamed++;
                 }
@@ -110,7 +111,7 @@ switch ($step) {
     default:
         $toolbox->smarty_assign([
             'formHidden' => [
-                'step' => STEP_CONCLUDE
+                'step' => STEP_RENAME
             ],
             'accounts' => $toolbox->getAccountList(),
             'terms' => $toolbox->getTermList()
