@@ -1,5 +1,7 @@
 <?php
 
+$requestApiDomain = (empty($_REQUEST['custom_canvas_api_domain']) ? false : $_REQUEST['custom_canvas_api_domain']);
+
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/constants.inc.php';
 
@@ -17,10 +19,13 @@ $toolbox =& $_SESSION[Toolbox::class];
 
 /* set the Tool Consumer's instance URL, if present */
 if (empty($_SESSION[CANVAS_INSTANCE_URL])) {
-    if (!empty($_SESSION[ToolProvider::class]['canvas']['api_domain'])) {
+    if (!empty($requestApiDomain)) {
+        $_SESSION[CANVAS_INSTANCE_URL] = "https://{$requestApiDomain}";
+    } elseif (!empty($_SESSION[ToolProvider::class]['canvas']['api_domain'])) {
         $_SESSION[CANVAS_INSTANCE_URL] = 'https://' . $_SESSION[ToolProvider::class]['canvas']['api_domain'];
     } else {
-        $_SESSION[CANVAS_INSTANCE_URL] = $toolbox->config('TOOL_CANVAS_API')['url'];
+        $toolbox->log('Could not detect CANVAS_INSTANCE_URL');
+        $_SESSION[CANVAS_INSTANCE_URL] = 'https://example.com';
     }
 }
 
