@@ -41,16 +41,16 @@
         },
         {
             "name": "battis/bootstrapsmarty",
-            "version": "v2.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/battis/bootstrapsmarty.git",
-                "reference": "c95297336ca37a48f3bcbc655275996ebbd0a2f9"
+                "reference": "e0a71cce1dd285ad11a64fd70495f802ff75ae00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/battis/bootstrapsmarty/zipball/c95297336ca37a48f3bcbc655275996ebbd0a2f9",
-                "reference": "c95297336ca37a48f3bcbc655275996ebbd0a2f9",
+                "url": "https://api.github.com/repos/battis/bootstrapsmarty/zipball/e0a71cce1dd285ad11a64fd70495f802ff75ae00",
+                "reference": "e0a71cce1dd285ad11a64fd70495f802ff75ae00",
                 "shasum": ""
             },
             "require": {
@@ -78,7 +78,7 @@
                 }
             ],
             "description": "A wrapper for Smarty to set (and maintain) defaults within a Bootstrap UI environment",
-            "time": "2016-08-01T13:10:10+00:00"
+            "time": "2017-05-24T17:21:18+00:00"
         },
         {
             "name": "battis/configxml",
@@ -1245,16 +1245,16 @@
         },
         {
             "name": "smtech/stmarks-reflexive-canvas-lti",
-            "version": "v0.2.2",
+            "version": "v0.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smtech/stmarks-reflexive-canvas-lti.git",
-                "reference": "d0e50e1fa145a1fab6b699725853c54b6b781ba1"
+                "reference": "2b1d54639970662acaef6b20c052172fbc235543"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smtech/stmarks-reflexive-canvas-lti/zipball/d0e50e1fa145a1fab6b699725853c54b6b781ba1",
-                "reference": "d0e50e1fa145a1fab6b699725853c54b6b781ba1",
+                "url": "https://api.github.com/repos/smtech/stmarks-reflexive-canvas-lti/zipball/2b1d54639970662acaef6b20c052172fbc235543",
+                "reference": "2b1d54639970662acaef6b20c052172fbc235543",
                 "shasum": ""
             },
             "require": {
@@ -1281,20 +1281,20 @@
                 }
             ],
             "description": "A toolbox for managing LTI authentication and tool provider development (with St. Mark's templating)",
-            "time": "2016-08-18T13:03:48+00:00"
+            "time": "2017-05-24T17:31:05+00:00"
         },
         {
             "name": "smtech/stmarkssmarty",
-            "version": "v1.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smtech/stmarks-bootstrapsmarty.git",
-                "reference": "e481110eed523a1c6dc3e1a8d152785ab909cfc9"
+                "reference": "0555522cf86d604a6c8db5c45692bc4c70f2d953"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smtech/stmarks-bootstrapsmarty/zipball/e481110eed523a1c6dc3e1a8d152785ab909cfc9",
-                "reference": "e481110eed523a1c6dc3e1a8d152785ab909cfc9",
+                "url": "https://api.github.com/repos/smtech/stmarks-bootstrapsmarty/zipball/0555522cf86d604a6c8db5c45692bc4c70f2d953",
+                "reference": "0555522cf86d604a6c8db5c45692bc4c70f2d953",
                 "shasum": ""
             },
             "require": {
@@ -1319,7 +1319,7 @@
                 }
             ],
             "description": "A standard Smarty install for St. Mark's projects",
-            "time": "2016-08-01T13:20:55+00:00"
+            "time": "2017-05-24T17:25:25+00:00"
         },
         {
             "name": "spvsoftwareproducts/LTI_Tool_Provider",
