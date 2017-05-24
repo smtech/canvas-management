@@ -43,6 +43,8 @@ if type sestatus &>/dev/null ; then
         printf "Updating SELinux context for Smarty cache directories\n"
         sudo chcon -R -t httpd_sys_rw_content_t vendor/battis/bootstrapsmarty/templates_c
         sudo chcon -R -t httpd_sys_rw_content_t vendor/battis/bootstrapsmarty/cache
+        printf "Updating SELinux context for logging\n"
+        sudo chcon -R -t httpd_sys_rw_content_t logs
     fi
 fi
 
