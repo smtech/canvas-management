@@ -3,6 +3,7 @@
 namespace smtech\CanvasManagement;
 
 use Battis\BootstrapSmarty\NotificationMessage;
+use Battis\DataUtilities;
 use Battis\HierarchicalSimpleCache;
 use smtech\LTI\Configuration\Option;
 
@@ -138,5 +139,46 @@ class Toolbox extends \smtech\StMarksReflexiveCanvasLTI\Toolbox
                 '</pre><p>Error Message</p><pre>' . $e->getMessage() . '</pre>',
             NotificationMessage::ERROR
         );
+    }
+
+    public function buildMenu($path, $ignore, $ignoreFiles = true)
+    {
+        $menuItems = [];
+        if (is_dir($path)) {
+            $dir = opendir($path);
+            while ($file = readdir($dir)) {
+                if (substr($file, 0, 1) != '.') {
+                    if (is_dir("$path/$file") && array_search($file, $ignore) === false) {
+                        $menuItems[$file]['submenu'] = $this->buildMenu("$path/$file", $ignore, false);
+                    } elseif (!$ignoreFiles && is_file("$path/$file") && preg_match('/^[^.]+\.php$/i', $file)) {
+                        $menuItems[$file]['url'] = DataUtilities::URLfromPath("$path/$file");
+                    }
+                    if (!empty($menuItems[$file])) {
+                        preg_match('/^(-?\d+)[-_](.*)$/', $file, $match);
+                        $menuItems[$file]['title'] = DataUtilities::titleCase(
+                            str_replace('-', ' ', basename((empty($match[2]) ? $file : $match[2]), '.php'))
+                        );
+                        if (!empty($match[1])) {
+                            $menuItems[$file]['order'] = (int) $match[1];
+                        }
+                    }
+                }
+            }
+            closedir($dir);
+        }
+        uasort($menuItems, function ($left, $right) {
+            if (!empty($left['order'])) {
+                if (!empty($right['order'])) {
+                    return $left['order'] - $right['order'];
+                } else {
+                    return -1;
+                }
+            } elseif (!empty($right['order'])) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        return $menuItems;
     }
 }

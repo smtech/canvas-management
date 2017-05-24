@@ -39,10 +39,26 @@ $toolbox->getSmarty()->addStylesheet(
     DataUtilities::URLfromPath(__DIR__ . '/css/canvas-management.css'),
     basename(__DIR__)
 );
+
 $toolbox->smarty_assign([
     'title' => $toolbox->config('TOOL_NAME'),
     'category' => DataUtilities::titleCase(preg_replace('/[\-_]+/', ' ', basename(__DIR__))),
     'APP_URL' => $toolbox->config('APP_URL'),
     'CANVAS_INSTANCE_URL' => $_SESSION[CANVAS_INSTANCE_URL],
-    'navbarActive' => basename(dirname($_SERVER['REQUEST_URI']))
+    'navbarActive' => basename(dirname($_SERVER['REQUEST_URI'])),
+    'menuItems' => $toolbox->buildMenu(__DIR__, [
+        '.git',
+        'build',
+        'css',
+        'docs',
+        'examples',
+        'images',
+        'js',
+        'logs',
+        'node_modules',
+        'src',
+        'templates',
+        'tests',
+        'vendor'
+    ])
 ]);
