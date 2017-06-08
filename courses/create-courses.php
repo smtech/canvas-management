@@ -96,6 +96,20 @@ switch ($step) {
 
                 /* why nest this, I mean... really? */
                 $source = array('course' => $source);
+
+                /* pull course navigation */
+                $tabs = $toolbox->api_get("courses/$template/tabs", [
+                    'include[]' => 'external'
+                ]);
+                $navigation = [];
+                foreach ($tabs as $tab) {
+                    if ($tab['id'] != 'home' && $tab['id'] != 'settings') {
+                        $navigation[$tab['id']] = $tab;
+                    }
+                }
+                uasort($navigation, function ($left, $right) {
+                    return $left['position'] - $right['position'];
+                });
             } catch (Exception $e) {
                 $toolbox->exceptionErrorMessage($e);
             }
@@ -160,7 +174,16 @@ switch ($step) {
                         /* duplicate course settings */
                         $toolbox->api_put("/courses/{$course['id']}", $source);
 
-                        // TODO  nice to figure out navigation settings copy
+                        /* duplicate course navigation */
+                        foreach ($navigation as $id => $tab) {
+                            $toolbox->api_put(
+                                "courses/{$course['id']}/tabs/$id",
+                                [
+                                    'position' => $tab['position'],
+                                    'visibility' => $tab['visibility']
+                                ]
+                            );
+                        }
 
                         /* duplicate course content */
                         $migration = $toolbox->api_post(
